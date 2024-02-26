@@ -22,8 +22,14 @@ export default function SignIn() {
             return;
         }
 
+        if(emailRef.current.includes('@')) {
+            Alert.alert('Sign In', "Please enter only first half of email before @manhattan.edu");
+            return;
+        }
+
         setLoading(true);
-        const response = await login(emailRef.current, passwordRef.current);
+        const response = await login((emailRef.current + '@manhattan.edu'), passwordRef.current);
+        console.log(emailRef.current)
         setLoading(false);
         console.log('sign in reposnse: ', response);
         if(!response.success){
@@ -47,7 +53,7 @@ export default function SignIn() {
                 <View style={{height: hp(7)}} className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl">
                     <Octicons name="mail" size={hp(2.7)} color="gray" />
                     <TextInput
-                        onChangeText={(value) => emailRef.current = value + '@manhattan.edu'}
+                        onChangeText={(value) => emailRef.current=value}
                         style={{fontSize: hp(2)}}
                         className="flex-1 font-semibold text-neutral-700"
                         placeholder='Email Address'
