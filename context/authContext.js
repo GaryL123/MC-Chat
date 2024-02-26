@@ -54,7 +54,7 @@ export const AuthContextProvider = ({children})=>{
             return {success: false, msg: e.message, error: e};
         }
     }
-    const register = async (email, password, username, profileUrl)=>{
+    const register = async (email, password)=>{
         try{
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log('response.user :', response?.user);
@@ -63,8 +63,8 @@ export const AuthContextProvider = ({children})=>{
             // setIsAuthenticated(true);
 
             await setDoc(doc(db, "users", response?.user?.uid),{
-                username, 
-                profileUrl,
+                //username, 
+                //profileUrl,
                 userId: response?.user?.uid
             });
             return {success: true, data: response?.user};
