@@ -15,6 +15,7 @@ export default function SignUp() {
 
     const emailRef = useRef("");
     const passwordRef = useRef("");
+    const passwordConfirmRef = useRef("");
     const usernameRef = useRef("");
     const profileRef = useRef("");
 
@@ -23,9 +24,20 @@ export default function SignUp() {
             Alert.alert('Sign Up', "Please fill all the fields!");
             return;
         }
+
+        if(emailRef.current.includes('@')) {
+            Alert.alert('Sign Up', "Please enter only first half of email before @manhattan.edu");
+            return;
+        }
+
+        if(passwordConfirmRef.current != passwordRef.current) {
+            Alert.alert('Sign Up', "Passwords do not match");
+            return;
+        }
+
         setLoading(true);
 
-        let response = await register(emailRef.current, passwordRef.current, usernameRef.current, profileRef.current);
+        let response = await register((emailRef.current + '@manhattan.edu'), passwordRef.current);
         setLoading(false);
 
         console.log('got result: ', response);
@@ -50,7 +62,7 @@ export default function SignUp() {
                 <View style={{height: hp(7)}} className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl">
                     <Octicons name="mail" size={hp(2.7)} color="gray" />
                     <TextInput
-                        onChangeText={(value) => emailRef.current = value + '@manhattan.edu'}
+                        onChangeText={(value) => emailRef.current = value}
                         style={{fontSize: hp(2)}}
                         className="flex-1 font-semibold text-neutral-700"
                         placeholder='Email Address'
@@ -73,7 +85,7 @@ export default function SignUp() {
                 <View style={{height: hp(7)}} className="flex-row gap-4 px-4 bg-neutral-100 items-center rounded-xl">
                     <Feather name="lock" size={hp(2.7)} color="gray" />
                     <TextInput
-                        onChangeText={value=> profileRef.current=value}
+                        onChangeText={value=> passwordConfirmRef.current=value}
                         style={{fontSize: hp(2)}}
                         className="flex-1 font-semibold text-neutral-700"
                         placeholder='Confirm Password'
