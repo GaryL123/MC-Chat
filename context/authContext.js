@@ -1,14 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import {onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
-import {doc, getDoc, setDoc} from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import axios from 'axios';
+import { obtainGoogleAccessToken } from "../oauthConfig";
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({children})=>{
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
-
 
     useEffect(()=>{
         const unsub = onAuthStateChanged(auth, (user)=>{
@@ -24,6 +25,25 @@ export const AuthContextProvider = ({children})=>{
         });
         return unsub;
     },[]);
+
+    const fetchGoogleProfile = async (accessToken) => {
+        try {
+            const response = await axios.get('https://people.googleapis.com/v1/people/me?personFields=names,photos', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            const { names, photos } = response.data;
+            const profileName = names[0]?.displayName;
+            const profilePicture = photos[0]?.url;
+
+            return {profileName, profilePicture };
+        } catch (error) {
+            console.error('Error fetching Google profile:', error);
+            return { profileName: undefined, profilePicture: undefined };
+        }
+    }
 
     const updateUserData = async (userId)=>{
         const docRef = doc(db, 'users', userId);
@@ -46,6 +66,7 @@ export const AuthContextProvider = ({children})=>{
             return {success: false, msg};
         }
     }
+
     const logout = async ()=>{
         try{
             await signOut(auth);
@@ -54,6 +75,7 @@ export const AuthContextProvider = ({children})=>{
             return {success: false, msg: e.message, error: e};
         }
     }
+
     const register = async (email, password)=>{
         try{
             const response = await createUserWithEmailAndPassword(auth, email, password);
@@ -62,11 +84,17 @@ export const AuthContextProvider = ({children})=>{
             // setUser(response?.user);
             // setIsAuthenticated(true);
 
+            const accessToken = await obtainGoogleAccessToken();
+
+            const {profileName, profilePicture } = await fetchGoogleProfile(accessToken);
+
             await setDoc(doc(db, "users", response?.user?.uid),{
-                //username, 
-                //profileUrl,
-                userId: response?.user?.uid
+                userId: response?.user?.uid,
+                email,
+                name: profileName,
+                profileUrl: profilePicture,
             });
+            
             return {success: true, data: response?.user};
         }catch(e){
             let msg = e.message;
@@ -75,6 +103,7 @@ export const AuthContextProvider = ({children})=>{
             return {success: false, msg};
         }
     }
+
     const resetPassword = async (email)=>{
         try{
             await sendPasswordResetEmail(auth, email);
@@ -88,7 +117,7 @@ export const AuthContextProvider = ({children})=>{
     }
 
     return (
-        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout}}>
+        <AuthContext.Provider value={{user, isAuthenticated, login, register, logout, resetPassword}}>
             {children}
         </AuthContext.Provider>
     )
