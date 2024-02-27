@@ -18,7 +18,7 @@ function createAuthUrl(oauthConfig) {
 export const obtainGoogleAccessToken = async () => {
     try {
         const authUrl = createAuthUrl(oauthConfig);
-        const response = await AuthSession.loadAsync({ authUrl });
+        const response = await AuthSession.loadAsync(oauthConfig, 'https://accounts.google.com');
 
         if (response.type === 'success') {
             // The accessToken is part of the response
