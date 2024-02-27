@@ -78,8 +78,8 @@ export default function ChatRoom() {
             const newDoc = await addDoc(messagesRef, {
                 userId: user?.userId,
                 text: message,
-                profileUrl: user?.profileUrl,
-                senderName: user?.username,
+                //profileUrl: user?.profileUrl,
+                //senderName: user?.username,
                 createdAt: Timestamp.fromDate(new Date())
             });
 
