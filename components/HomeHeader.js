@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { blurhash } from '../utils/common';
 import { useAuth } from '../context/authContext';
+import { useRouter } from 'expo-router';
+
 import {
     Menu,
     MenuOptions,
@@ -16,11 +18,12 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 
 const ios = Platform.OS=='ios';
 export default function HomeHeader() {
+    const router = useRouter();
     const {user, logout} = useAuth();
 
     const {top} = useSafeAreaInsets();
     const handleProfile = ()=>{
-
+        router.push('profilePage')
     }
 
     const handleLogout = async ()=>{
