@@ -2,19 +2,13 @@ import { View, Text, Platform } from 'react-native'
 import React from 'react'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Octicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { blurhash } from '../utils/common';
 import { useAuth } from '../context/authContext';
 import { useRouter } from 'expo-router';
-
-import {
-    Menu,
-    MenuOptions,
-    MenuOption,
-    MenuTrigger,
-  } from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { MenuItem } from './CustomMenuItems';
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 
 const ios = Platform.OS=='ios';
 export default function HomeHeader() {
@@ -67,35 +61,35 @@ export default function HomeHeader() {
                     text="Profile"
                     action={handleProfile}
                     value={null}
-                    icon={<Feather name="user" size={hp(2.5)} color="#737373" /> }
+                    icon={<Octicons name="person" size={hp(2.5)} color="gray" /> }
                 />
                 <Divider />
                 <MenuItem
                     text="Settings"
                     action={handleProfile}
                     value={null}
-                    icon={<Feather name="settings" size={hp(2.5)} color="#737373" /> }
+                    icon={<Octicons name="gear" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Add Friends"
                     action={handleProfile}
                     value={null}
-                    icon={<AntDesign name="adduser" size={24} color="black" />}
+                    icon={<Octicons name="person-add" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Rooms"
                     action={handleProfile}
                     value={null}
-                    icon={<MaterialIcons name="room" size={24} color="black" /> }
+                    icon={<Octicons name="home" size={hp(2.5)} color="gray" /> }
                 />
                 <Divider />
                 <MenuItem
                     text="Sign Out"
                     action={handleLogout}
                     value={null}
-                    icon={<AntDesign name="logout" size={hp(2.5)} color="#737373" /> }
+                    icon={<Octicons name="sign-out" size={hp(2.5)} color="gray" /> }
                 />
                 
 
