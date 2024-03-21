@@ -68,11 +68,33 @@ export default function HomeHeader() {
                 />
                 <Divider />
                 <MenuItem
+                    text="Settings"
+                    action={handleProfile}
+                    value={null}
+                    icon={<Feather name="settings" size={hp(2.5)} color="#737373" /> }
+                />
+                <Divider />
+                <MenuItem
+                    text="Add Friends"
+                    action={handleProfile}
+                    value={null}
+                    icon={<Feather name="plus" size={hp(2.5)} color="#737373" /> }
+                />
+                <Divider />
+                <MenuItem
+                    text="Rooms"
+                    action={handleProfile}
+                    value={null}
+                    icon={<Feather name="settings" size={hp(2.5)} color="#737373" /> }
+                />
+                <Divider />
+                <MenuItem
                     text="Sign Out"
                     action={handleLogout}
                     value={null}
                     icon={<AntDesign name="logout" size={hp(2.5)} color="#737373" /> }
                 />
+                
 
             </MenuOptions>
         </Menu>
