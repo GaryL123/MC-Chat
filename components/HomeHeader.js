@@ -21,7 +21,7 @@ export default function HomeHeader() {
         await logout();
     }
   return (
-    <View style={{paddingTop: ios? top:top+10 }} className="flex-row justify-between px-5 bg-indigo-400 pb-6 rounded-b-3xl shadow">
+    <View style={{paddingTop: ios? top:top+10 }} className="flex-row justify-between px-5 bg-green-700 pb-6 rounded-b-3xl shadow">
       <View>
         <Text style={{fontSize: hp(3)}} className="font-medium text-white">Chats</Text>
       </View>
