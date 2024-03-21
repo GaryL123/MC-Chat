@@ -14,7 +14,7 @@ import {
     MenuTrigger,
   } from 'react-native-popup-menu';
 import { MenuItem } from './CustomMenuItems';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 
 const ios = Platform.OS=='ios';
 export default function HomeHeader() {
