@@ -63,21 +63,21 @@ export default function HomeHeader() {
                 <Divider />
                 <MenuItem
                     text="Settings"
-                    action={() => router.push('profilePage')}
+                    action={() => router.push('Settings')}
                     value={null}
                     icon={<Octicons name="gear" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Add Friends"
-                    action={() => router.push('profilePage')}
+                    action={() => router.push('AddFriends')}
                     value={null}
                     icon={<Octicons name="person-add" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Rooms"
-                    action={() => router.push('profilePage')}
+                    action={() => router.push('Rooms')}
                     value={null}
                     icon={<Octicons name="home" size={hp(2.5)} color="gray" /> }
                 />
