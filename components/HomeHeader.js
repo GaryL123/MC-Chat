@@ -81,14 +81,14 @@ export default function HomeHeader() {
                     text="Add Friends"
                     action={handleProfile}
                     value={null}
-                    icon={<Feather name="plus" size={hp(2.5)} color="#737373" /> }
+                    icon={<AntDesign name="adduser" size={24} color="black" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Rooms"
                     action={handleProfile}
                     value={null}
-                    icon={<Feather name="settings" size={hp(2.5)} color="#737373" /> }
+                    icon={<MaterialIcons name="room" size={24} color="black" /> }
                 />
                 <Divider />
                 <MenuItem
