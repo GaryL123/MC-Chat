@@ -16,9 +16,6 @@ export default function HomeHeader() {
     const {user, logout} = useAuth();
 
     const {top} = useSafeAreaInsets();
-    const handleProfile = ()=>{
-        router.push('profilePage')
-    }
 
     const handleLogout = async ()=>{
         await logout();
@@ -59,28 +56,28 @@ export default function HomeHeader() {
             >
                 <MenuItem
                     text="Profile"
-                    action={handleProfile}
+                    action={() => router.push('profilePage')}
                     value={null}
                     icon={<Octicons name="person" size={hp(2.5)} color="gray" /> }
                 />
                 <Divider />
                 <MenuItem
                     text="Settings"
-                    action={handleProfile}
+                    action={() => router.push('profilePage')}
                     value={null}
                     icon={<Octicons name="gear" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Add Friends"
-                    action={handleProfile}
+                    action={() => router.push('profilePage')}
                     value={null}
                     icon={<Octicons name="person-add" size={hp(2.5)} color="gray" />}
                 />
                 <Divider />
                 <MenuItem
                     text="Rooms"
-                    action={handleProfile}
+                    action={() => router.push('profilePage')}
                     value={null}
                     icon={<Octicons name="home" size={hp(2.5)} color="gray" /> }
                 />
