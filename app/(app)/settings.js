@@ -1,52 +1,30 @@
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Switch } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../context/authContext'
 import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import ChatList from '../../components/ChatList';
-import Loading from '../../components/Loading';
-import { getDocs, query, where } from 'firebase/firestore';
-import { usersRef } from '../../firebaseConfig';
 import SettingsHeader from '../../components/SettingsHeader';
 import { useRouter } from 'expo-router';
 
 export default function Settings() {
-  const { user } = useAuth();
-  const [users, setUsers] = useState([]);
   const router = useRouter();
-  useEffect(() => {
-    if (user?.uid)
-      getUsers();
-  }, [])
-  const getUsers = async () => {
-    // fetch users
-    const q = query(usersRef, where('userId', '!=', user?.uid));
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-    const querySnapshot = await getDocs(q);
-    let data = [];
-    querySnapshot.forEach(doc => {
-      data.push({ ...doc.data() });
-    });
-
-    setUsers(data);
-  }
+  const toggleSwitch = () => setIsDarkMode(previousState => !previousState);
 
   return (
     <View className="flex-1 bg-white">
-      <StatusBar style="light" />
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
       <SettingsHeader router={router} />
-      {
-        users.length > 0 ? (
-          <UserList currentUser={user} users={users} />
-        ) : (
-          <View className="flex items-center" style={{ top: hp(30) }}>
-            <Text>Welcome user</Text>
-            {/* <ActivityIndicator size="large" /> */}
-            {/* <Loading size={hp(10)} /> */}
-          </View>
-        )
-      }
-
+      <View className="items-center mt-72">
+        <Text className="text-lg mb-4">{isDarkMode ? 'Dark Mode' : 'Light Mode'}</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isDarkMode ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isDarkMode}
+        />
+      </View>
     </View>
-  )
+  );
 }
