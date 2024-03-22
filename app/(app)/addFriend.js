@@ -12,7 +12,7 @@ import { getRoomId } from '../../utils/common';
 import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 
-export default function ChatRoom() {
+export default function AddFriend() {
     const item = useLocalSearchParams(); // second user
     const { user } = useAuth(); // logged in user
     const router = useRouter();
