@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 
@@ -56,20 +56,25 @@ export const AuthContextProvider = ({ children }) => {
             return { success: false, msg: e.message, error: e };
         }
     }
-    const register = async (email, password) => {
+    const register = async (email, fName, lName, password) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('response.user :', response?.user);
 
-            // setUser(response?.user);
             setIsAuthenticated(true);
 
             await setDoc(doc(db, "users", response?.user?.uid), {
                 userId: response?.user?.uid,
-                email: response?.user?.email
+                email: response?.user?.email,
+                fName: fName,
+                lName: lName
             });
 
             await setDoc(doc(db, "users", response?.user?.uid, "friends", "initial_friend"), {
+                friendId: "initial_friend",
+                status: "placeholder"
+            });
+
+            await setDoc(doc(db, "users", response?.user?.uid, "friendsPending", "initial_friend"), {
                 friendId: "initial_friend",
                 status: "placeholder"
             });
