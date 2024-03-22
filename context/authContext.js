@@ -24,13 +24,13 @@ export const AuthContextProvider = ({ children }) => {
         return unsub;
     }, []);
 
-    const updateUserData = async (userId) => {
-        const docRef = doc(db, 'users', userId);
+    const updateUserData = async (uid) => {
+        const docRef = doc(db, 'users', uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             let data = docSnap.data();
-            return { ...user, userId: data.userId, email: data.email }
+            return { ...user, uid: data.uid, email: data.email }
         } else {
             return null;
         }
@@ -63,7 +63,7 @@ export const AuthContextProvider = ({ children }) => {
             setIsAuthenticated(true);
 
             await setDoc(doc(db, "users", response?.user?.uid), {
-                userId: response?.user?.uid,
+                uid: response?.user?.uid,
                 email: response?.user?.email,
                 fName: fName,
                 lName: lName
@@ -74,7 +74,12 @@ export const AuthContextProvider = ({ children }) => {
                 status: "placeholder"
             });
 
-            await setDoc(doc(db, "users", response?.user?.uid, "friendsPending", "initial_friend"), {
+            await setDoc(doc(db, "users", response?.user?.uid, "friendsSent", "initial_friend"), {
+                friendId: "initial_friend",
+                status: "placeholder"
+            });
+
+            await setDoc(doc(db, "users", response?.user?.uid, "friendsReceived", "initial_friend"), {
                 friendId: "initial_friend",
                 status: "placeholder"
             });
