@@ -22,7 +22,7 @@ export default function UserItem({ item, noBorder, currentUser }) {
             />
 
             <View className="flex-1 gap-1">
-                <Text style={{ fontSize: hp(2.0) }} className="font-semibold text-neutral-800">{item?.email.split('@')[0]}</Text>
+                <Text style={{ fontSize: hp(2.0) }} className="font-semibold text-neutral-800">{item?.fName + ' ' + item?.lName}</Text>
                 {/* You could add more user details here */}
             </View>
 
