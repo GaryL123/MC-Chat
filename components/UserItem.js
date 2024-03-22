@@ -8,6 +8,10 @@ import { Octicons } from '@expo/vector-icons';
 export default function UserItem({ item, noBorder, currentUser }) {
     const [friendRequestSent, setFriendRequestSent] = useState(false);
 
+    const checkFriendRequests = () => {
+        
+    }
+
     const sendFriendRequest = () => {
         setFriendRequestSent(true);
     }
