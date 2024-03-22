@@ -11,12 +11,11 @@ export const AuthContextProvider = ({ children }) => {
 
 
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (user) => {
-            // console.log('got user: ', user);
+        const unsub = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setIsAuthenticated(true);
+                const updatedUserData = await updateUserData(user.uid);
                 setUser(user);
-                updateUserData(user.uid);
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
@@ -31,7 +30,9 @@ export const AuthContextProvider = ({ children }) => {
 
         if (docSnap.exists()) {
             let data = docSnap.data();
-            setUser({ ...user, userId: data.userId, email: data.email })
+            return { ...user, userId: data.userId, email: data.email }
+        } else {
+            return null;
         }
     }
 
