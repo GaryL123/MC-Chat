@@ -43,14 +43,14 @@ export default function SignIn() {
     return (
         <CustomKeyboardView>
             <StatusBar style="dark" />
-            <View style={{ paddingTop: hp(10), paddingHorizontal: wp(5) }} className="flex-1 gap-12">
+            <View style={{ paddingTop: hp(10), paddingHorizontal: wp(5) }} className="flex-1 gap-7">
                 {/* signIn image */}
                 <View className="items-center">
-                    <Image style={{ height: hp(25) }} resizeMode='contain' source={require('../assets/images/MCChat_Color_512px.png')} />
+                    <Image style={{ height: hp(20) }} resizeMode='contain' source={require('../assets/images/MCChat_Color_512px.png')} />
                 </View>
 
 
-                <View className="gap-10">
+                <View className="gap-7">
                     <Text style={{ fontSize: hp(4) }} className="font-bold tracking-wider text-center text-neutral-800">Sign In</Text>
                     {/* inputs */}
                     <View className="gap-4">
