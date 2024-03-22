@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native'
+import { View, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
@@ -24,8 +24,8 @@ export default function ChatRoom() {
     useEffect(() => {
         createRoomIfNotExists();
 
-        let roomId = getRoomId(user?.userId, item?.userId);
-        const docRef = doc(db, "rooms", roomId);
+        let roomId = getRoomId(user?.uid, item?.uid);
+        const docRef = doc(db, "chatRooms", roomId);
         const messagesRef = collection(docRef, "messages");
         const q = query(messagesRef, orderBy('createdAt', 'asc'));
 
@@ -58,10 +58,10 @@ export default function ChatRoom() {
     }
 
     const createRoomIfNotExists = async () => {
-        // roomId
-        let roomId = getRoomId(user?.userId, item?.userId);
-        await setDoc(doc(db, "rooms", roomId), {
+        let roomId = getRoomId(user?.uid, item?.uid);
+        await setDoc(doc(db, "chatRooms", roomId), {
             roomId,
+            roomName: 'TestRoom',
             createdAt: Timestamp.fromDate(new Date())
         });
     }
@@ -70,13 +70,14 @@ export default function ChatRoom() {
         let message = textRef.current.trim();
         if (!message) return;
         try {
-            let roomId = getRoomId(user?.userId, item?.userId);
-            const docRef = doc(db, 'rooms', roomId);
+            let roomId = getRoomId(user?.uid, item?.uid);
+            const docRef = doc(db, 'chatRooms', roomId);
             const messagesRef = collection(docRef, "messages");
             textRef.current = "";
             if (inputRef) inputRef?.current?.clear();
+            console.log("chatRoom User ID:", user?.uid);
             const newDoc = await addDoc(messagesRef, {
-                userId: user?.userId,
+                uid: user?.uid,
                 text: message,
                 senderName: user?.email,
                 createdAt: Timestamp.fromDate(new Date())
