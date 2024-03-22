@@ -33,20 +33,20 @@ export default function Settings() {
 
   return (
     <View className="flex-1 bg-white">
-        <StatusBar style="light" />
-        <SettingsHeader router={router} />
-        {
-            users.length > 0 ? (
-                <UserList currentUser={user} users={users} />
-            ) : (
-                <View className="flex items-center" style={{ top: hp(30) }}>
-                    <Text>Welcome user</Text>
-                    {/* <ActivityIndicator size="large" /> */}
-                    {/* <Loading size={hp(10)} /> */}
-                </View>
-            )
-        }
+      <StatusBar style="light" />
+      <SettingsHeader router={router} />
+      {
+        users.length > 0 ? (
+          <UserList currentUser={user} users={users} />
+        ) : (
+          <View className="flex items-center" style={{ top: hp(30) }}>
+            <Text>Welcome user</Text>
+            {/* <ActivityIndicator size="large" /> */}
+            {/* <Loading size={hp(10)} /> */}
+          </View>
+        )
+      }
 
     </View>
-)
+  )
 }
