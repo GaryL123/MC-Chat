@@ -1,14 +1,15 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
 import { blurhash } from '../utils/common';
 import { Octicons } from '@expo/vector-icons';
 
 export default function UserItem({ item, noBorder, currentUser }) {
+    const [friendRequestSent, setFriendRequestSent] = useState(false);
 
     const sendFriendRequest = () => {
-        
+        setFriendRequestSent(true);
     }
 
     return (
@@ -26,7 +27,7 @@ export default function UserItem({ item, noBorder, currentUser }) {
             </View>
 
             <TouchableOpacity onPress={sendFriendRequest} style={{ padding: 10, backgroundColor: 'green', borderRadius: 5 }}>
-                <Octicons name="person-add" size={20} color="white" />
+                <Octicons name={friendRequestSent ? "check" : "person-add"} size={20} color="white" />
             </TouchableOpacity>
         </View>
     );
