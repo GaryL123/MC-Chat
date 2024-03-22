@@ -11,7 +11,7 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
     const [lastMessage, setLastMessage] = useState(undefined);
     useEffect(() => {
 
-        let roomId = getRoomId(currentUser?.userId, item?.userId);
+        let roomId = getRoomId(currentUser?.uid, item?.uid);
         const docRef = doc(db, "rooms", roomId);
         const messagesRef = collection(docRef, "messages");
         const q = query(messagesRef, orderBy('createdAt', 'desc'));
@@ -42,7 +42,7 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
     const renderLastMessage = () => {
         if (typeof lastMessage == 'undefined') return 'Loading...';
         if (lastMessage) {
-            if (currentUser?.userId == lastMessage?.userId) return "You: " + lastMessage?.text;
+            if (currentUser?.uid == lastMessage?.uid) return "You: " + lastMessage?.text;
             return lastMessage?.text;
         } else {
             return 'Say Hi 👋';
@@ -67,7 +67,7 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
             {/* name and last message */}
             <View className="flex-1 gap-1">
                 <View className="flex-row justify-between">
-                    <Text style={{ fontSize: hp(1.8) }} className="font-semibold text-neutral-800">{item?.email}</Text>
+                    <Text style={{ fontSize: hp(1.8) }} className="font-semibold text-neutral-800">{item?.fName + ' ' + item?.lName}</Text>
                     <Text style={{ fontSize: hp(1.6) }} className="font-medium text-neutral-500">
                         {renderTime()}
                     </Text>
