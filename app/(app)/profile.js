@@ -18,9 +18,10 @@ export default function Profile() {
     if (user?.uid)
       getUsers();
   }, [])
+  
   const getUsers = async () => {
     // fetch users
-    const q = query(usersRef, where('userId', '!=', user?.uid));
+    const q = query(usersRef, where('uid', '!=', user?.uid));
 
     const querySnapshot = await getDocs(q);
     let data = [];
@@ -36,17 +37,12 @@ export default function Profile() {
       <StatusBar style="light" />
       <ProfileHeader router={router} />
       {
-        users.length > 0 ? (
-          <UserList currentUser={user} users={users} />
-        ) : (
           <View className="flex items-center" style={{ top: hp(30) }}>
             <Text>Welcome user</Text>
             {/* <ActivityIndicator size="large" /> */}
             {/* <Loading size={hp(10)} /> */}
           </View>
-        )
       }
-
     </View>
   )
 }
