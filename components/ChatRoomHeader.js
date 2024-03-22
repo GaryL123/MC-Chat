@@ -3,7 +3,6 @@ import React from 'react'
 import { Stack } from 'expo-router'
 import { Entypo, Ionicons } from '@expo/vector-icons'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Image } from 'expo-image';
 
 export default function ChatRoomHeader({ user, router }) {
     return (
