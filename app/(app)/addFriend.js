@@ -3,13 +3,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
 import AddFriendHeader from '../../components/AddFriendHeader';
-import MessageList from '../../components/MessageList';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
-import CustomKeyboardView from '../../components/CustomKeyboardView';
 import { useAuth } from '../../context/authContext';
-import { Timestamp, addDoc, collection, doc, where, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
-import { db, usersRef } from '../../firebaseConfig';
+import { where, onSnapshot, query } from 'firebase/firestore';
+import { usersRef } from '../../firebaseConfig';
 import UserList from '../../components/UserList';
 
 export default function AddFriend() {
@@ -22,30 +20,24 @@ export default function AddFriend() {
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
-        console.log('Current users state:', users);
-    }, [users]);
-
-    useEffect(() => {
-        console.log('getting users')
-        console.log(user?.uid)
-        if (user?.uid)
+        if (user?.uid) {
+            console.log("addFriend use effect if statement passed");
             getUsers();
-        console.log(user?.uid)
+        }
     }, [])
 
     const getUsers = () => {
-        console.log('Subscribing to users...');
-        const q = query(usersRef, where('userId', '!=', user?.uid));
+        console.log("addFriend Getting users..."); // Confirm the function is called
+        const q = query(usersRef, where('uid', '!=', user?.uid));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             let data = [];
             querySnapshot.forEach((doc) => {
-                console.log('User found:', doc.data());
                 data.push({ ...doc.data(), id: doc.id });
             });
+            console.log("addFriend Fetched users:", data);
             setUsers(data);
-            console.log('Users set:', data);
         }, (error) => {
-            console.error('Error subscribing to users:', error);
+            console.error('addFriend Error subscribing to users:', error);
         });
 
         return unsubscribe;
