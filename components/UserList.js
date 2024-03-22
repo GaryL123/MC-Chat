@@ -10,7 +10,7 @@ export default function UserList({ users, currentUser }) {
       <FlatList
         data={users}
         contentContainerStyle={{ flex: 1, paddingVertical: 25 }}
-        keyExtractor={item => Math.random()}
+        keyExtractor={item => item.email.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => <UserItem
           noBorder={index + 1 == users.length}
