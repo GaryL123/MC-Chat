@@ -3,7 +3,7 @@ import React from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function MessageItem({ message, currentUser }) {
-    if (currentUser?.userId == message?.userId) {
+    if (currentUser?.uid == message?.uid) {
         // my message
         return (
             <View className="flex-row justify-end mb-3 mr-3">
