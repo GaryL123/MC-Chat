@@ -30,6 +30,18 @@ export default function UserItem({ item, noBorder }) {
         } catch (err) {
             Alert.alert('Message', err.message);
         }
+
+        try {
+            console.log("useritem sendfriendrequest try");
+            const doc2Ref = doc(db, 'users', user?.uid);
+            console.log("item userID: " + user?.uid);
+            const requests2Ref = collection(doc2Ref, "friendsSent");
+            const newDoc = await addDoc(requests2Ref, {
+                friendId: item?.uid,
+            });
+        } catch (err) {
+            Alert.alert('Message', err.message);
+        }
     }
 
     return (
