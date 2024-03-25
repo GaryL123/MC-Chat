@@ -4,16 +4,30 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Image } from 'expo-image';
 import { blurhash } from '../utils/common';
 import { Octicons } from '@expo/vector-icons';
+import { addDoc, collection, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
-export default function UserItem({ item, noBorder, currentUser }) {
+export default function UserItem({ item, noBorder }) {
     const [friendRequestSent, setFriendRequestSent] = useState(false);
 
     const checkFriendRequests = () => {
         
     }
 
-    const sendFriendRequest = () => {
+    const sendFriendRequest = async () => {
+        console.log("attempting to send friend request");
         setFriendRequestSent(true);
+        try {
+            console.log("useritem sendfriendrequest try");
+            const docRef = doc(db, 'users', item?.uid);
+            console.log("item userID: " + item?.uid);
+            const requestsRef = collection(docRef, "friendsReceived");
+            const newDoc = await addDoc(requestsRef, {
+                friendId: item?.uid,
+            });
+        } catch (err) {
+            Alert.alert('Message', err.message);
+        }
     }
 
     return (
