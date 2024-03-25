@@ -13,13 +13,30 @@ import { MenuItem } from './CustomMenuItems';
 const ios = Platform.OS == 'ios';
 export default function HomeHeader() {
     const router = useRouter();
-    const { user, logout } = useAuth();
-
+    const { user, logout, pendingFriendRequests } = useAuth();
     const { top } = useSafeAreaInsets();
 
     const handleLogout = async () => {
         await logout();
     }
+
+    const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
+
+    const NotificationBubble = ({ count }) => {
+        return (
+          <View style={{
+            minWidth: 20, // Ensure the bubble is at least somewhat circular
+            padding: 2,
+            backgroundColor: 'red',
+            borderRadius: 10, // Adjust for circularity
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Text style={{ color: 'white', fontSize: 10, padding: 1 }}>{count}</Text>
+          </View>
+        );
+      };
+
     return (
         <View style={{ paddingTop: ios ? top : top + 10 }} className="flex-row justify-between px-5 bg-green-700 pb-6 rounded-b-3xl shadow">
             <View>
@@ -31,6 +48,8 @@ export default function HomeHeader() {
                     <MenuTrigger customStyles={{
                         triggerWrapper: {
                             // trigger wrapper styles
+                            //borderWidth: hasPendingRequests ? 2 : 0,
+                            //borderColor: hasPendingRequests ? 'red' : 'transparent',
                         }
                     }}>
                         <Image
@@ -39,6 +58,21 @@ export default function HomeHeader() {
                             placeholder={blurhash}
                             transition={500}
                         />
+                        {hasPendingRequests && (
+                            <View style={{
+                                position: 'absolute',
+                                right: -6,
+                                bottom: -3,
+                                backgroundColor: 'red',
+                                borderRadius: 50,
+                                width: hp(2),
+                                height: hp(2),
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                                <Text style={{ color: 'white', fontSize: 10 }}>{pendingFriendRequests.length}</Text>
+                            </View>
+                        )}
                     </MenuTrigger>
                     <MenuOptions
                         customStyles={{
@@ -68,6 +102,16 @@ export default function HomeHeader() {
                             icon={<Octicons name="gear" size={hp(2.5)} color="gray" />}
                         />
                         <Divider />
+                        {hasPendingRequests && (
+                            <MenuItem
+                            text="Friend Requests"
+                            action={() => router.push('friendRequests')}
+                            value={null}
+                            customContent={ // Use `customContent` or a similar prop if `MenuItem` supports it, or adjust according to your component's API
+                                <NotificationBubble count={pendingFriendRequests.length} />
+                              }
+                        />
+                        )}
                         <MenuItem
                             text="Add Friends"
                             action={() => router.push('addFriend')}
