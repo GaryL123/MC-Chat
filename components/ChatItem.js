@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
-import { blurhash, formatDate, getRoomId } from '../utils/common';
+import { blurhash, formatDate, getIndId } from '../utils/common';
 import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -11,8 +11,8 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
     const [lastMessage, setLastMessage] = useState(undefined);
     useEffect(() => {
 
-        let roomId = getRoomId(currentUser?.uid, item?.uid);
-        const docRef = doc(db, "rooms", roomId);
+        let indId = getIndId(currentUser?.uid, item?.uid);
+        const docRef = doc(db, "chatInds", indId);
         const messagesRef = collection(docRef, "messages");
         const q = query(messagesRef, orderBy('createdAt', 'desc'));
 
@@ -28,8 +28,8 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
 
     // console.log('last message: ', lastMessage);
 
-    const openChatRoom = () => {
-        router.push({ pathname: '/chatRoom', params: item });
+    const openChatInd = () => {
+        router.push({ pathname: '/chatInd', params: item });
     }
 
     const renderTime = () => {
@@ -49,7 +49,7 @@ export default function ChatItem({ item, router, noBorder, currentUser }) {
         }
     }
     return (
-        <TouchableOpacity onPress={openChatRoom} className={`flex-row justify-between mx-4 items-center gap-3 mb-4 pb-2 ${noBorder ? '' : 'border-b border-b-neutral-200'}`}>
+        <TouchableOpacity onPress={openChatInd} className={`flex-row justify-between mx-4 items-center gap-3 mb-4 pb-2 ${noBorder ? '' : 'border-b border-b-neutral-200'}`}>
             {/* <Image 
             source={{uri: item?.profileUrl}} 
             style={{height: hp(6), width: hp(6)}}
