@@ -2,7 +2,7 @@ import { View, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
-import ChatRoomHeader from '../../components/ChatRoomHeader';
+import ChatIndHeader from '../../components/ChatIndHeader';
 import MessageList from '../../components/MessageList';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
@@ -69,7 +69,7 @@ export default function ChatInd() {
         let message = textRef.current.trim();
         if (!message) return;
         try {
-            let roomId = getindId(user?.uid, item?.uid);
+            let roomId = getIndId(user?.uid, item?.uid);
             const docRef = doc(db, 'chatInds', roomId);
             const messagesRef = collection(docRef, "messages");
             textRef.current = "";
