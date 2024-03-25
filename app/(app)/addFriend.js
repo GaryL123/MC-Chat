@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native'
+import { View, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
