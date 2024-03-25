@@ -17,7 +17,7 @@ export default function Home() {
       console.log("home use effect if statement passed");
       getUsers();
     }
-  }, [])
+  }, [user?.uid])
 
   const getUsers = async () => {
     console.log("home Getting users..."); // Confirm the function is called
