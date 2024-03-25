@@ -30,8 +30,32 @@ export default function UserItem({ item, noBorder }) {
     }, [user?.uid, item?.uid]);
 
     const sendFriendRequest = async () => {
-        // Send friend request logic remains the same
-    };
+        console.log("attempting to send friend request");
+        setFriendRequestSent(true);
+        try {
+            console.log("useritem sendfriendrequest try");
+            const docRef = doc(db, 'users', item?.uid);
+            console.log("item userID: " + item?.uid);
+            const requestsRef = collection(docRef, "friendsReceived");
+            const newDoc = await addDoc(requestsRef, {
+                friendId: user?.uid,
+            });
+        } catch (err) {
+            Alert.alert('Message', err.message);
+        }
+
+        try {
+            console.log("useritem sendfriendrequest try");
+            const doc2Ref = doc(db, 'users', user?.uid);
+            console.log("item userID: " + user?.uid);
+            const requests2Ref = collection(doc2Ref, "friendsSent");
+            const newDoc = await addDoc(requests2Ref, {
+                friendId: item?.uid,
+            });
+        } catch (err) {
+            Alert.alert('Message', err.message);
+        }
+    }
 
     return (
         <View className={`flex-row justify-between mx-4 items-center gap-3 mb-4 pb-2 ${noBorder ? '' : 'border-b border-b-neutral-200'}`}>
