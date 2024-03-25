@@ -19,7 +19,7 @@ export default function Home() {
     }
   }, [])
 
-  const getUsers = () => {
+  const getUsers = async () => {
     console.log("home Getting users..."); // Confirm the function is called
     const q = query(usersRef, where('uid', '!=', user?.uid));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
