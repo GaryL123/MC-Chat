@@ -1,12 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [pendingFriendRequests, setPendingFriendRequests] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
 
 
@@ -16,9 +17,11 @@ export const AuthContextProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 const updatedUserData = await updateUserData(user.uid);
                 setUser(user);
+                await fetchPendingFriendRequests(user.uid);
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
+                setPendingFriendRequests([]);
             }
         });
         return unsub;
@@ -69,21 +72,6 @@ export const AuthContextProvider = ({ children }) => {
                 lName: lName
             });
 
-            await setDoc(doc(db, "users", response?.user?.uid, "friends", "initial_friend"), {
-                friendId: "initial_friend",
-                status: "placeholder"
-            });
-
-            await setDoc(doc(db, "users", response?.user?.uid, "friendsSent", "initial_friend"), {
-                friendId: "initial_friend",
-                status: "placeholder"
-            });
-
-            await setDoc(doc(db, "users", response?.user?.uid, "friendsReceived", "initial_friend"), {
-                friendId: "initial_friend",
-                status: "placeholder"
-            });
-
             return { success: true, data: response?.user };
         } catch (e) {
             let msg = e.message;
@@ -104,8 +92,18 @@ export const AuthContextProvider = ({ children }) => {
         }
     }
 
+    const fetchPendingFriendRequests = async (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'friendsReceived');
+        const querySnapshot = await getDocs(requestsRef);
+        const requests = querySnapshot.docs.map(doc => ({
+            id: doc.id, // Friend Request ID
+            ...doc.data()
+        }));
+        setPendingFriendRequests(requests);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests }}>
             {children}
         </AuthContext.Provider>
     )
