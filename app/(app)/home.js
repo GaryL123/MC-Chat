@@ -12,6 +12,7 @@ export default function Home() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+    console.log("home use effect started");
     if (user?.uid) {
       console.log("home use effect if statement passed");
       getUsers();
