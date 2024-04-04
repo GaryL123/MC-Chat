@@ -8,7 +8,7 @@ import { useAuth } from '../context/authContext';
 import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, query, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-export default function RequestItem({ item, noBorder }) {
+export default function RequestItem({ item, noBorder, onFriendRequestProcessed }) {
     const { user } = useAuth();
     const [friendRequestSent, setFriendRequestSent] = useState(false);
 
@@ -31,6 +31,8 @@ export default function RequestItem({ item, noBorder }) {
             deleteDoc(doc(db, 'users', item.uid, 'friendsSent', friendRequestId)),
             deleteDoc(doc(db, 'users', item.uid, 'friendsSent', friendRequestId2)),
         ]);
+
+        onFriendRequestProcessed(item.id);
     };
 
     const requestDeny = async () => {
@@ -43,6 +45,8 @@ export default function RequestItem({ item, noBorder }) {
             deleteDoc(doc(db, 'users', item.uid, 'friendsSent', friendRequestId)),
             deleteDoc(doc(db, 'users', item.uid, 'friendsSent', friendRequestId2)),
         ]);
+
+        onFriendRequestProcessed(item.id);
     };
 
     return (
