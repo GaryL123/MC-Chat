@@ -37,24 +37,25 @@ export default function Home() {
     return unsubscribe;
   };*/
 
-  const getFriends = async () => {
+  const getFriends = () => {
+    if (!user?.uid) return; // Guard clause if user is not defined
+
     const friendsRef = collection(db, 'users', user.uid, 'friends');
-    const friendsSnapshot = await getDocs(friendsRef);
+    onSnapshot(friendsRef, async (friendsSnapshot) => {
+        let friendPromises = friendsSnapshot.docs.map(docSnap => {
+            const friendUid = docSnap.id;
+            return getDoc(doc(db, 'users', friendUid));
+        });
 
-    let friendPromises = friendsSnapshot.docs.map(docSnap => {
-        const friendUid = docSnap.id;
-        return getDoc(doc(db, 'users', friendUid));
+        const friendDocs = await Promise.all(friendPromises);
+        const friendsData = friendDocs.filter(docSnap => docSnap.exists()).map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
+
+        setFriends(friendsData); // Update the friends state
     });
-
-    const friendDocs = await Promise.all(friendPromises);
-    const friendsData = friendDocs.filter(docSnap => docSnap.exists()).map(docSnap => ({
-        id: docSnap.id,
-        ...docSnap.data()
-    }));
-
-    setFriends(friendsData); // Use setFriends to store the fetched friend data
 };
-
 
   return (
     <View className="flex-1 bg-white">
