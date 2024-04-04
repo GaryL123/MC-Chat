@@ -25,6 +25,10 @@ export default function AddFriend() {
         }
     }, [])
 
+    const onFriendRequestProcessed = (processedId) => {
+        setUsers(currentUsers => currentUsers.filter(user => user.id !== processedId));
+    };
+
     const getRequests = async () => {
         console.log("Fetching friend requests...");
         const friendRequestsRef = collection(db, 'users', user?.uid, 'friendsReceived');
@@ -73,7 +77,7 @@ export default function AddFriend() {
             <View className="h-3 border-b border-neutral-300" />
             <View className="flex-1 justify-between bg-neutral-100 overflow-visible">
                 <View className="flex-1">
-                    <RequestList scrollViewRef={scrollViewRef} users={users} currentUser={user} />
+                    <RequestList scrollViewRef={scrollViewRef} users={users} currentUser={user} onFriendRequestProcessed={onFriendRequestProcessed} />
                 </View>
             </View>
         </View>
