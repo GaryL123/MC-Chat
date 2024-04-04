@@ -3,7 +3,7 @@ import React from 'react'
 import RequestItem from './RequestItem'
 import { useRouter } from 'expo-router'
 
-export default function RequestList({ users, currentUser }) {
+export default function RequestList({ users, currentUser, onFriendRequestProcessed }) {
   const router = useRouter();
   return (
     <View className="flex-1">
@@ -17,6 +17,7 @@ export default function RequestList({ users, currentUser }) {
           router={router}
           currentUser={currentUser}
           item={item}
+          onFriendRequestProcessed={() => onFriendRequestProcessed(item.id)}
           index={index}
         />}
       />
