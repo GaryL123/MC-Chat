@@ -6,8 +6,8 @@ import AddFriendHeader from '../../components/AddFriendHeader';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/authContext';
-import { where, onSnapshot, query } from 'firebase/firestore';
-import { usersRef } from '../../firebaseConfig';
+import { collection, getDocs, where, onSnapshot, query } from 'firebase/firestore';
+import { db, usersRef } from '../../firebaseConfig';
 import UserList from '../../components/UserList';
 
 export default function AddFriend() {
@@ -26,21 +26,29 @@ export default function AddFriend() {
         }
     }, [])
 
-    const getUsers = () => {
-        console.log("addFriend Getting users..."); // Confirm the function is called
-        const q = query(usersRef, where('uid', '!=', user?.uid));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const getFriendsUids = async () => {
+        const friendsRef = collection(db, 'users', user.uid, 'friends');
+        const snapshot = await getDocs(friendsRef);
+        const friendUids = snapshot.docs.map(doc => doc.id);
+        return friendUids;
+    };
+
+    const getUsers = async () => {
+        console.log("addFriend Getting users...");
+        try {
+            const friendUids = await getFriendsUids();
+            const allUsersSnapshot = await getDocs(usersRef);
             let data = [];
-            querySnapshot.forEach((doc) => {
-                data.push({ ...doc.data(), id: doc.id });
+            allUsersSnapshot.forEach((doc) => {
+                if (!friendUids.includes(doc.id) && doc.id !== user.uid) {
+                    data.push({ ...doc.data(), id: doc.id });
+                }
             });
             console.log("addFriend Fetched users:", data);
             setUsers(data);
-        }, (error) => {
+        } catch (error) {
             console.error('addFriend Error subscribing to users:', error);
-        });
-
-        return unsubscribe;
+        }
     };
 
     useEffect(() => {
