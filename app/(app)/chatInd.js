@@ -106,8 +106,12 @@ export default function ChatInd() {
                                 className="flex-1 mr-2"
                             />
                             <TouchableOpacity onPress={handleSendMessage} className="bg-neutral-200 p-2 mr-[1px] rounded-full">
+                                <Feather name="plus" size={hp(2.7)} color="#737373" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleSendMessage} className="bg-neutral-200 p-2 mr-[1px] rounded-full">
                                 <Feather name="send" size={hp(2.7)} color="#737373" />
                             </TouchableOpacity>
+                            
                         </View>
                     </View>
                 </View>
