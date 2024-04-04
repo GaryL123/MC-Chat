@@ -37,6 +37,7 @@ export default function RequestItem({ item, noBorder, onFriendRequestProcessed }
 
     const requestDeny = async () => {
         const friendRequestId = `${item.uid}-${user.uid}`;
+        const friendRequestId2 = `${user.uid}-${item.uid}`;
     
         // Remove the friend request
         await Promise.all([
