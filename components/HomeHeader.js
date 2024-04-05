@@ -1,12 +1,12 @@
-import { View, Text, Platform } from 'react-native'
-import React from 'react'
+import { View, Text, Platform, TouchableOpacity } from 'react-native'
+import React, { useEffect } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Octicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { blurhash } from '../utils/common';
 import { useAuth } from '../context/authContext';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { MenuItem } from './CustomMenuItems';
 
@@ -15,27 +15,28 @@ export default function HomeHeader() {
     const router = useRouter();
     const { user, logout, pendingFriendRequests } = useAuth();
     const { top } = useSafeAreaInsets();
+    const pathName = usePathname();
 
     const handleLogout = async () => {
         await logout();
     }
-
+    
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
 
     const NotificationBubble = ({ count }) => {
         return (
-          <View style={{
-            minWidth: 20, // Ensure the bubble is at least somewhat circular
-            padding: 2,
-            backgroundColor: 'red',
-            borderRadius: 10, // Adjust for circularity
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Text style={{ color: 'white', fontSize: 10, padding: 1 }}>{count}</Text>
-          </View>
+            <View style={{
+                minWidth: 20, // Ensure the bubble is at least somewhat circular
+                padding: 2,
+                backgroundColor: 'red',
+                borderRadius: 10, // Adjust for circularity
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <Text style={{ color: 'white', fontSize: 10, padding: 1 }}>{count}</Text>
+            </View>
         );
-      };
+    };
 
     return (
         <View style={{ paddingTop: ios ? top : top + 10 }} className="flex-row justify-between px-5 bg-green-700 pb-6 rounded-b-3xl shadow">
@@ -52,6 +53,11 @@ export default function HomeHeader() {
                             //borderColor: hasPendingRequests ? 'red' : 'transparent',
                         }
                     }}>
+                        {pathName == '/homeRooms' && (
+                            <TouchableOpacity onPress={() => router.push('createChatRoom')} style={{ marginRight: 10 }}>
+                                <Octicons name="plus" size={hp(3)} color="white" />
+                            </TouchableOpacity>
+                        )}
                         <Image
                             style={{ height: hp(4.3), aspectRatio: 1, borderRadius: 100 }}
                             source={user?.profileUrl}
@@ -89,6 +95,20 @@ export default function HomeHeader() {
                         }}
                     >
                         <MenuItem
+                            text="Home"
+                            action={() => router.push('home')}
+                            value={null}
+                            icon={<Octicons name="person" size={hp(2.5)} color="gray" />}
+                        />
+                        <Divider />
+                        <MenuItem
+                            text="HomeRooms"
+                            action={() => router.push('homeRooms')}
+                            value={null}
+                            icon={<Octicons name="person" size={hp(2.5)} color="gray" />}
+                        />
+                        <Divider />
+                        <MenuItem
                             text="Profile"
                             action={() => router.push('profile')}
                             value={null}
@@ -104,13 +124,13 @@ export default function HomeHeader() {
                         <Divider />
                         {hasPendingRequests && (
                             <MenuItem
-                            text="Friend Requests"
-                            action={() => router.push('friendRequests')}
-                            value={null}
-                            customContent={ // Use `customContent` or a similar prop if `MenuItem` supports it, or adjust according to your component's API
-                                <NotificationBubble count={pendingFriendRequests.length} />
-                              }
-                        />
+                                text="Friend Requests"
+                                action={() => router.push('friendRequests')}
+                                value={null}
+                                customContent={ // Use `customContent` or a similar prop if `MenuItem` supports it, or adjust according to your component's API
+                                    <NotificationBubble count={pendingFriendRequests.length} />
+                                }
+                            />
                         )}
                         <MenuItem
                             text="Add Friends"
