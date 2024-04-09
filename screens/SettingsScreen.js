@@ -21,11 +21,11 @@ function SettingsScreen() {
     darkMode: false,
     emailNotifications: true,
     pushNotifications: false,
-    fontSize: 17, // Initial font size
-    language: 'English', // Initial language
+    fontSize: 17,
+    language: 'English',
   });
 
-  const [showLanguageModal, setShowLanguageModal] = useState(false); // State for language modal
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -37,10 +37,9 @@ function SettingsScreen() {
   }, [form.darkMode]);
 
   const calculateFontSize = (baseFontSize) => {
-    return baseFontSize * (form.fontSize / 17); // Assuming 17 is the base font size
+    return baseFontSize * (form.fontSize / 17);
   };
 
-  // Object containing translations for each language
   const translations = {
     English: {
       preferences: 'Preferences',
@@ -66,51 +65,14 @@ function SettingsScreen() {
       selectLanguage: 'Seleccionar Idioma',
       close: 'Cerrar',
     },
-    French: {
-      preferences: 'Préférences',
-      language: 'Langue',
-      darkMode: 'Mode Sombre',
-      emailNotifications: 'Notifications par Email',
-      pushNotifications: 'Notifications Push',
-      textSize: 'Taille du Texte',
-      resources: 'Ressources',
-      reportBug: 'Signaler un Problème',
-      selectLanguage: 'Sélectionner une Langue',
-      close: 'Fermer',
-    },
-    German: {
-      preferences: 'Einstellungen',
-      language: 'Sprache',
-      darkMode: 'Dunkler Modus',
-      emailNotifications: 'E-Mail-Benachrichtigungen',
-      pushNotifications: 'Push-Benachrichtigungen',
-      textSize: 'Textgröße',
-      resources: 'Ressourcen',
-      reportBug: 'Fehler melden',
-      selectLanguage: 'Sprache wählen',
-      close: 'Schließen',
-    },
-    Chinese: {
-      preferences: '偏好设置',
-      language: '语言',
-      darkMode: '暗黑模式',
-      emailNotifications: '电子邮件通知',
-      pushNotifications: '推送通知',
-      textSize: '字体大小',
-      resources: '资源',
-      reportBug: '报告错误',
-      selectLanguage: '选择语言',
-      close: '关闭',
-    },
+    // Add other languages here...
   };
-  
 
-  // Function to get translation based on selected language
   const translate = (key) => {
     return translations[form.language][key];
   };
 
-  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese']; // List of languages
+  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
@@ -126,7 +88,7 @@ function SettingsScreen() {
                 source={{
                   uri: 'https://image.unsplash.com/photos/a-lake-surrounded-by-trees-and-mountains-under-a-cloudy-sky-6AFFx5eU99k',
                 }}
-                style={[styles.profileAvatar, { fontSize: calculateFontSize(19) }]} />
+                style={styles.profileAvatar} />
 
               <TouchableOpacity
                 onPress={() => {
@@ -136,30 +98,28 @@ function SettingsScreen() {
                   <FeatherIcon
                     color="#fff"
                     name="edit-3"
-                    size={calculateFontSize(15)} />
+                    size={15} />
                 </View>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
 
-          <View>
-            <Text style={[styles.profileName, { fontSize: calculateFontSize(19), color: form.darkMode ? '#fff' : '#414d63' }]}>User's name</Text>
+          <Text style={[styles.profileName, { fontSize: calculateFontSize(19), color: form.darkMode ? '#fff' : '#414d63' }]}>User's name</Text>
 
-            <Text style={[styles.profileAddress, { fontSize: calculateFontSize(16), color: form.darkMode ? '#989898' : '#414d63' }]}>
+          <Text style={[styles.profileAddress, { fontSize: calculateFontSize(16), color: form.darkMode ? '#989898' : '#414d63' }]}>
             4513 Manhattan College Pkwy, Bronx, NY 10471
-            </Text>
-          </View>
+          </Text>
         </View>
 
         <ScrollView>
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000' }]}>{translate('preferences')}</Text>
+            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000', fontSize: calculateFontSize(17) }]}>{translate('preferences')}</Text>
 
             <TouchableOpacity
-              onPress={() => setShowLanguageModal(true)} // Open language modal
+              onPress={() => setShowLanguageModal(true)}
               style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
-                <FeatherIcon color="#fff" name="globe" size={calculateFontSize(20)} />
+                <FeatherIcon color="#fff" name="globe" size={20} />
               </View>
 
               <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('language')}: {form.language}</Text>
@@ -169,16 +129,14 @@ function SettingsScreen() {
               <FeatherIcon
                 color="#C6C6C6"
                 name="chevron-right"
-                size={calculateFontSize(20)} />
+                size={20} />
             </TouchableOpacity>
 
-            {/* Language Modal */}
             <Modal
               animationType="slide"
               transparent={true}
               visible={showLanguageModal}
-              onRequestClose={() => setShowLanguageModal(false)}
-            >
+              onRequestClose={() => setShowLanguageModal(false)}>
               <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                   <Text style={styles.modalTitle}>{translate('selectLanguage')}</Text>
@@ -189,8 +147,7 @@ function SettingsScreen() {
                       onPress={() => {
                         setForm({ ...form, language });
                         setShowLanguageModal(false);
-                      }}
-                    >
+                      }}>
                       <Text style={styles.modalItemText}>{language}</Text>
                     </TouchableOpacity>
                   ))}
@@ -201,7 +158,7 @@ function SettingsScreen() {
 
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#007afe' }]}>
-                <FeatherIcon color="#fff" name="moon" size={calculateFontSize(20)} />
+                <FeatherIcon color="#fff" name="moon" size={20} />
               </View>
 
               <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('darkMode')}</Text>
@@ -213,13 +170,12 @@ function SettingsScreen() {
                 value={form.darkMode} />
             </View>
 
-            {/* Email Notifications */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
                 <FeatherIcon
                   color="#fff"
                   name="at-sign"
-                  size={calculateFontSize(20)} />
+                  size={20} />
               </View>
 
               <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('emailNotifications')}</Text>
@@ -233,10 +189,9 @@ function SettingsScreen() {
                 value={form.emailNotifications} />
             </View>
 
-            {/* Push Notifications */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
-                <FeatherIcon color="#fff" name="bell" size={calculateFontSize(20)} />
+                <FeatherIcon color="#fff" name="bell" size={20} />
               </View>
 
               <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('pushNotifications')}</Text>
@@ -250,9 +205,8 @@ function SettingsScreen() {
                 value={form.pushNotifications} />
             </View>
 
-            {/* Font Size Slider */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1 }]}>{translate('textSize')}</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1, fontSize: calculateFontSize(17) }]}>{translate('textSize')}</Text>
               <Slider
                 style={{ flex: 3 }}
                 minimumValue={10}
@@ -265,29 +219,6 @@ function SettingsScreen() {
                 thumbTintColor={form.darkMode ? '#fff' : '#007bff'}
               />
             </View>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#fff' }]}>{translate('resources')}</Text>
-
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#8e8d91' }]}>
-                <FeatherIcon color="#fff" name="flag" size={calculateFontSize(20)} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('reportBug')}</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <FeatherIcon
-                color="#C6C6C6"
-                name="chevron-right"
-                size={calculateFontSize(20)} />
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
