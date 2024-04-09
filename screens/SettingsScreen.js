@@ -189,43 +189,6 @@ function SettingsScreen() {
                 size={20} />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: '#007afe' }]}>
-                <FeatherIcon color="#fff" name="mail" size={20} />
-              </View>
-
-              <Text style={styles.rowLabel}>Contact Us</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <FeatherIcon
-                color="#C6C6C6"
-                name="chevron-right"
-                size={20} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: '#32c759' }]}>
-                <FeatherIcon color="#fff" name="star" size={20} />
-              </View>
-
-              <Text style={styles.rowLabel}>Rate in App Store</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <FeatherIcon
-                color="#C6C6C6"
-                name="chevron-right"
-                size={20} />
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
