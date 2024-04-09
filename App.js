@@ -11,6 +11,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import ForgotPassword from './screens/ForgotPassword';
+import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,10 +40,46 @@ function App() {
   function MainApp() {
     return (
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Chats" component={ChatsScreen} />
-        <Tab.Screen name="Rooms" component={RoomsScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+    <Tab.Screen
+    name="Home"
+    component={HomeScreen}
+    options={{
+      tabBarLabel: 'Home',
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="home" color={color} size={size} />
+      ),
+    }}
+  />
+        <Tab.Screen
+    name="Chats"
+    component={ChatsScreen}
+    options={{
+      tabBarLabel: 'Chats',
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="chatbubble-outline" size={24} color="black" />
+      ),
+    }}
+  />
+        <Tab.Screen
+    name="Rooms"
+    component={RoomsScreen}
+    options={{
+      tabBarLabel: 'Rooms',
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="people-outline" size={24} color="black" />
+      ),
+    }}
+  />
+        <Tab.Screen
+    name="Settings"
+    component={SettingsScreen}
+    options={{
+      tabBarLabel: 'Settings',
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="settings-outline" size={24} color="black" />
+      ),
+    }}
+  />
       </Tab.Navigator>
     );
   }
