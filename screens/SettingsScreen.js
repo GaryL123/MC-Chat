@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Slider from '@react-native-community/slider';
+import { useNavigation } from '@react-navigation/native';
 
 function SettingsScreen() {
+  const navigation = useNavigation();
   const [form, setForm] = useState({
     darkMode: false,
     emailNotifications: true,
@@ -20,8 +22,17 @@ function SettingsScreen() {
     fontSize: 17, // Initial font size
   });
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: form.darkMode ? '#222' : '#fff',
+      },
+      headerTintColor: form.darkMode ? '#fff' : '#000',
+    });
+  }, [form.darkMode]);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
       <View style={styles.container}>
         <View style={styles.profile}>
           <TouchableOpacity
@@ -32,7 +43,7 @@ function SettingsScreen() {
               <Image
                 alt=""
                 source={{
-                  uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
+                  uri: 'https://image.unsplash.com/photos/a-lake-surrounded-by-trees-and-mountains-under-a-cloudy-sky-6AFFx5eU99k',
                 }}
                 style={styles.profileAvatar} />
 
@@ -51,9 +62,9 @@ function SettingsScreen() {
           </TouchableOpacity>
 
           <View>
-            <Text style={[styles.profileName, { fontSize: form.fontSize }]}>User's name</Text>
+            <Text style={[styles.profileName, { fontSize: form.fontSize, color: form.darkMode ? '#fff' : '#414d63' }]}>User's name</Text>
 
-            <Text style={[styles.profileAddress, { fontSize: form.fontSize }]}>
+            <Text style={[styles.profileAddress, { fontSize: form.fontSize, color: form.darkMode ? '#989898' : '#414d63' }]}>
             4513 Manhattan College Pkwy, Bronx, NY 10471
             </Text>
           </View>
@@ -61,18 +72,18 @@ function SettingsScreen() {
 
         <ScrollView>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Preferences</Text>
+            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000' }]}>Preferences</Text>
 
             <TouchableOpacity
               onPress={() => {
                 // handle onPress
               }}
-              style={styles.row}>
+              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
                 <FeatherIcon color="#fff" name="globe" size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Language</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Language</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -82,12 +93,12 @@ function SettingsScreen() {
                 size={20} />
             </TouchableOpacity>
 
-            <View style={styles.row}>
+            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#007afe' }]}>
                 <FeatherIcon color="#fff" name="moon" size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Dark Mode</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Dark Mode</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -100,7 +111,7 @@ function SettingsScreen() {
               onPress={() => {
                 // handle onPress
               }}
-              style={styles.row}>
+              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#32c759' }]}>
                 <FeatherIcon
                   color="#fff"
@@ -108,7 +119,7 @@ function SettingsScreen() {
                   size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Location</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Location</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -118,7 +129,7 @@ function SettingsScreen() {
                 size={20} />
             </TouchableOpacity>
 
-            <View style={styles.row}>
+            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
                 <FeatherIcon
                   color="#fff"
@@ -126,7 +137,7 @@ function SettingsScreen() {
                   size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Email Notifications</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Email Notifications</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -137,12 +148,12 @@ function SettingsScreen() {
                 value={form.emailNotifications} />
             </View>
 
-            <View style={styles.row}>
+            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
                 <FeatherIcon color="#fff" name="bell" size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Push Notifications</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Push Notifications</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -154,8 +165,8 @@ function SettingsScreen() {
             </View>
 
             {/* Font Size Slider */}
-            <View style={styles.row}>
-              <Text style={[styles.rowLabel, { flex: 1 }]}>Font Size</Text>
+            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1 }]}>Text Size</Text>
               <Slider
                 style={{ flex: 3 }}
                 minimumValue={10}
@@ -163,23 +174,26 @@ function SettingsScreen() {
                 step={1}
                 value={form.fontSize}
                 onValueChange={value => setForm({ ...form, fontSize: value })}
+                minimumTrackTintColor={form.darkMode ? '#fff' : '#007bff'}
+                maximumTrackTintColor={form.darkMode ? '#fff' : '#C6C6C6'}
+                thumbTintColor={form.darkMode ? '#fff' : '#007bff'}
               />
             </View>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Resources</Text>
+            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#fff' }]}>Resources</Text>
 
             <TouchableOpacity
               onPress={() => {
                 // handle onPress
               }}
-              style={styles.row}>
+              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#8e8d91' }]}>
                 <FeatherIcon color="#fff" name="flag" size={20} />
               </View>
 
-              <Text style={styles.rowLabel}>Report Bug</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c' }]}>Report Bug</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -188,7 +202,6 @@ function SettingsScreen() {
                 name="chevron-right"
                 size={20} />
             </TouchableOpacity>
-
           </View>
         </ScrollView>
       </View>
@@ -205,7 +218,6 @@ const styles = StyleSheet.create({
   },
   profile: {
     padding: 24,
-    backgroundColor: '#fff',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
@@ -233,13 +245,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 19,
     fontWeight: '600',
-    color: '#414d63',
     textAlign: 'center',
   },
   profileAddress: {
     marginTop: 5,
     fontSize: 16,
-    color: '#989898',
     textAlign: 'center',
   },
   section: {
@@ -249,7 +259,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 12,
     fontWeight: '600',
-    color: '#9e9e9e',
     textTransform: 'uppercase',
     letterSpacing: 1.1,
   },
@@ -258,7 +267,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     height: 50,
-    backgroundColor: '#f2f2f2',
     borderRadius: 8,
     marginBottom: 12,
     paddingLeft: 12,
@@ -276,7 +284,6 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontSize: 17,
     fontWeight: '400',
-    color: '#0c0c0c',
   },
   rowSpacer: {
     flexGrow: 1,
