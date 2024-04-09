@@ -4,9 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import { auth } from './firebaseConfig'; // Ensure this is correctly pointing to your Firebase config
-import HomeScreen from './screens/HomeScreen';
+import { AuthContextProvider } from './logic/authContext';
 import ChatsScreen from './screens/ChatsScreen';
 import RoomsScreen from './screens/RoomsScreen';
+import DirectoryScreen from './screens/DirectoryScreen'
 import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
@@ -40,16 +41,6 @@ function App() {
   function MainApp() {
     return (
       <Tab.Navigator>
-    <Tab.Screen
-    name="Home"
-    component={HomeScreen}
-    options={{
-      tabBarLabel: 'Home',
-      tabBarIcon: ({ color, size }) => (
-        <Ionicons name="home" color={color} size={size} />
-      ),
-    }}
-  />
         <Tab.Screen
     name="Chats"
     component={ChatsScreen}
@@ -69,6 +60,16 @@ function App() {
         <Ionicons name="people-outline" size={24} color="black" />
       ),
     }}
+  />  
+        <Tab.Screen
+    name="Directory"
+    component={DirectoryScreen}
+    options={{
+      tabBarLabel: 'Directory',
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="person-add-outline" size={24} color="black" />
+      ),
+    }}
   />
         <Tab.Screen
     name="Settings"
@@ -86,7 +87,9 @@ function App() {
 
   return (
     <NavigationContainer>
-      {currentUser ? <MainApp /> : <AuthStack />}
+      <AuthContextProvider>
+        {currentUser ? <MainApp /> : <AuthStack />}
+      </AuthContextProvider>
     </NavigationContainer>
   );
 }
