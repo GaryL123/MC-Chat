@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Switch,
   Image,
+  Modal,
+  Button,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Slider from '@react-native-community/slider';
@@ -20,7 +22,10 @@ function SettingsScreen() {
     emailNotifications: true,
     pushNotifications: false,
     fontSize: 17, // Initial font size
+    language: 'English', // Initial language
   });
+
+  const [showLanguageModal, setShowLanguageModal] = useState(false); // State for language modal
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,6 +39,78 @@ function SettingsScreen() {
   const calculateFontSize = (baseFontSize) => {
     return baseFontSize * (form.fontSize / 17); // Assuming 17 is the base font size
   };
+
+  // Object containing translations for each language
+  const translations = {
+    English: {
+      preferences: 'Preferences',
+      language: 'Language',
+      darkMode: 'Dark Mode',
+      emailNotifications: 'Email Notifications',
+      pushNotifications: 'Push Notifications',
+      textSize: 'Text Size',
+      resources: 'Resources',
+      reportBug: 'Report Bug',
+      selectLanguage: 'Select Language',
+      close: 'Close',
+    },
+    Spanish: {
+      preferences: 'Preferencias',
+      language: 'Idioma',
+      darkMode: 'Modo Oscuro',
+      emailNotifications: 'Notificaciones por Correo Electrónico',
+      pushNotifications: 'Notificaciones Push',
+      textSize: 'Tamaño del Texto',
+      resources: 'Recursos',
+      reportBug: 'Reportar Error',
+      selectLanguage: 'Seleccionar Idioma',
+      close: 'Cerrar',
+    },
+    French: {
+      preferences: 'Préférences',
+      language: 'Langue',
+      darkMode: 'Mode Sombre',
+      emailNotifications: 'Notifications par Email',
+      pushNotifications: 'Notifications Push',
+      textSize: 'Taille du Texte',
+      resources: 'Ressources',
+      reportBug: 'Signaler un Problème',
+      selectLanguage: 'Sélectionner une Langue',
+      close: 'Fermer',
+    },
+    German: {
+      preferences: 'Einstellungen',
+      language: 'Sprache',
+      darkMode: 'Dunkler Modus',
+      emailNotifications: 'E-Mail-Benachrichtigungen',
+      pushNotifications: 'Push-Benachrichtigungen',
+      textSize: 'Textgröße',
+      resources: 'Ressourcen',
+      reportBug: 'Fehler melden',
+      selectLanguage: 'Sprache wählen',
+      close: 'Schließen',
+    },
+    Chinese: {
+      preferences: '偏好设置',
+      language: '语言',
+      darkMode: '暗黑模式',
+      emailNotifications: '电子邮件通知',
+      pushNotifications: '推送通知',
+      textSize: '字体大小',
+      resources: '资源',
+      reportBug: '报告错误',
+      selectLanguage: '选择语言',
+      close: '关闭',
+    },
+  };
+  
+
+  // Function to get translation based on selected language
+  const translate = (key) => {
+    return translations[form.language][key];
+  };
+
+  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese']; // List of languages
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
@@ -76,18 +153,16 @@ function SettingsScreen() {
 
         <ScrollView>
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000' }]}>Preferences</Text>
+            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000' }]}>{translate('preferences')}</Text>
 
             <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
+              onPress={() => setShowLanguageModal(true)} // Open language modal
               style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
                 <FeatherIcon color="#fff" name="globe" size={calculateFontSize(20)} />
               </View>
 
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Language</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('language')}: {form.language}</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -97,12 +172,39 @@ function SettingsScreen() {
                 size={calculateFontSize(20)} />
             </TouchableOpacity>
 
+            {/* Language Modal */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={showLanguageModal}
+              onRequestClose={() => setShowLanguageModal(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>{translate('selectLanguage')}</Text>
+                  {languages.map((language, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.modalItem}
+                      onPress={() => {
+                        setForm({ ...form, language });
+                        setShowLanguageModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItemText}>{language}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  <Button title={translate('close')} onPress={() => setShowLanguageModal(false)} />
+                </View>
+              </View>
+            </Modal>
+
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#007afe' }]}>
                 <FeatherIcon color="#fff" name="moon" size={calculateFontSize(20)} />
               </View>
 
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Dark Mode</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('darkMode')}</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -111,28 +213,7 @@ function SettingsScreen() {
                 value={form.darkMode} />
             </View>
 
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#32c759' }]}>
-                <FeatherIcon
-                  color="#fff"
-                  name="navigation"
-                  size={calculateFontSize(20)} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Location</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <FeatherIcon
-                color="#C6C6C6"
-                name="chevron-right"
-                size={calculateFontSize(20)} />
-            </TouchableOpacity>
-
+            {/* Email Notifications */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
                 <FeatherIcon
@@ -141,7 +222,7 @@ function SettingsScreen() {
                   size={calculateFontSize(20)} />
               </View>
 
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Email Notifications</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('emailNotifications')}</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -152,12 +233,13 @@ function SettingsScreen() {
                 value={form.emailNotifications} />
             </View>
 
+            {/* Push Notifications */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
               <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
                 <FeatherIcon color="#fff" name="bell" size={calculateFontSize(20)} />
               </View>
 
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Push Notifications</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('pushNotifications')}</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -170,7 +252,7 @@ function SettingsScreen() {
 
             {/* Font Size Slider */}
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1 }]}>Text Size</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1 }]}>{translate('textSize')}</Text>
               <Slider
                 style={{ flex: 3 }}
                 minimumValue={10}
@@ -186,7 +268,7 @@ function SettingsScreen() {
           </View>
 
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#fff' }]}>Resources</Text>
+            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#fff' }]}>{translate('resources')}</Text>
 
             <TouchableOpacity
               onPress={() => {
@@ -197,7 +279,7 @@ function SettingsScreen() {
                 <FeatherIcon color="#fff" name="flag" size={calculateFontSize(20)} />
               </View>
 
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>Report Bug</Text>
+              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('reportBug')}</Text>
 
               <View style={styles.rowSpacer} />
 
@@ -289,6 +371,33 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalItem: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  modalItemText: {
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
 
