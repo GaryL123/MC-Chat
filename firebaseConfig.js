@@ -1,8 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import {getFirestore, collection } from 'firebase/firestore'
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,16 +17,17 @@ const firebaseConfig = {
     measurementId: "G-WT8HHRDRJQ"
 };
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
-// Get a reference to the auth service
-//const auth = getAuth(app);
- export const auth = getAuth(app, {
-   persistence: getReactNativePersistence(AsyncStorage)
- });
+// Initialize Firebase auth with custom persistence
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
+
+export { auth, app };
 
 export const db = getFirestore(app);
-export const usersRef = collection(db, 'users')
-export const chatIndsRef = collection(db, 'chatInds')
-export const chatRoomsRef = collection(db, 'chatRooms')
+export const usersRef = collection(db, 'users');
+export const chatIndsRef = collection(db, 'chatInds');
+export const chatRoomsRef = collection(db, 'chatRooms');
