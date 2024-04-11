@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const ChatStack = createStackNavigator();
+const RoomStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
@@ -42,15 +43,6 @@ function App() {
   }
 
   function ChatStackNavigator() {
-    return (
-      <ChatStack.Navigator initialRouteName="Chats">
-        <ChatStack.Screen name="ChatsList" component={ChatsScreen} />
-        <ChatStack.Screen name="Messages" component={MessagesScreen} />
-      </ChatStack.Navigator>
-    );
-  }
-
-  function MainApp() {
     const { logout } = useAuth();
 
     const handleLogout = async () => {
@@ -58,7 +50,7 @@ function App() {
     }
 
     return (
-      <Tab.Navigator
+      <ChatStack.Navigator initialRouteName="ChatsList"
         screenOptions={{
           tabBarActiveTintColor: "white",
           tabBarInactiveTintColor: "lightgray",
@@ -82,8 +74,64 @@ function App() {
             />
           ),
         }}>
+        <ChatStack.Screen name="Chats" component={ChatsScreen} />
+        <ChatStack.Screen name="Messages" component={MessagesScreen} />
+      </ChatStack.Navigator>
+    );
+  }
+
+  function RoomStackNavigator() {
+    const { logout } = useAuth();
+
+    const handleLogout = async () => {
+      await logout();
+    }
+
+    return (
+      <RoomStack.Navigator initialRouteName="RoomsList"
+        screenOptions={{
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "lightgray",
+          tabBarStyle: {
+            backgroundColor: '#166939',
+            height: 100,
+          },
+          headerStyle: {
+            backgroundColor: '#166939',
+            height: 115,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerRight: () => (
+            <Button
+              onPress={handleLogout}
+              title="Logout"
+              color="#fff"
+            />
+          ),
+        }}>
+        <RoomStack.Screen name="Rooms" component={RoomsScreen} />
+        <RoomStack.Screen name="Messages" component={MessagesScreen} />
+      </RoomStack.Navigator>
+    );
+  }
+
+  function MainApp() {
+    return (
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "lightgray",
+          tabBarStyle: {
+            backgroundColor: '#166939',
+            height: 100,
+          },
+        }}>
         <Tab.Screen
-          name="Chats"
+          name="ChatsStack"
           component={ChatStackNavigator}
           options={{
             tabBarLabel: 'Chats',
@@ -93,8 +141,8 @@ function App() {
           }}
         />
         <Tab.Screen
-          name="Rooms"
-          component={RoomsScreen}
+          name="RoomsStack"
+          component={RoomStackNavigator}
           options={{
             tabBarLabel: 'Rooms',
             tabBarIcon: ({ color, size }) => (
