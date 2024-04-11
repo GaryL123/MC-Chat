@@ -1,4 +1,4 @@
-import { View, Button, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native'
+import { View, Button, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, Image } from 'react-native'
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -16,6 +16,7 @@ export default function MessagesScreen() {
 
     useEffect(() => {
         navigation.setOptions({
+            headerShown: true,
             headerTitle: item?.fName + ' ' + item?.lName,
             headerRight: () => (
                 <View style={{ flexDirection: 'row', paddingRight: 10 }}>
@@ -27,6 +28,10 @@ export default function MessagesScreen() {
                     </TouchableOpacity>
                 </View>
             ),
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#166939',
+            },
         });
     }, [navigation, item]);
 
@@ -80,6 +85,9 @@ export default function MessagesScreen() {
                         style={styles.textInput}
                         ref={inputRef}
                     />
+                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+                        <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
                         <Feather name="plus" size={24} color="#737373" />
                     </TouchableOpacity>
