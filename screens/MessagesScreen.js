@@ -9,7 +9,7 @@ import messagesLogic from '../logic/messagesLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-    const { user, messages, textRef, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, handleSendMessage } = messagesLogic();
+    const { user, messages, textRef, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, handleSendMessage, handleSendDoc } = messagesLogic();
     const navigation = useNavigation();
     const route = useRoute();
     const { item } = route.params;
@@ -17,31 +17,30 @@ export default function MessagesScreen() {
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: item?.fName + ' ' + item?.lName, // Set dynamic title
+            headerTitle: item?.fName + ' ' + item?.lName,
             headerRight: () => (
-                <View style={styles.headerButtonsContainer}>
-                    <Button
-                        onPress={() => {/* Handle voice call */}}
-                        title="Call"
-                        color="#fff" // Adjust as necessary
-                    />
-                    <Button
-                        onPress={() => {/* Handle video call */}}
-                        title="Video"
-                        color="#fff" // Adjust as necessary
-                    />
+                <View style={{ flexDirection: 'row', paddingRight: 10 }}>
+                    <TouchableOpacity onPress={() => {/* Handle voice call */ }} style={{ marginRight: 15 }}>
+                        <Feather name="phone" size={24} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {/* Handle video call */ }}>
+                        <Feather name="video" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
             ),
-            headerTintColor: '#fff', // Adjust colors as needed
+            headerTintColor: 'white',
             headerStyle: {
-                backgroundColor: '#166939', // Or any other color
+                backgroundColor: '#166939',
             },
         });
     }, [navigation, item]);
 
     const MessageList = ({ messages, user }) => {
         return (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.messageListContainer}>
+            <ScrollView
+                contentContainerStyle={styles.messageListContainer}
+                showsVerticalScrollIndicator={false}
+                ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <MessageItem message={message} key={index} user={user} />
                 ))}
@@ -54,7 +53,7 @@ export default function MessagesScreen() {
         return (
             <View style={[styles.messageItemContainer, { justifyContent: isMyMessage ? 'flex-end' : 'flex-start' }]}>
                 <View style={[styles.messageBubble, isMyMessage ? styles.myMessage : styles.theirMessage]}>
-                    <Text style={styles.messageText}>
+                    <Text style={isMyMessage ? styles.myMessageText : styles.theirMessageText}>
                         {message?.text}
                     </Text>
                 </View>
@@ -62,37 +61,36 @@ export default function MessagesScreen() {
         );
     };
 
-    const CustomKeyboardView = ({ children, inChat }) => {
-        const keyboardVerticalOffset = inChat ? 90 : 0;
+    const CustomKeyboardView = ({ children }) => {
         return (
-            <KeyboardAvoidingView behavior={ios ? 'padding' : 'height'} style={styles.flex} keyboardVerticalOffset={keyboardVerticalOffset}>
-                <ScrollView style={styles.flex} bounces={false} showsVerticalScrollIndicator={false}>
-                    {children}
-                </ScrollView>
+            <KeyboardAvoidingView
+                behavior={ios ? 'padding' : 'height'}
+                style={styles.flexWhite}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 160 : 0}>
+                {children}
             </KeyboardAvoidingView>
         );
     };
 
     return (
-        <CustomKeyboardView inChat={true}>
+        <CustomKeyboardView>
             <View style={styles.flexWhite}>
                 <StatusBar style="dark" />
-                <View style={styles.divider} />
-                <View style={styles.chatContainer}>
-                    <MessageList messages={messages} user={user} />
-                    <View style={styles.inputContainer}>
-                        <View style={styles.inputRow}>
-                            <TextInput
-                                onChangeText={value => textRef.current = value}
-                                placeholder='Type a message...'
-                                placeholderTextColor={'gray'}
-                                style={styles.textInput}
-                            />
-                            <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-                                <Feather name="send" size={24} color="#737373" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                <MessageList messages={messages} user={user} />
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        onChangeText={value => textRef.current = value}
+                        placeholder='Type a message...'
+                        placeholderTextColor={'gray'}
+                        style={styles.textInput}
+                        ref={inputRef}
+                    />
+                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+                        <Feather name="plus" size={24} color="#737373" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                        <Feather name="send" size={24} color="#737373" />
+                    </TouchableOpacity>
                 </View>
             </View>
         </CustomKeyboardView>
@@ -111,7 +109,7 @@ const styles = StyleSheet.create({
         height: 3,
         backgroundColor: 'white',
         borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
+        borderBottomColor: 'white',
     },
     chatContainer: {
         flex: 1,
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
     },
     messageListContainer: {
-        paddingTop: 10,
+        paddingBottom: 60, // Ensure this is enough space for the input container
     },
     messageItemContainer: {
         flexDirection: 'row',
@@ -139,16 +137,24 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
     theirMessage: {
-        backgroundColor: '#5b61b9',
-        borderColor: '#5058a9',
+        backgroundColor: '#e0e0e0',
+        borderColor: 'lightgray',
         alignSelf: 'flex-start',
     },
-    messageText: {
+    myMessageText: {
         fontSize: 16,
+        color: "black",
+    },
+    theirMessageText: {
+        fontSize: 16,
+        color: "black",
     },
     inputContainer: {
-        marginBottom: hp(2.7),
-        paddingTop: 8,
+        flexDirection: 'row',
+        padding: 8,
+        borderTopWidth: 1,
+        borderColor: '#e0e0e0',
+        backgroundColor: 'white',
     },
     inputRow: {
         flexDirection: 'row',
