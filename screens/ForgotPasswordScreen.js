@@ -3,11 +3,11 @@ import { View, TextInput, Text, TouchableOpacity, Image, StyleSheet, Alert } fro
 import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
-import styles from '../assets/styles/AppStyles.js';
+import styles from '../assets/styles/AppStyles';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 
-function ForgotPassword() {
+function ForgotPasswordScreen() {
   const navigation = useNavigation();
   const [emailPrefix, setEmailPrefix] = useState('');
   const [loading, setLoading] = useState(false);
@@ -82,4 +82,4 @@ function ForgotPassword() {
   );
 }
 
-export default ForgotPassword;
+export default ForgotPasswordScreen;
