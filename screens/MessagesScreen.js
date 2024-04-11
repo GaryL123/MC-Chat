@@ -16,7 +16,6 @@ export default function MessagesScreen() {
 
     useEffect(() => {
         navigation.setOptions({
-            headerShown: true,
             headerTitle: item?.fName + ' ' + item?.lName,
             headerRight: () => (
                 <View style={{ flexDirection: 'row', paddingRight: 10 }}>
@@ -28,11 +27,6 @@ export default function MessagesScreen() {
                     </TouchableOpacity>
                 </View>
             ),
-            headerTintColor: 'white',
-            headerStyle: {
-                backgroundColor: '#166939',
-                height: 115,
-            },
         });
     }, [navigation, item]);
 
