@@ -6,15 +6,17 @@ import 'react-native-gesture-handler';
 import { auth } from './firebaseConfig'; // Ensure this is correctly pointing to your Firebase config
 import { AuthContextProvider } from './logic/authContext';
 import ChatsScreen from './screens/ChatsScreen';
+import MessagesScreen from './screens/MessagesScreen';
 import RoomsScreen from './screens/RoomsScreen';
 import DirectoryScreen from './screens/DirectoryScreen'
 import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
-import ForgotPassword from './screens/ForgotPassword';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
+const ChatStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
@@ -33,8 +35,17 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegistrationScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       </Stack.Navigator>
+    );
+  }
+
+  function ChatStackNavigator() {
+    return (
+      <ChatStack.Navigator initialRouteName="Chats">
+        <ChatStack.Screen name="ChatsList" component={ChatsScreen} />
+        <ChatStack.Screen name="Messages" component={MessagesScreen} />
+      </ChatStack.Navigator>
     );
   }
 
@@ -43,11 +54,11 @@ function App() {
       <Tab.Navigator>
         <Tab.Screen
     name="Chats"
-    component={ChatsScreen}
+    component={ChatStackNavigator} // Use ChatStackNavigator here
     options={{
       tabBarLabel: 'Chats',
       tabBarIcon: ({ color, size }) => (
-        <Ionicons name="chatbubble-outline" size={24} color="black" />
+        <Ionicons name="chatbubble-outline" size={size} color={color} />
       ),
     }}
   />
