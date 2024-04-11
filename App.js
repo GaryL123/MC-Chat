@@ -57,6 +57,15 @@ function App() {
           tabBarInactiveTintColor: "lightgray",
           tabBarStyle: {
             backgroundColor: '#166939',
+            height: 100,
+          },
+          headerStyle: {
+            backgroundColor: '#166939',
+            height: 115,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
           },
         }}>
         <Tab.Screen
@@ -64,13 +73,6 @@ function App() {
           component={ChatStackNavigator}
           options={{
             tabBarLabel: 'Chats',
-            headerStyle: {
-              backgroundColor: '#166939',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="chatbubble-outline" size={size} color={color} />
             ),
@@ -81,15 +83,8 @@ function App() {
           component={RoomsScreen}
           options={{
             tabBarLabel: 'Rooms',
-            headerStyle: {
-              backgroundColor: '#166939',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people-outline" size={24} color={color} />
+              <Ionicons name="people-outline" size={size} color={color} />
             ),
           }}
         />
@@ -98,15 +93,8 @@ function App() {
           component={DirectoryScreen}
           options={{
             tabBarLabel: 'Directory',
-            headerStyle: {
-              backgroundColor: '#166939',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-add-outline" size={24} color={color} />
+              <Ionicons name="person-add-outline" size={size} color={color} />
             ),
           }}
         />
@@ -115,15 +103,8 @@ function App() {
           component={SettingsScreen}
           options={{
             tabBarLabel: 'Settings',
-            headerStyle: {
-              backgroundColor: '#166939',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings-outline" size={24} color={color} />
+              <Ionicons name="settings-outline" size={size} color={color} />
             ),
           }}
         />
