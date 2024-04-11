@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import { auth } from './firebaseConfig';
-import { AuthContextProvider } from './logic/authContext';
+import { AuthContextProvider, useAuth } from './logic/authContext';
 import ChatsScreen from './screens/ChatsScreen';
 import MessagesScreen from './screens/MessagesScreen';
 import RoomsScreen from './screens/RoomsScreen';
@@ -50,6 +51,12 @@ function App() {
   }
 
   function MainApp() {
+    const { logout } = useAuth();
+
+    const handleLogout = async () => {
+      await logout();
+    }
+
     return (
       <Tab.Navigator
         screenOptions={{
@@ -67,6 +74,13 @@ function App() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          headerRight: () => (
+            <Button
+              onPress={handleLogout}
+              title="Logout"
+              color="#fff"
+            />
+          ),
         }}>
         <Tab.Screen
           name="Chats"
