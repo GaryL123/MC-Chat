@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './authContext'
-import { collection, doc, getDoc, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { useLocalSearchParams } from 'expo-router';
+import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { useRoute } from '@react-navigation/native';
 
 const chatsLogic = (navigation) => {
-    const item = useLocalSearchParams();
     const { user } = useAuth();
     const [friends, setFriends] = useState([]);
     const [lastMessage, setLastMessage] = useState(undefined);
+    const [lastMessages, setLastMessages] = useState({});
     const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
     useEffect(() => {
@@ -21,20 +21,22 @@ const chatsLogic = (navigation) => {
 
 
     useEffect(() => {
-        let chatId = getChatId(user?.uid, item?.uid);
-        const docRef = doc(db, "chatInds", chatId);
-        const messagesRef = collection(docRef, "messages");
-        const q = query(messagesRef, orderBy('createdAt', 'desc'));
-
-        let unsub = onSnapshot(q, (snapshot) => {
-            let allMessages = snapshot.docs.map(doc => {
-                return doc.data();
+        friends.forEach(friend => {
+            let chatId = getChatId(user?.uid, friend.uid);
+            const docRef = doc(db, "chatInds", chatId);
+            const messagesRef = collection(docRef, "messages");
+            const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
+    
+            const unsub = onSnapshot(q, (snapshot) => {
+                const lastMessage = snapshot.docs.map(doc => doc.data())[0];
+                if (lastMessage) {
+                    setLastMessages(prev => ({ ...prev, [friend.id]: lastMessage }));
+                }
             });
-            setLastMessage(allMessages[0] ? allMessages[0] : null);
+    
+            return () => unsub();
         });
-
-        return unsub;
-    }, []);
+    }, [friends, user?.uid]);
 
 
     const getFriends = () => {
@@ -60,22 +62,19 @@ const chatsLogic = (navigation) => {
         navigation.navigate('Messages', { item });
     }
 
-    const renderTime = () => {
+    const renderTime = (friendId) => {
+        const lastMessage = lastMessages[friendId];
         if (lastMessage) {
-            let date = lastMessage?.createdAt;
-            return formatDate(new Date(date?.seconds * 1000));
+            let date = lastMessage.createdAt;
+            return formatDate(new Date(date.seconds * 1000));
         }
-    }
+    };
 
-    const renderLastMessage = () => {
-        if (typeof lastMessage == 'undefined') return 'Loading...';
-        if (lastMessage) {
-            if (user?.uid == lastMessage?.uid) return "You: " + lastMessage?.text;
-            return lastMessage?.text;
-        } else {
-            return 'Say Hi 👋';
-        }
-    }
+    const renderLastMessage = (friendId) => {
+        const lastMessage = lastMessages[friendId];
+        if (!lastMessage) return 'Say Hi 👋';
+        return user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
+    };
 
     const getChatId = (userId1, userId2) => {
         const sortedIds = [userId1, userId2].sort();
@@ -95,7 +94,7 @@ const chatsLogic = (navigation) => {
     //console.log( 'chatsLogic User: ', user, '\n' );
     //console.log( 'chatsLogic Friends: ', friends, '\n' );
     //console.log( 'Last Message: ', lastMessage, '\n' );
-    return { item, user, friends, renderLastMessage, renderTime, openChat, blurhash, getChatId };
+    return { user, friends, renderLastMessage, renderTime, openChat, blurhash, getChatId };
 }
 
 export default chatsLogic;
