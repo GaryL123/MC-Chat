@@ -5,9 +5,11 @@ import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc 
 import { db } from '../firebaseConfig';
 import chatsLogic from './chatsLogic';
 import { Keyboard } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 const messagesLogic = () => {
-    const item = useLocalSearchParams(); // second user
+    const route = useRoute();
+    const { item } = route.params;
     const { user } = useAuth(); // logged in user
     const [messages, setMessages] = useState([]);
     const textRef = useRef('');
