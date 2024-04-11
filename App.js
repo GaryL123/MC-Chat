@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
-import { auth } from './firebaseConfig'; // Ensure this is correctly pointing to your Firebase config
+import { auth } from './firebaseConfig';
 import { AuthContextProvider } from './logic/authContext';
 import ChatsScreen from './screens/ChatsScreen';
 import MessagesScreen from './screens/MessagesScreen';
@@ -27,7 +27,7 @@ function App() {
       setCurrentUser(user);
     });
 
-    return unsubscribe; // Unsubscribe on unmount
+    return unsubscribe;
   }, []);
 
   function AuthStack() {
@@ -51,47 +51,82 @@ function App() {
 
   function MainApp() {
     return (
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "lightgray",
+          tabBarStyle: {
+            backgroundColor: '#166939',
+          },
+        }}>
         <Tab.Screen
-    name="Chats"
-    component={ChatStackNavigator} // Use ChatStackNavigator here
-    options={{
-      tabBarLabel: 'Chats',
-      tabBarIcon: ({ color, size }) => (
-        <Ionicons name="chatbubble-outline" size={size} color={color} />
-      ),
-    }}
-  />
+          name="Chats"
+          component={ChatStackNavigator}
+          options={{
+            tabBarLabel: 'Chats',
+            headerStyle: {
+              backgroundColor: '#166939',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="chatbubble-outline" size={size} color={color} />
+            ),
+          }}
+        />
         <Tab.Screen
-    name="Rooms"
-    component={RoomsScreen}
-    options={{
-      tabBarLabel: 'Rooms',
-      tabBarIcon: ({ color, size }) => (
-        <Ionicons name="people-outline" size={24} color="black" />
-      ),
-    }}
-  />  
+          name="Rooms"
+          component={RoomsScreen}
+          options={{
+            tabBarLabel: 'Rooms',
+            headerStyle: {
+              backgroundColor: '#166939',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="people-outline" size={24} color={color} />
+            ),
+          }}
+        />
         <Tab.Screen
-    name="Directory"
-    component={DirectoryScreen}
-    options={{
-      tabBarLabel: 'Directory',
-      tabBarIcon: ({ color, size }) => (
-        <Ionicons name="person-add-outline" size={24} color="black" />
-      ),
-    }}
-  />
+          name="Directory"
+          component={DirectoryScreen}
+          options={{
+            tabBarLabel: 'Directory',
+            headerStyle: {
+              backgroundColor: '#166939',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="person-add-outline" size={24} color={color} />
+            ),
+          }}
+        />
         <Tab.Screen
-    name="Settings"
-    component={SettingsScreen}
-    options={{
-      tabBarLabel: 'Settings',
-      tabBarIcon: ({ color, size }) => (
-        <Ionicons name="settings-outline" size={24} color="black" />
-      ),
-    }}
-  />
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarLabel: 'Settings',
+            headerStyle: {
+              backgroundColor: '#166939',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings-outline" size={24} color={color} />
+            ),
+          }}
+        />
       </Tab.Navigator>
     );
   }
