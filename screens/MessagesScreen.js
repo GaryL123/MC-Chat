@@ -31,6 +31,7 @@ export default function MessagesScreen() {
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#166939',
+                height: 115,
             },
         });
     }, [navigation, item]);
