@@ -1,16 +1,45 @@
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Button, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native'
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import messagesLogic from '../logic/messagesLogic';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-    const { item, user, messages, textRef, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, handleSendMessage } = messagesLogic();
+    const { user, messages, textRef, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, handleSendMessage } = messagesLogic();
+    const navigation = useNavigation();
+    const route = useRoute();
+    const { item } = route.params;
 
-    const MessageList = ({ messages, scrollViewRef, user }) => {
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerTitle: item?.fName + ' ' + item?.lName, // Set dynamic title
+            headerRight: () => (
+                <View style={styles.headerButtonsContainer}>
+                    <Button
+                        onPress={() => {/* Handle voice call */}}
+                        title="Call"
+                        color="#fff" // Adjust as necessary
+                    />
+                    <Button
+                        onPress={() => {/* Handle video call */}}
+                        title="Video"
+                        color="#fff" // Adjust as necessary
+                    />
+                </View>
+            ),
+            headerTintColor: '#fff', // Adjust colors as needed
+            headerStyle: {
+                backgroundColor: '#166939', // Or any other color
+            },
+        });
+    }, [navigation, item]);
+
+    const MessageList = ({ messages, user }) => {
         return (
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.messageListContainer}>
                 {messages.map((message, index) => (
@@ -142,5 +171,9 @@ const styles = StyleSheet.create({
         marginRight: 1,
         borderRadius: 30,
         backgroundColor: '#e0e0e0',
+    },
+    headerButtonsContainer: {
+        flexDirection: 'row',
+        marginRight: 10
     },
 });
