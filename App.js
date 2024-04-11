@@ -19,6 +19,8 @@ import { Ionicons } from '@expo/vector-icons';
 const Stack = createStackNavigator();
 const ChatStack = createStackNavigator();
 const RoomStack = createStackNavigator();
+const DirectoryStack = createStackNavigator();
+const SettingsStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
@@ -118,6 +120,80 @@ function App() {
     );
   }
 
+  function DirectoryStackNavigator() {
+    const { logout } = useAuth();
+
+    const handleLogout = async () => {
+      await logout();
+    }
+
+    return (
+      <DirectoryStack.Navigator initialRouteName="DirectoryList"
+        screenOptions={{
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "lightgray",
+          tabBarStyle: {
+            backgroundColor: '#166939',
+            height: 100,
+          },
+          headerStyle: {
+            backgroundColor: '#166939',
+            height: 115,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerRight: () => (
+            <Button
+              onPress={handleLogout}
+              title="Logout"
+              color="#fff"
+            />
+          ),
+        }}>
+        <DirectoryStack.Screen name="Directory" component={DirectoryScreen} />
+      </DirectoryStack.Navigator>
+    );
+  }
+
+  function SettingsStackNavigator() {
+    const { logout } = useAuth();
+
+    const handleLogout = async () => {
+      await logout();
+    }
+
+    return (
+      <SettingsStack.Navigator initialRouteName="SettingsList"
+        screenOptions={{
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "lightgray",
+          tabBarStyle: {
+            backgroundColor: '#166939',
+            height: 100,
+          },
+          headerStyle: {
+            backgroundColor: '#166939',
+            height: 115,
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerRight: () => (
+            <Button
+              onPress={handleLogout}
+              title="Logout"
+              color="#fff"
+            />
+          ),
+        }}>
+        <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      </SettingsStack.Navigator>
+    );
+  }
+
   function MainApp() {
     return (
       <Tab.Navigator
@@ -151,8 +227,8 @@ function App() {
           }}
         />
         <Tab.Screen
-          name="Directory"
-          component={DirectoryScreen}
+          name="DirectoryStack"
+          component={DirectoryStackNavigator}
           options={{
             tabBarLabel: 'Directory',
             tabBarIcon: ({ color, size }) => (
@@ -161,8 +237,8 @@ function App() {
           }}
         />
         <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
+          name="SettingsStack"
+          component={SettingsStackNavigator}
           options={{
             tabBarLabel: 'Settings',
             tabBarIcon: ({ color, size }) => (
