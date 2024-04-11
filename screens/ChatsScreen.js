@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import chatsLogic from '../logic/chatsLogic';
@@ -30,17 +30,16 @@ export default function ChatsScreen() {
         <Image
           style={styles.profileImage}
           source={{ blurhash }}
-          //source={{ uri: item?.profileUrl }}
         />
         <View style={styles.textContainer}>
           <View style={styles.nameAndTimeRow}>
             <Text style={styles.nameText}>{item?.fName + ' ' + item?.lName}</Text>
             <Text style={styles.timeText}>
-              {renderTime()}
+              {renderTime(item.id)}
             </Text>
           </View>
           <Text style={styles.lastMessageText}>
-            {renderLastMessage()}
+            {renderLastMessage(item.id)}
           </Text>
         </View>
       </TouchableOpacity>
