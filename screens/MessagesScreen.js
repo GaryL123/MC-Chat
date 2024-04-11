@@ -66,7 +66,7 @@ export default function MessagesScreen() {
             <KeyboardAvoidingView
                 behavior={ios ? 'padding' : 'height'}
                 style={styles.flexWhite}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 160 : 0}>
+                keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}>
                 {children}
             </KeyboardAvoidingView>
         );
@@ -78,6 +78,9 @@ export default function MessagesScreen() {
                 <StatusBar style="dark" />
                 <MessageList messages={messages} user={user} />
                 <View style={styles.inputContainer}>
+                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+                        <Feather name="plus" size={24} color="#737373" />
+                    </TouchableOpacity>
                     <TextInput
                         onChangeText={value => textRef.current = value}
                         placeholder='Type a message...'
@@ -87,9 +90,6 @@ export default function MessagesScreen() {
                     />
                     <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
                         <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
-                        <Feather name="plus" size={24} color="#737373" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
                         <Feather name="send" size={24} color="#737373" />
