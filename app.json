@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MySimpleApp",
-    "slug": "MySimpleApp",
+    "name": "MC-Chat",
+    "slug": "MC-Chat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
