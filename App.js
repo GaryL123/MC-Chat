@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,6 +13,7 @@ import LoginScreen from './screens/LoginScreen';
 import MessagesScreen from './screens/MessagesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
+import RoomsCreateScreen from './screens/RoomsCreateScreen';
 import RoomsScreen from './screens/RoomsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,7 +21,6 @@ import { Image } from 'expo-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { blurhash } from './logic/commonLogic';
 import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const ChatStack = createStackNavigator();
@@ -57,7 +57,7 @@ function App() {
       fontWeight: 'bold',
     },
     headerRight: () => (
-      <ProfileButton/>
+      <ProfileButton />
     ),
   }
 
@@ -98,7 +98,6 @@ function App() {
   const ProfileButton = () => {
     const { logout, pendingFriendRequests } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
-    const { top } = useSafeAreaInsets();
     const navigation = useNavigation();
 
     const handleLogout = async () => {
@@ -152,6 +151,16 @@ function App() {
     );
   };
 
+  const CreateRoomButton = () => {
+    const navigation = useNavigation();
+
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles.createRoomButton}>
+        <Ionicons name="add-circle-outline" size={30} color="white" />
+      </TouchableOpacity>
+    );
+  };
+
   function AuthStack() {
     return (
       <Stack.Navigator>
@@ -173,9 +182,16 @@ function App() {
 
   function RoomStackNavigator() {
     return (
-      <RoomStack.Navigator initialRouteName="RoomsStack" screenOptions={HeaderScreenOptions}>
+      <RoomStack.Navigator
+        initialRouteName="RoomsStack"
+        screenOptions={{
+          ...HeaderScreenOptions, // Ensure these options are properly spread
+          headerLeft: () => <CreateRoomButton />
+        }}
+      >
         <RoomStack.Screen name="Rooms" component={RoomsScreen} />
         <RoomStack.Screen name="Messages" component={MessagesScreen} />
+        <RoomStack.Screen name="Create a Room" component={RoomsCreateScreen} />
       </RoomStack.Navigator>
     );
   }
@@ -331,6 +347,13 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     height: hp(4.3),
+    aspectRatio: 1,
+    borderRadius: 100,
+    marginBottom: 10,
+  },
+  createRoomButton: {
+    height: hp(4.3),
+    marginLeft: 15,
     aspectRatio: 1,
     borderRadius: 100,
   },
