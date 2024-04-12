@@ -78,39 +78,6 @@ function SettingsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
       <View style={styles.container}>
-        <View style={styles.profile}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}>
-            <View style={styles.profileAvatarWrapper}>
-              <Image
-                alt=""
-                source={{
-                  uri: 'https://image.unsplash.com/photos/a-lake-surrounded-by-trees-and-mountains-under-a-cloudy-sky-6AFFx5eU99k',
-                }}
-                style={styles.profileAvatar} />
-
-              <TouchableOpacity
-                onPress={() => {
-                  // handle onPress
-                }}>
-                <View style={styles.profileAction}>
-                  <FeatherIcon
-                    color="#fff"
-                    name="edit-3"
-                    size={15} />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-
-          <Text style={[styles.profileName, { fontSize: calculateFontSize(19), color: form.darkMode ? '#fff' : '#414d63' }]}>User's name</Text>
-
-          <Text style={[styles.profileAddress, { fontSize: calculateFontSize(16), color: form.darkMode ? '#989898' : '#414d63' }]}>
-            4513 Manhattan College Pkwy, Bronx, NY 10471
-          </Text>
-        </View>
 
         <ScrollView>
           <View style={styles.section}>
