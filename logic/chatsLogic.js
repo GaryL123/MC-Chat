@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react'
 import { useAuth } from './authContext'
 import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { useRoute } from '@react-navigation/native';
+import { blurhash, getChatId, formatDate } from './commonLogic';
 
 const chatsLogic = (navigation) => {
     const { user } = useAuth();
     const [friends, setFriends] = useState([]);
     const [lastMessage, setLastMessage] = useState(undefined);
     const [lastMessages, setLastMessages] = useState({});
-    const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
     useEffect(() => {
         //console.log("ChatsLogic use effect started");
@@ -75,21 +74,6 @@ const chatsLogic = (navigation) => {
         if (!lastMessage) return 'Say Hi 👋';
         return user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
     };
-
-    const getChatId = (userId1, userId2) => {
-        const sortedIds = [userId1, userId2].sort();
-        const chatId = sortedIds.join('-');
-        return chatId;
-    }
-
-    const formatDate = date => {
-        var day = date.getDate();
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var month = monthNames[date.getMonth()];
-
-        var formattedDate = day + ' ' + month;
-        return formattedDate;
-    }
 
     //console.log( 'chatsLogic User: ', user, '\n' );
     //console.log( 'chatsLogic Friends: ', friends, '\n' );
