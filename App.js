@@ -50,7 +50,7 @@ function App() {
     },
     headerStyle: {
       backgroundColor: '#166939',
-      height: 115,
+      height: 120,
     },
     headerTintColor: '#fff',
     headerTitleStyle: {
