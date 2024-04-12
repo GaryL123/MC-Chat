@@ -124,7 +124,7 @@ function App() {
               customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
               <MenuItem
                 text="Profile"
-                action={() => navigation.navigate('ProfileScreen')}
+                action={() => navigation.navigate('ProfileStack')}
                 value={null}
                 icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
               />
@@ -254,6 +254,13 @@ function App() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings-outline" size={size} color={color} />
             ),
+          }}
+        />
+        <Tab.Screen
+          name="ProfileStack"
+          component={ProfileStackNavigator}
+          options={{
+            tabBarButton: () => null,
           }}
         />
       </Tab.Navigator>
