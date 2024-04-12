@@ -27,14 +27,15 @@ function SettingsScreen() {
 
   const [showLanguageModal, setShowLanguageModal] = useState(false);
 
+ 
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: form.darkMode ? '#222' : '#fff',
+        backgroundColor: form.darkMode ? '#222' : '#166939', // Change header color here
       },
-      headerTintColor: form.darkMode ? '#fff' : '#000',
+      headerTintColor: '#fff',
     });
-  }, [form.darkMode]);
+  }, [form.darkMode, navigation]);
 
   const calculateFontSize = (baseFontSize) => {
     return baseFontSize * (form.fontSize / 17);
