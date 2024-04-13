@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#333',
+    marginBottom: hp(2),
   },
   inputContainer: {
     flexDirection: 'row',
@@ -27,6 +28,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(4),
     borderRadius: 25,
     marginBottom: hp(2),
+  },
+  inputContainerHoriz: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   input: {
     flex: 1,
@@ -78,6 +83,38 @@ const styles = StyleSheet.create({
     fontSize: hp(1.8),
     fontWeight: 'bold',
     color: '#166939',
+  },
+  profileImageProfilePage: {
+    height: hp(15),
+    aspectRatio: 1,
+    borderRadius: 100,
+    marginBottom: hp(4),
+  },
+  submitDiscardButtonProfilePage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#166939',
+    paddingVertical: hp(1.5),
+    paddingHorizontal: wp(11),
+    borderRadius: 25,
+    marginBottom: hp(2),
+  },
+
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: wp(4),
+    borderRadius: 25,
+    marginBottom: hp(2),
+  },
+  editButton: {
+    position: 'absolute',
+    right: 125,
+    bottom: 30,
+    borderRadius: 100,
+    backgroundColor: '#e0e0e0',
+    padding: 8,
   },
 });
 

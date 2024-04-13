@@ -1,30 +1,29 @@
 import { useEffect, useState } from 'react';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-export default function useUserDirectoryLogic() {
-  const [users, setUsers] = useState([]);
+const directoryLogic = () => {
+    const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef);
+    const fetchUsers = async () => {
+        try {
+            const usersRef = collection(db, 'users');
+            const querySnapshot = await getDocs(usersRef);
+            const userData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setUsers(userData);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
 
-      const querySnapshot = await getDocs(q);
-      const userData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      console.log('Fetched users:', userData);
-      setUsers(userData);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
+    return { users };
+};
 
-  return { users };
-}
+export default directoryLogic;

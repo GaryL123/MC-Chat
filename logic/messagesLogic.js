@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
 import { useAuth } from './authContext'
 import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import chatsLogic from './chatsLogic';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { OpenAI } from 'openai';
+import { getChatId } from './commonLogic';
 
 const messagesLogic = () => {
     const route = useRoute();
@@ -18,7 +17,6 @@ const messagesLogic = () => {
     const inputRef = useRef(null);
     // const [aiReply, setAiReply] = useState('');
     const scrollViewRef = useRef(null);
-    const { getChatId } = chatsLogic();
 
     useEffect(() => {
         createChatIfNotExists();
