@@ -5,14 +5,15 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import messagesLogic from '../logic/messagesLogic';
+import ExpandableTextInput from '../components/ExpandableTextInput';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-    const { user, messages, textRef, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, handleSendMessage, handleSendDoc } = messagesLogic();
+    const { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, messageText, setMessageText, handleSendMessage, handleSendDoc, handleGPT  } = messagesLogic();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { item } = route.params;
+    // const route = useRoute();
+    // const { item } = route.params;
 
     useEffect(() => {
         navigation.setOptions({
@@ -82,13 +83,13 @@ export default function MessagesScreen() {
                         <Feather name="plus" size={24} color="#737373" />
                     </TouchableOpacity>
                     <TextInput
-                        onChangeText={value => textRef.current = value}
+                        value={messageText}
+                        onChangeText={setMessageText}
                         placeholder='Type a message...'
                         placeholderTextColor={'gray'}
                         style={styles.textInput}
-                        ref={inputRef}
                     />
-                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+                    <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
                         <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
