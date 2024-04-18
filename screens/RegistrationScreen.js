@@ -15,6 +15,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/styles/AppStyles';
+import { useAuth } from '../logic/authContext';
 
 function RegistrationScreen() {
   const navigation = useNavigation();
@@ -23,36 +24,33 @@ function RegistrationScreen() {
   const [emailPrefix, setEmailPrefix] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { register } = useAuth();
 
   const handleRegister = async () => {
     if (!firstName || !lastName || !emailPrefix || !password || !confirmPassword) {
-      Alert.alert('Registration Error', "Please fill all the fields!");
-      return;
+        Alert.alert('Registration Error', "Please fill all the fields!");
+        return;
     }
 
     if (emailPrefix.includes('@') || !/^[a-zA-Z0-9_.-]+$/.test(emailPrefix)) {
-      Alert.alert('Invalid Email', "Please enter only the first part of your email before '@manhattan.edu'.");
-      return;
+        Alert.alert('Invalid Email', "Please enter only the first part of your email before '@manhattan.edu'.");
+        return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Password Error', "Passwords don't match. Please try again.");
-      return;
+        Alert.alert('Password Error', "Passwords don't match. Please try again.");
+        return;
     }
 
     const email = `${emailPrefix}@manhattan.edu`;
 
-    // Implement registration logic with your authentication service here
-    // Since we don't have the actual auth method, I'm simulating with a timeout
-    // Replace this with your actual registration method
     try {
-      // Simulated loading
-      setTimeout(() => {
-        console.log('Registered with:', email);
-        // navigation.navigate('Home'); // Navigate to home screen or next screen
-      }, 2000);
+        const result = await register(email, firstName, lastName, password);
+        if (!result.success) {
+          Alert.alert('Registration Error', result.msg);
+        }
     } catch (error) {
-      Alert.alert('Registration Error', error.message);
+        Alert.alert('Registration Error', error.message);
     }
   };
 

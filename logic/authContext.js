@@ -59,6 +59,7 @@ export const AuthContextProvider = ({ children }) => {
             return { success: false, msg: e.message, error: e };
         }
     }
+    
     const register = async (email, fName, lName, password) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
@@ -80,6 +81,7 @@ export const AuthContextProvider = ({ children }) => {
             return { success: false, msg };
         }
     }
+
     const resetPassword = async (email) => {
         try {
             await sendPasswordResetEmail(auth, email);
