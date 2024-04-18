@@ -1,85 +1,101 @@
 import React from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import directoryLogic from '../logic/directoryLogic';
-import { Feather } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 
 export default function DirectoryScreen() {
-    const navigation = useNavigation();
-    const { users } = directoryLogic();
-
-    const renderUserItem = ({ item }) => {
-        const isFriend = false; // You can implement your logic to check if the user is a friend
-        const friendshipStatus = isFriend ? 'Friend' : 'Add';
-        const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
-        return (
-            <TouchableOpacity style={styles.userItemContainer} onPress={() => {/* Handle navigation to user profile */}}>
-                <Image
-                    style={styles.profileImage}
-                    source={{ blurhash }}
-                />
-                <View style={styles.userInfo}>
-                    <Text style={styles.emailText}>{item.email}</Text>
-                    {/* Add more user information as needed */}
-                </View>
-                <TouchableOpacity
-                    onPress={() => handleFriendRequest(item.id)}
-                    disabled={isFriend}
-                    style={[styles.friendButton, { backgroundColor: isFriend ? '#ccc' : 'blue' }]}>
-                    <Text style={styles.friendButtonText}>
-                        {friendshipStatus}
-                    </Text>
-                </TouchableOpacity>
-            </TouchableOpacity>
-        );
-    };
+  const navigation = useNavigation();
+  const { users, sendFriendRequest, isFriend } = directoryLogic();
+  const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+  const renderUserItem = ({ item }) => {
+    const friendId = item.id;
+    const friendshipStatus = isFriend(friendId) ? 'Friend' : 'Add';
 
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={users}
-                renderItem={renderUserItem}
-                keyExtractor={item => item.id}
-            />
+      <View style={styles.userItemContainer}>
+        <View style={styles.userInfoContainer}>
+          <Image style={styles.profileImage} source={{ blurhash }} />
+          <Text style={styles.emailText}>{item.email}</Text>
         </View>
+        <TouchableOpacity
+          onPress={() => sendFriendRequest(friendId)}
+          disabled={friendshipStatus === 'Friend'}
+          style={[
+            styles.friendButton,
+            friendshipStatus === 'Friend' ? styles.friendButtonFriend : styles.friendButtonAdd
+          ]}
+        >
+          <Text style={styles.friendButtonText}>
+            {friendshipStatus}
+          </Text>
+        </TouchableOpacity>
+      </View>
     );
+  };
+
+  return (
+    <View style={styles.screen}>
+      <StatusBar style="dark-content" />
+      <FlatList
+        data={users}
+        contentContainerStyle={styles.flatListContent}
+        keyExtractor={item => item.id.toString()}
+        renderItem={renderUserItem}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    userItemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    profileImage: {
-        height: hp(6),
-        width: hp(6),
-        borderRadius: 100,
-    },
-    userInfo: {
-        flex: 1,
-        marginLeft: 10,
-    },
-    emailText: {
-        fontSize: hp(1.8),
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    friendButton: {
-        marginLeft: 'auto',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-    },
-    friendButtonText: {
-        color: 'white',
-    },
+  screen: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  flatListContent: {
+    flexGrow: 1,
+    paddingBottom: 25,
+  },
+  userItemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: wp(4),
+    marginBottom: hp(1),
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: hp(1),
+  },
+  userInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileImage: {
+    height: hp(6),
+    width: hp(6),
+    borderRadius: 100,
+  },
+  emailText: {
+    marginLeft: wp(4),
+    fontSize: hp(1.8),
+    color: 'black',
+  },
+  friendButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: hp(1),
+    paddingHorizontal: wp(4),
+    borderRadius: 5,
+    width: wp(20), // Fixed width for both buttons
+  },
+  friendButtonAdd: {
+    backgroundColor: '#166939', // Green color for Add button
+  },
+  friendButtonFriend: {
+    backgroundColor: 'gray', // Gray color for Friend button
+  },
+  friendButtonText: {
+    color: 'white',
+  },
 });
