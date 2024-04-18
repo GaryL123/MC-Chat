@@ -9,10 +9,8 @@ import messagesLogic from '../logic/messagesLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-    const { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, messageText, setMessageText, handleSendMessage, handleSendDoc, handleGPT  } = messagesLogic();
+    const { item, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesLogic();
     const navigation = useNavigation();
-    // const route = useRoute();
-    // const { item } = route.params;
 
     useEffect(() => {
         navigation.setOptions({
@@ -82,11 +80,11 @@ export default function MessagesScreen() {
                         <Feather name="plus" size={24} color="#737373" />
                     </TouchableOpacity>
                     <TextInput
-                        value={messageText}
-                        onChangeText={setMessageText}
+                        onChangeText={value => textRef.current = value}
                         placeholder='Type a message...'
                         placeholderTextColor={'gray'}
                         style={styles.textInput}
+                        ref={inputRef}
                     />
                     <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
                         <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />

@@ -12,8 +12,7 @@ const messagesLogic = () => {
     const { item } = route.params;
     const { user } = useAuth(); // logged in user
     const [messages, setMessages] = useState([]);
-    // const textRef = useRef('');
-    const [messageText, setMessageText] = useState('');
+    const textRef = useRef('');
     const inputRef = useRef(null);
     // const [aiReply, setAiReply] = useState('');
     const scrollViewRef = useRef(null);
@@ -86,7 +85,7 @@ const messagesLogic = () => {
         console.log('sending doc...');
     }
 
-    const handleGPT = async() => {;
+    const handleGPT = async() => {
 
         const openai = new OpenAI({
             apiKey: "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", // This is the default and can be omitted
@@ -94,7 +93,7 @@ const messagesLogic = () => {
 
         const conversationString = messages.map(message => `${message.senderName.split('@')[0]}: ${message.text}`).join('\n');
 
-        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information.`;
+        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information. Do not mention the username in your reply.`;
 
         const user_input = `${roleInstruction}\n\n${conversationString}`;
         
@@ -105,11 +104,12 @@ const messagesLogic = () => {
         });
 
         const reply = completion.choices[0]?.message?.content;
-        setMessageText(reply);  // Update the state with the new AI reply
+        console.log(reply);
+
+        // TO DO - Render input field with the AI reply
     }
           
-
-    return { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, messageText, setMessageText, handleSendMessage, handleSendDoc, handleGPT };
+    return { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, handleSendMessage, handleSendDoc, handleGPT };
 }
 
 export default messagesLogic;
