@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native';
 import { useAuth } from './authContext'
 import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -62,13 +63,13 @@ const messagesLogic = () => {
     }
 
     const handleSendMessage = async () => {
-        let message = messageText.trim();
+        let message = textRef.current.trim();
         if (!message) return;
         try {
             let chatId = getChatId(user?.uid, item?.uid);
             const docRef = doc(db, 'chatInds', chatId);
             const messagesRef = collection(docRef, "messages");
-            setMessageText('');
+            textRef.current = "";
             if (inputRef) inputRef?.current?.clear();
             const newDoc = await addDoc(messagesRef, {
                 uid: user?.uid,
