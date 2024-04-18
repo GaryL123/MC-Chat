@@ -72,7 +72,10 @@ const chatsLogic = (navigation) => {
     const renderLastMessage = (friendId) => {
         const lastMessage = lastMessages[friendId];
         if (!lastMessage) return 'Say Hi 👋';
-        return user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
+    
+        const messageText = user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
+    
+        return messageText.length > 30 ? `${messageText.slice(0, 30)}...` : messageText;
     };
 
     //console.log( 'chatsLogic User: ', user, '\n' );
