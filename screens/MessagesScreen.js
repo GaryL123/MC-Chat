@@ -5,7 +5,6 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import messagesLogic from '../logic/messagesLogic';
-import ExpandableTextInput from '../components/ExpandableTextInput';
 
 const ios = Platform.OS == 'ios';
 
