@@ -6,7 +6,6 @@ import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/styles/AppStyles';
 import { blurhash } from '../logic/commonLogic';
-import profileLogic from '../logic/profileLogic';
 import roomsLogic from '../logic/roomsLogic';
 
 export default function RoomsCreateScreen() {

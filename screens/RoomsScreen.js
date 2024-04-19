@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
 import roomsLogic from '../logic/roomsLogic';
 import { Image } from 'expo-image';
 
 export default function RoomsScreen() {
   const navigation = useNavigation();
   const { rooms, renderLastMessage, renderTime, openRoom, blurhash } = roomsLogic(navigation);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles.createRoomButton}>
+          <Ionicons name="add-circle-outline" size={30} color="white" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const RoomList = ({ rooms }) => {
     return (
@@ -110,5 +121,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: hp(30),
+  },
+  createRoomButton: {
+    height: hp(4.3),
+    marginLeft: 15,
+    aspectRatio: 1,
+    borderRadius: 100,
   },
 });

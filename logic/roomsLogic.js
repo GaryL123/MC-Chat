@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './authContext'
-import { collection, doc, addDoc, getDoc, setDoc, onSnapshot, orderBy, query, limit } from 'firebase/firestore';
+import { collection, doc, addDoc, getDoc, setDoc, onSnapshot, orderBy, query, limit, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { blurhash, getChatId, formatDate } from './commonLogic';
 
@@ -22,17 +22,17 @@ const roomsLogic = (navigation) => {
         rooms.forEach(room => {
             //let chatId = getChatId(user?.uid, friend.uid);
             const docRef = doc(db, "chatRooms", room.id);
-            let roomId = room.id;
+            //let roomId = room.id;
             const messagesRef = collection(docRef, "messages");
             const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
-    
+
             const unsub = onSnapshot(q, (snapshot) => {
                 const lastMessage = snapshot.docs.map(doc => doc.data())[0];
                 if (lastMessage) {
                     setLastMessages(prev => ({ ...prev, [room.id]: lastMessage }));
                 }
             });
-    
+
             return () => unsub();
         });
     }, [rooms, user?.uid]);
@@ -57,7 +57,7 @@ const roomsLogic = (navigation) => {
     };
 
     const openRoom = (item) => {
-        navigation.navigate('Messages', { item });
+        navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName });
     }
 
     const renderTime = (roomId) => {
@@ -71,14 +71,14 @@ const roomsLogic = (navigation) => {
     const renderLastMessage = (roomId) => {
         const lastMessage = lastMessages[roomId];
         if (!lastMessage) return 'Say Hi 👋';
-    
+
         const messageText = user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
-    
+
         return messageText.length > 30 ? `${messageText.slice(0, 30)}...` : messageText;
     };
 
     const changeRoomPicture = async () => {
-        
+
     };
 
     const createRoom = async (roomName, roomDesc, roomPhoto, roomPublic, uid) => {
@@ -94,15 +94,6 @@ const roomsLogic = (navigation) => {
 
             const roomId = docRef.id;
 
-            /*const adminRef = doc(collection(db, "chatRooms", roomId, "admins"));
-            await setDoc(adminRef, {
-                uid: user?.uid,
-            });
-
-            const memberRef = doc(collection(db, "chatRooms", roomId, "members"));
-            await setDoc(memberRef, {
-                uid: user?.uid,
-            });*/
             return { success: true, roomId: docRef.id };
         } catch (e) {
             console.error("Error creating chat room: ", e);
@@ -110,15 +101,32 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    const addMemberToRoom = async (roomId, uid) => {
+    const addUserToRoom = async (roomId, uid) => {
         try {
-            const memberRef = doc(collection(db, "chatRooms", roomId, "members"));
-            await setDoc(memberRef, {
-                uid: uid,
+            const roomRef = doc(db, "chatRooms", roomId);
+
+            await updateDoc(roomRef, {
+                members: arrayUnion(uid)
             });
+
             return { success: true };
         } catch (e) {
-            console.error("Error adding member to room: ", e);
+            console.error("Error adding user to room: ", e);
+            return { success: false, message: e.message };
+        }
+    }
+
+    const addAdminToRoom = async (roomId, userId) => {
+        try {
+            const roomRef = doc(db, "chatRooms", roomId);
+
+            await updateDoc(roomRef, {
+                admins: arrayUnion(userId)
+            });
+
+            return { success: true };
+        } catch (e) {
+            console.error("Error adding user to room: ", e);
             return { success: false, message: e.message };
         }
     }

@@ -4,35 +4,25 @@ import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import messagesLogic from '../logic/messagesLogic';
+import messagesRoomLogic from '../logic/messagesRoomLogic';
 
 const ios = Platform.OS == 'ios';
 
-export default function MessagesScreen() {
-    const { item, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesLogic();
+export default function MessagesRoomScreen() {
+    const { roomId, roomName, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesRoomLogic();
     const navigation = useNavigation();
 
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: item?.fName + ' ' + item?.lName,
-            headerRight: () => (
-                <View style={{ flexDirection: 'row', paddingRight: 10 }}>
-                    <TouchableOpacity onPress={() => {/* Handle voice call */ }} style={{ marginRight: 15 }}>
-                        <Feather name="phone" size={24} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {/* Handle video call */ }}>
-                        <Feather name="video" size={24} color="white" />
-                    </TouchableOpacity>
-                </View>
-            ),
+            headerTitle: roomName,
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#166939',
                 height: 120,
             },
         });
-    }, [navigation, item]);
+    }, [navigation, roomId]);
 
     const MessageList = ({ messages, user }) => {
         return (

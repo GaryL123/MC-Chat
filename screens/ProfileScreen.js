@@ -9,7 +9,7 @@ import { blurhash } from '../logic/commonLogic';
 import profileLogic from '../logic/profileLogic';
 
 export default function ProfileScreen() {
-    const { user, changeProfilePicture, changeFName, changeLName, changeEmail, changePassword } = profileLogic();
+    const { user, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changePassword } = profileLogic();
     const [fName, setFName] = useState(user?.fName || "");
     const [lName, setLName] = useState(user?.lName || "");
     const [email, setEmail] = useState(user?.email.split('@')[0] || "");
@@ -18,7 +18,7 @@ export default function ProfileScreen() {
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
     const handleChangeProfilePicture = async () => {
-        await changeProfilePicture();
+        await chooseProfilePicture();
     };
 
     const handleSubmit = async () => {
@@ -93,8 +93,8 @@ export default function ProfileScreen() {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.container}>
                     <View style={styles.centered}>
-                        <Image style={styles.profileImageProfilePage} source={{ blurhash }} />
-                        <TouchableOpacity style={styles.editButton} onPress={{handleChangeProfilePicture}}>
+                        <Image style={styles.profileImageProfilePage} source={{ uri: user?.profilePicture || blurhash }} />
+                        <TouchableOpacity style={styles.editButton} onPress={handleChangeProfilePicture}>
                             <Octicons name="pencil" size={24} color="#737373" />
                         </TouchableOpacity>
                     </View>

@@ -10,6 +10,7 @@ import ChatsScreen from './screens/ChatsScreen';
 import DirectoryScreen from './screens/DirectoryScreen'
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import LoginScreen from './screens/LoginScreen';
+import MessagesRoomScreen from './screens/MessagesRoomScreen';
 import MessagesScreen from './screens/MessagesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
@@ -96,7 +97,7 @@ function App() {
   };
 
   const ProfileButton = () => {
-    const { logout, pendingFriendRequests } = useAuth();
+    const { user, logout, pendingFriendRequests } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
     const navigation = useNavigation();
 
@@ -105,58 +106,50 @@ function App() {
     }
 
     return (
-      <View style={styles.container}>
-        <View>
-          <Menu>
-            <MenuTrigger>
-              <Image
-                style={styles.profileImage}
-                source={{ blurhash }}
-              />
-              {hasPendingRequests && (
-                <View style={styles.notificationBubble}>
-                  <Text style={styles.notificationText}>{pendingFriendRequests.length}</Text>
-                </View>
-              )}
-            </MenuTrigger>
-            <MenuOptions
-              customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
-              <MenuItem
-                text="Profile"
-                action={() => navigation.navigate('ProfileStack')}
-                value={null}
-                icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
-              />
-              <Divider />
-              {hasPendingRequests && (
-                <MenuItem
-                  text="Friend Requests"
-                  action={() => navigation.navigate('FriendRequestsScreen')}
-                  value={null}
-                  customContent={
-                    <NotificationBubble count={pendingFriendRequests.length} />
-                  }
+      <TouchableOpacity>
+        <View style={styles.container}>
+          <View>
+            <Menu>
+              <MenuTrigger>
+                <Image
+                  style={styles.profileImage}
+                  source={{ uri: user?.photoURL || blurhash }}
                 />
-              )}
-              <MenuItem
-                text="Log Out"
-                action={handleLogout}
-                value={null}
-                icon={<Ionicons name="log-out-outline" size={hp(2.5)} color="gray" />}
-              />
-            </MenuOptions>
-          </Menu>
+                {hasPendingRequests && (
+                  <View style={styles.notificationBubble}>
+                    <Text style={styles.notificationText}>{pendingFriendRequests.length}</Text>
+                  </View>
+                )}
+              </MenuTrigger>
+              <MenuOptions
+                customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
+                <MenuItem
+                  text="Profile"
+                  action={() => navigation.navigate('ProfileStack')}
+                  value={null}
+                  icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
+                />
+                <Divider />
+                {hasPendingRequests && (
+                  <MenuItem
+                    text="Friend Requests"
+                    action={() => navigation.navigate('FriendRequestsScreen')}
+                    value={null}
+                    customContent={
+                      <NotificationBubble count={pendingFriendRequests.length} />
+                    }
+                  />
+                )}
+                <MenuItem
+                  text="Log Out"
+                  action={handleLogout}
+                  value={null}
+                  icon={<Ionicons name="log-out-outline" size={hp(2.5)} color="gray" />}
+                />
+              </MenuOptions>
+            </Menu>
+          </View>
         </View>
-      </View>
-    );
-  };
-
-  const CreateRoomButton = () => {
-    const navigation = useNavigation();
-
-    return (
-      <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles.createRoomButton}>
-        <Ionicons name="add-circle-outline" size={30} color="white" />
       </TouchableOpacity>
     );
   };
@@ -183,14 +176,9 @@ function App() {
   function RoomStackNavigator() {
     return (
       <RoomStack.Navigator
-        initialRouteName="RoomsStack"
-        screenOptions={{
-          ...HeaderScreenOptions, // Ensure these options are properly spread
-          headerLeft: () => <CreateRoomButton />
-        }}
-      >
+        initialRouteName="RoomsStack" screenOptions={HeaderScreenOptions}>
         <RoomStack.Screen name="Rooms" component={RoomsScreen} />
-        <RoomStack.Screen name="Messages" component={MessagesScreen} />
+        <RoomStack.Screen name="MessagesRoom" component={MessagesRoomScreen} />
         <RoomStack.Screen name="Create a Room" component={RoomsCreateScreen} />
       </RoomStack.Navigator>
     );
