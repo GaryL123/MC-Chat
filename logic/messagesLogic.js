@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native';
 import { useAuth } from './authContext'
 import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
