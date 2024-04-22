@@ -19,14 +19,11 @@ const directoryLogic = () => {
 
     const fetchUserEmail = async (uid) => {
         try {
-            console.log("Getting user document for UID:", uid); // Debug the UID
             const userDoc = await getDoc(doc(db, 'users', uid)); // Get the document
             if (userDoc.exists()) {
                 const userData = userDoc.data(); // Get the data
-                console.log("User data fetched:", userData); // Log user data
                 return userData.email; // Return the email
             } else {
-                console.error("User not found for UID:", uid); // Handle case when user doesn't exist
                 return null;
             }
         } catch (error) {
@@ -58,9 +55,7 @@ const directoryLogic = () => {
     
             // Prepare an array of promises to fetch user emails
             const emailPromises = requestsSnapshot.docs.map(async (doc) => {
-                console.log("Fetching email for", doc.id); // Log the user ID
                 const senderEmail = await fetchUserEmail(doc.id); // Fetch email asynchronously
-                console.log("Fetched email:", senderEmail); // Debug log to see if it's undefined
                 return {
                     id: doc.id,
                     senderEmail: senderEmail, // Expected resolved email
@@ -70,7 +65,6 @@ const directoryLogic = () => {
             // Wait for all promises to resolve
             const requestDetails = await Promise.all(emailPromises);
     
-            console.log("Resolved friend request details:", requestDetails); // Debug the results
             setFriendRequests(requestDetails); // Set the state with resolved details
         } catch (error) {
             console.error("Error fetching friend requests:", error); // Error handling
