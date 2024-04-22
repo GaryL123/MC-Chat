@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 
 export default function RoomsScreen() {
   const navigation = useNavigation();
-  const { rooms, renderLastMessage, renderTime, openRoom, blurhash } = roomsLogic(navigation);
+  const { user, rooms, renderLastMessage, renderTime, joinRoom, openRoom, blurhash } = roomsLogic(navigation);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,24 +36,39 @@ export default function RoomsScreen() {
   };
 
   const RoomItem = ({ item }) => {
+    const isMember = item.members.includes(user.uid);
+
     return (
-      <TouchableOpacity onPress={() => openRoom(item)} style={[styles.roomItem ]}>
-        <Image
-          style={styles.profileImage}
-          source={{ blurhash }}
-        />
-        <View style={styles.textContainer}>
-          <View style={styles.nameAndTimeRow}>
-            <Text style={styles.nameText}>{item?.roomName}</Text>
-            <Text style={styles.timeText}>
-              {renderTime(item.id)}
+      <View>
+        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles.roomItem]}>
+          <Image
+            style={styles.profileImage}
+            source={{ blurhash }}
+            disabled={!isMember}
+          />
+          <View style={styles.textContainer}>
+            <View style={styles.nameAndTimeRow}>
+              <Text style={styles.nameText}>{item?.roomName}</Text>
+              <Text style={styles.timeText}>
+                {renderTime(item.id)}
+              </Text>
+            </View>
+            {isMember && (
+            <Text style={styles.lastMessageText}>
+              {renderLastMessage(item.id)}
             </Text>
+          )}
           </View>
-          <Text style={styles.lastMessageText}>
-            {renderLastMessage(item.id)}
-          </Text>
-        </View>
-      </TouchableOpacity>
+          {!isMember && (
+          <TouchableOpacity
+            onPress={joinRoom(item)}
+            style={styles.joinButton}
+          >
+            <Text style={styles.joinButtonText}>Join</Text>
+          </TouchableOpacity>
+        )}
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -127,5 +142,17 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     aspectRatio: 1,
     borderRadius: 100,
+  },
+  joinButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#166939',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  joinButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
