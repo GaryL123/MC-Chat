@@ -13,19 +13,26 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setIsAuthenticated(true);
-                const updatedUserData = await updateUserData(user.uid);
-                setUser(user);
-                await fetchPendingFriendRequests(user.uid);
-            } else {
-                setIsAuthenticated(false);
-                setUser(null);
-                setPendingFriendRequests([]);
-            }
+          if (user) {
+            setIsAuthenticated(true);
+            updateUserState(user);
+            fetchPendingFriendRequests(user.uid);
+          } else {
+            setIsAuthenticated(false);
+            setUser(null);
+            setPendingFriendRequests([]);
+          }
         });
         return unsub;
-    }, []);
+      }, []);
+
+    const updateUserState = async (user) => {
+        const userData = await updateUserData(user.uid);
+        setUser({
+          ...user,
+          ...userData,
+        });
+      };
 
     const updateUserData = async (uid) => {
         const docRef = doc(db, 'users', uid);
@@ -33,7 +40,7 @@ export const AuthContextProvider = ({ children }) => {
 
         if (docSnap.exists()) {
             let data = docSnap.data();
-            return { ...user, uid: data.uid, email: data.email }
+            return { ...user, uid: data.uid, email: data.email, photoURL: data.photoURL }
         } else {
             return null;
         }
