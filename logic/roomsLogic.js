@@ -56,6 +56,10 @@ const roomsLogic = (navigation) => {
         });
     };
 
+    const joinRoom = (item) => {
+        console.log('Joining room');
+    }
+
     const openRoom = (item) => {
         navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName });
     }
@@ -131,7 +135,7 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    return { user, rooms, renderLastMessage, renderTime, openRoom, createRoom, blurhash };
+    return { user, rooms, renderLastMessage, renderTime, joinRoom, openRoom, createRoom, blurhash };
 }
 
 export default roomsLogic;
