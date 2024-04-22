@@ -5,10 +5,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Ionicons } from '@expo/vector-icons';
 import chatsLogic from '../logic/chatsLogic';
 import { Image } from 'expo-image';
+import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function ChatsScreen() {
   const navigation = useNavigation();
-  const { friends, renderLastMessage, renderTime, openChat, blurhash } = chatsLogic(navigation);
+  const { friends, renderLastMessage, renderTime, openChat } = chatsLogic(navigation);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,7 +41,7 @@ export default function ChatsScreen() {
       <TouchableOpacity onPress={() => openChat(item)} style={[styles.chatItem ]}>
         <Image
           style={styles.profileImage}
-          source={{ blurhash }}
+          source={{ uri: item?.photoURL || defaultProfilePicture }}
         />
         <View style={styles.textContainer}>
           <View style={styles.nameAndTimeRow}>
