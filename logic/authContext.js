@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,sendPasswordResetEmail, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
 import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
 
@@ -13,26 +13,27 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            setIsAuthenticated(true);
-            updateUserState(user);
-            fetchPendingFriendRequests(user.uid);
-          } else {
-            setIsAuthenticated(false);
-            setUser(null);
-            setPendingFriendRequests([]);
-          }
+            if (user) {
+                setIsAuthenticated(true);
+                updateUserState(user);
+                fetchPendingFriendRequests(user.uid);
+            } else {
+                setIsAuthenticated(false);
+                setUser(null);
+                setPendingFriendRequests([]);
+            }
         });
         return unsub;
-      }, []);
+    }, []);
+    
 
     const updateUserState = async (user) => {
         const userData = await updateUserData(user.uid);
         setUser({
-          ...user,
-          ...userData,
+            ...user,
+            ...userData,
         });
-      };
+    };
 
     const updateUserData = async (uid) => {
         const docRef = doc(db, 'users', uid);
@@ -66,7 +67,7 @@ export const AuthContextProvider = ({ children }) => {
             return { success: false, msg: e.message, error: e };
         }
     }
-    
+
     const register = async (email, fName, lName, password) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
@@ -112,7 +113,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests, updateUserData }}>
             {children}
         </AuthContext.Provider>
     )
