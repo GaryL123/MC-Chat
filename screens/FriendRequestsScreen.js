@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'r
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import directoryLogic from '../logic/directoryLogic';
 import { Image } from 'expo-image';
+import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function FriendRequestsScreen() {
     const { friendRequests, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests } = directoryLogic();
@@ -12,14 +13,12 @@ export default function FriendRequestsScreen() {
         fetchFriendRequests();
     }, []);
 
-    const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
     const renderFriendRequestItem = ({ item }) => {
         return (
             <View style={styles.userItemContainer}>
                 {/* Align the user info and email vertically */}
                 <View style={styles.userInfoContainer}>
-                    <Image style={styles.profileImage} source={{ blurhash }} />
+                    <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
                     <Text style={styles.emailText}>{item.senderEmail}</Text>
                 </View>
     
