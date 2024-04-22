@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         width: wp(20),
     },
     friendButtonAdd: {
-        backgroundColor: '#166939',
+        backgroundColor: 'blue',
     },
     friendButtonFriend: {
         backgroundColor: '#166939',
