@@ -9,7 +9,8 @@ import messagesRoomLogic from '../logic/messagesRoomLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
-    const { roomId, roomName, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesRoomLogic();
+    const { roomId, roomName, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc } = messagesRoomLogic();
+    const [inputText, setInputText] = useState('');
     const navigation = useNavigation();
 
     useEffect(() => {
