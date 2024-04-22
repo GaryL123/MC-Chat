@@ -93,7 +93,7 @@ export default function ProfileScreen() {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.container}>
                     <View style={styles.centered}>
-                        <Image style={styles.profileImageProfilePage} source={{ uri: user?.profilePicture || blurhash }} />
+                        <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || blurhash }} />
                         <TouchableOpacity style={styles.editButton} onPress={handleChangeProfilePicture}>
                             <Octicons name="pencil" size={24} color="#737373" />
                         </TouchableOpacity>
