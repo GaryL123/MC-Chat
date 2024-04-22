@@ -5,7 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/styles/AppStyles';
-import { blurhash } from '../logic/commonLogic';
+import { defaultProfilePicture } from '../logic/commonLogic';
 import profileLogic from '../logic/profileLogic';
 
 export default function ProfileScreen() {
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.container}>
                     <View style={styles.centered}>
-                        <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || blurhash }} />
+                        <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || defaultProfilePicture }} />
                         <TouchableOpacity style={styles.editButton} onPress={handleChangeProfilePicture}>
                             <Octicons name="pencil" size={24} color="#737373" />
                         </TouchableOpacity>
