@@ -21,7 +21,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { blurhash } from './logic/commonLogic';
+import { defaultProfilePicture } from './logic/commonLogic';
 import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 const Stack = createStackNavigator();
@@ -99,16 +99,12 @@ function App() {
   };
 
   const ProfileButton = () => {
-    const { user, logout, pendingFriendRequests, fetchPendingFriendRequests } = useAuth();
+    const { user, logout, pendingFriendRequests } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
     const navigation = useNavigation();
 
     const handleLogout = async () => {
       await logout();
-    }
-
-    const numberFriendRequests = async () => {
-
     }
 
     return (
@@ -119,7 +115,7 @@ function App() {
               <MenuTrigger>
                 <Image
                   style={styles.profileImage}
-                  source={{ uri: user?.photoURL || blurhash }}
+                  source={{ uri: user?.photoURL || defaultProfilePicture }}
                 />
                 {hasPendingRequests && (
                   <View style={styles.notificationBubble}>
@@ -216,9 +212,9 @@ function App() {
 
   function FriendRequestsStackNavigator() {
     return (
-      <ProfileStack.Navigator initialRouteName="FriendRequestsStack" screenOptions={HeaderScreenOptions}>
-        <ProfileStack.Screen name="Profile" component={FriendRequestsScreen} />
-      </ProfileStack.Navigator>
+      <FriendRequestsStack.Navigator initialRouteName="FriendRequestsStack" screenOptions={HeaderScreenOptions}>
+        <FriendRequestsStack.Screen name="Profile" component={FriendRequestsScreen} />
+      </FriendRequestsStack.Navigator>
     );
   }
 
