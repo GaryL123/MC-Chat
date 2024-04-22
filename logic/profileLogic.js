@@ -43,9 +43,9 @@ const profileLogic = () => {
         });
 
         if (!result.cancelled) {
-            console.log(result);
+            //console.log(result);
             const { uri } = result.assets[0];
-            console.log(uri);
+            //console.log(uri);
             if (uri) {
                 changeProfilePicture(uri);
             } else {
@@ -66,7 +66,10 @@ const profileLogic = () => {
             const downloadURL = await getDownloadURL(userProfilePicRef);
 
             const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, {
+            await updateDoc(userRef, { photoURL: downloadURL });
+
+            const auth = getAuth();
+            await updateProfile(auth.currentUser, {
                 photoURL: downloadURL
             });
 
