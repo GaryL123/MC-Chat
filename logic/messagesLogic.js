@@ -94,7 +94,7 @@ const messagesLogic = () => {
 
         const conversationString = messages.map(message => `${message.senderName.split('@')[0]}: ${message.text}`).join('\n');
 
-        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information. Do not mention the username in your reply.`;
+        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information. Do not mention the username in your reply. Try to keep replies within 50 characters, unless the other person is asking for an elaborate reply.`;
 
         const user_input = `${roleInstruction}\n\n${conversationString}`;
 
@@ -105,7 +105,8 @@ const messagesLogic = () => {
         });
 
         const reply = completion.choices[0]?.message?.content;
-        console.log(reply);
+        
+        return reply;
 
         // TO DO - Render input field with the AI reply
     }
