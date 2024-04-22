@@ -9,6 +9,7 @@ import { AuthContextProvider, useAuth } from './logic/authContext';
 import ChatsScreen from './screens/ChatsScreen';
 import DirectoryScreen from './screens/DirectoryScreen'
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import FriendRequestsScreen from './screens/FriendRequestsScreen';
 import LoginScreen from './screens/LoginScreen';
 import MessagesRoomScreen from './screens/MessagesRoomScreen';
 import MessagesScreen from './screens/MessagesScreen';
@@ -29,6 +30,7 @@ const RoomStack = createStackNavigator();
 const DirectoryStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const FriendRequestsStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
@@ -97,12 +99,16 @@ function App() {
   };
 
   const ProfileButton = () => {
-    const { user, logout, pendingFriendRequests } = useAuth();
+    const { user, logout, pendingFriendRequests, fetchPendingFriendRequests } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
     const navigation = useNavigation();
 
     const handleLogout = async () => {
       await logout();
+    }
+
+    const numberFriendRequests = async () => {
+
     }
 
     return (
@@ -133,7 +139,7 @@ function App() {
                 {hasPendingRequests && (
                   <MenuItem
                     text="Friend Requests"
-                    action={() => navigation.navigate('FriendRequestsScreen')}
+                    action={() => navigation.navigate('FriendRequestsStack')}
                     value={null}
                     customContent={
                       <NotificationBubble count={pendingFriendRequests.length} />
@@ -208,6 +214,14 @@ function App() {
     );
   }
 
+  function FriendRequestsStackNavigator() {
+    return (
+      <ProfileStack.Navigator initialRouteName="FriendRequestsStack" screenOptions={HeaderScreenOptions}>
+        <ProfileStack.Screen name="Profile" component={FriendRequestsScreen} />
+      </ProfileStack.Navigator>
+    );
+  }
+
   function MainApp() {
     return (
       <Tab.Navigator
@@ -263,6 +277,13 @@ function App() {
         <Tab.Screen
           name="ProfileStack"
           component={ProfileStackNavigator}
+          options={{
+            tabBarButton: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="FriendRequestsStack"
+          component={FriendRequestsStackNavigator}
           options={{
             tabBarButton: () => null,
           }}
