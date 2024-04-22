@@ -5,12 +5,11 @@ import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'r
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import directoryLogic from '../logic/directoryLogic';
 import { Image } from 'expo-image';
+import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function DirectoryScreen() {
     const navigation = useNavigation();
     const { users, sendFriendRequest, isFriend, sentRequests } = directoryLogic();
-
-    const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
     const renderUserItem = ({ item }) => {
         const friendId = item.id;
@@ -19,7 +18,7 @@ export default function DirectoryScreen() {
         return (
             <View style={styles.userItemContainer}>
                 <View style={styles.userInfoContainer}>
-                    <Image style={styles.profileImage} source={{ blurhash }} />
+                    <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
                     <Text style={styles.emailText}>{item.email}</Text>
                 </View>
                 <TouchableOpacity
