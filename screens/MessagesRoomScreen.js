@@ -55,7 +55,7 @@ export default function MessagesRoomScreen() {
             <KeyboardAvoidingView
                 behavior={ios ? 'padding' : 'height'}
                 style={styles.flexWhite}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}>
+                keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
                 {children}
             </KeyboardAvoidingView>
         );
