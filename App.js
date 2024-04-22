@@ -23,6 +23,7 @@ import { Image } from 'expo-image';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { defaultProfilePicture } from './logic/commonLogic';
 import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { getAuth, onIdTokenChanged } from 'firebase/auth';
 
 const Stack = createStackNavigator();
 const ChatStack = createStackNavigator();
@@ -35,13 +36,24 @@ const Tab = createBottomTabNavigator();
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const auth = getAuth();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
+      console.log('App.js first use effect')
       setCurrentUser(user);
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onIdTokenChanged(auth, user => {
+      console.log('App.js second use effect')
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const HeaderScreenOptions = {
@@ -115,7 +127,7 @@ function App() {
               <MenuTrigger>
                 <Image
                   style={styles.profileImage}
-                  source={{ uri: user?.photoURL || defaultProfilePicture }}
+                  source={{ uri: currentUser?.photoURL || defaultProfilePicture }}
                 />
                 {hasPendingRequests && (
                   <View style={styles.notificationBubble}>
