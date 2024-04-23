@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useAuth } from './authContext';
 
@@ -12,7 +12,7 @@ const directoryRoomsLogic = () => {
 
     useEffect(() => {
         fetchUsers();
-        fetchMembers();
+        fetchRoomInvites();
         fetchRoomInvites();
     }, [user, members, sentRoomInvites]);
 
@@ -30,7 +30,6 @@ const directoryRoomsLogic = () => {
             return null;
         }
     };
-
 
     const fetchUsers = async () => {
         try {
@@ -87,13 +86,13 @@ const directoryRoomsLogic = () => {
         }
     };
 
-    const sendRoomInvite = async (userId) => {
+    const sendRoomInvite = async (userId, roomId) => {
         try {
             const currentUserInvitesSentRef = collection(db, 'users', user.uid, 'invitesSent');
-            await setDoc(doc(currentUserInvitesSentRef, userId), { uid: userId });
+            await setDoc(doc(currentUserInvitesSentRef, userId), { id: roomId });
 
             const recipientInvitesReceivedRef = collection(db, 'users', userId, 'invitesReceived');
-            await setDoc(doc(recipientInvitesReceivedRef, user.uid), { uid: user.uid });
+            await setDoc(doc(recipientInvitesReceivedRef, user.uid), { id: roomId });
 
             setSentRoomInvites(prevState => [...prevState, userId]);
 
@@ -186,6 +185,7 @@ const directoryRoomsLogic = () => {
     return {
         users,
         members,
+        fetchMembers,
         isMember,
         sendRoomInvite,
         sentRoomInvites,
