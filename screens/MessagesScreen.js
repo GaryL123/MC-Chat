@@ -92,6 +92,7 @@ export default function MessagesScreen() {
                     value={inputText}
                     multiline={true} // Enable multiline input
                     scrollEnabled={true} // Allow scrolling inside the input
+                    keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
                 <TouchableOpacity onPress={handleGPT} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />

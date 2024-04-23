@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationContainer} from '@react-navigation/native';
-import { MenuProvider} from 'react-native-popup-menu';
+import { NavigationContainer } from '@react-navigation/native';
+import { MenuProvider } from 'react-native-popup-menu';
 import { getAuth, onIdTokenChanged } from 'firebase/auth';
 
 // Context Providers
@@ -35,13 +35,13 @@ function App() {
 
   return (
     <MenuProvider>
-      <NavigationContainer>
-        <AuthContextProvider>
-          <SettingsContextProvider>
-          {currentUser ? <MainTabNavigator /> : <AuthStackNavigator />}
-          </SettingsContextProvider>
-        </AuthContextProvider>
-      </NavigationContainer>
+      <SettingsContextProvider>
+        <NavigationContainer>
+          <AuthContextProvider>
+            {currentUser ? <MainTabNavigator /> : <AuthStackNavigator />}
+          </AuthContextProvider>
+        </NavigationContainer>
+      </SettingsContextProvider>
     </MenuProvider>
   );
 }

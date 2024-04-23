@@ -143,6 +143,7 @@ export default function MessagesRoomScreen() {
                     value={inputText}
                     multiline={true} // Enable multiline input
                     scrollEnabled={true} // Allow scrolling inside the input
+                    keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
                 <TouchableOpacity onPress={handleSendMessage} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="send" size={24} color="#737373" />
