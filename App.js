@@ -87,7 +87,7 @@ function App() {
         minWidth: 20,
         padding: 2,
         backgroundColor: 'red',
-        borderRadius: 10,
+        borderRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
       }}>
@@ -119,6 +119,8 @@ function App() {
     const { user, logout, pendingFriendRequests, pendingRoomInvites } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
     const hasPendingInvites = pendingRoomInvites && pendingRoomInvites.length > 0;
+    const totalNotifications = (hasPendingRequests ? pendingFriendRequests.length : 0) + (hasPendingInvites ? pendingRoomInvites.length : 0);
+    const hasNotifications = hasPendingRequests || hasPendingInvites;
     const navigation = useNavigation();
 
     const handleLogout = async () => {
@@ -135,9 +137,9 @@ function App() {
                   style={styles.profileImage}
                   source={{ uri: currentUser?.photoURL || defaultProfilePicture }}
                 />
-                {hasPendingRequests && (
+                {hasNotifications  && (
                   <View style={styles.notificationBubble}>
-                    <Text style={styles.notificationText}>{pendingFriendRequests.length}</Text>
+                    <Text style={styles.notificationText}>{totalNotifications}</Text>
                   </View>
                 )}
               </MenuTrigger>
@@ -410,8 +412,8 @@ const styles = StyleSheet.create({
   },
   notificationBubble: {
     position: 'absolute',
-    right: -6,
-    bottom: -3,
+    right: -3,
+    bottom: 3,
     backgroundColor: 'red',
     borderRadius: 50,
     width: hp(2),
@@ -425,12 +427,12 @@ const styles = StyleSheet.create({
   },
   menuOptionsStyle: {
     borderRadius: 10,
-    marginTop: 40,
+    marginTop: 30,
     marginLeft: -30,
     backgroundColor: 'white',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
-    width: 160
+    width: 190
   },
 });
 
