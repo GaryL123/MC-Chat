@@ -8,29 +8,27 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 export default function RoomsInvitesScreen() {
     const { roomInvites, acceptRoomInvite, rejectRoomInvite, fetchRoomInvites } = directoryRoomsLogic();
 
-    useEffect(() => {
-        fetchRoomInvites();
-    }, []);
-
     const renderRoomInvitesItem = ({ item }) => {
+        console.log(item);
+        const { roomId, senderEmail, id } = item;
         return (
             <View style={styles.userItemContainer}>
                 {/* Align the user info and email vertically */}
                 <View style={styles.userInfoContainer}>
                     <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
-                    <Text style={styles.emailText}>{item.senderEmail}</Text>
+                    <Text style={styles.emailText}>{senderEmail}</Text>
                 </View>
     
                 {/* Add space between email and buttons */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        onPress={() => acceptRoomInvite(item.id)}
+                        onPress={() => acceptRoomInvite(roomId, item.id)}
                         style={[styles.inviteButton, styles.acceptButton]}
                     >
                         <Text style={styles.buttonText}>Accept</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => rejectRoomInvite(item.id)}
+                        onPress={() => rejectRoomInvite(roomId, item.id)}
                         style={[styles.inviteButton, styles.rejectButton]}
                     >
                         <Text style={styles.buttonText}>Reject</Text>
