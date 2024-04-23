@@ -51,7 +51,7 @@ const messagesRoomLogic = () => {
         }, 100)
     }
 
-    const handleSendMessage = async () => {
+    const sendMessage = async () => {
         let message = textRef.current.trim();
         if (!message) return;
         try {
@@ -62,7 +62,9 @@ const messagesRoomLogic = () => {
             const newDoc = await addDoc(messagesRef, {
                 uid: user?.uid,
                 text: message,
-                senderName: user?.email,
+                senderEmail: user?.email,
+                senderFName: user?.fName,
+                senderLName: user?.lName,
                 createdAt: Timestamp.fromDate(new Date())
             });
         } catch (err) {
@@ -70,11 +72,11 @@ const messagesRoomLogic = () => {
         }
     }
 
-    const handleSendDoc = async () => {
+    const sendDoc = async () => {
         console.log('sending doc...');
     }
           
-    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, handleSendMessage, handleSendDoc };
+    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc };
 }
 
 export default messagesRoomLogic;
