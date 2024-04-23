@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import { auth } from './firebaseConfig';
 import { AuthContextProvider, useAuth } from './logic/authContext';
+import { SettingsContextProvider} from './logic/settingsContext';
 import ChatsScreen from './screens/ChatsScreen';
 import DirectoryScreen from './screens/DirectoryScreen'
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
@@ -340,7 +341,9 @@ function App() {
     <MenuProvider>
       <NavigationContainer>
         <AuthContextProvider>
+          <SettingsContextProvider>
           {currentUser ? <MainApp /> : <AuthStack />}
+          </SettingsContextProvider>
         </AuthContextProvider>
       </NavigationContainer>
     </MenuProvider>
