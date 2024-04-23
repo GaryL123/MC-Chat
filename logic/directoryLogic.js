@@ -15,7 +15,7 @@ const directoryLogic = () => {
         fetchUsers();
         fetchFriends();
         fetchFriendRequests();
-    }, []);
+    }, [sentRequests, friends]);
 
     const fetchUserEmail = async (uid) => {
         try {
@@ -40,7 +40,7 @@ const directoryLogic = () => {
             const userData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            }));
+            })).filter((userData) => userData.id !== user.uid);
             setUsers(userData);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -149,7 +149,30 @@ const directoryLogic = () => {
             console.error("Error rejecting friend request:", error);
         }
     };
-
+    const getOrganizedUsers = () => {
+        const friendsList = users.filter((u) => friends.includes(u.id));
+        const otherUsersList = users.filter((u) => !friends.includes(u.id));
+        
+        return { friendsList, otherUsersList };
+      };
+      const removeFriend = async (friendId) => {
+        try {
+          // Remove from the current user's 'friends' collection
+          const currentUserFriendsRef = doc(db, 'users', user.uid, 'friends', friendId);
+          await deleteDoc(currentUserFriendsRef);
+    
+          // Remove from the friend's 'friends' collection
+          const friendUserFriendsRef = doc(db, 'users', friendId, 'friends', user.uid);
+          await deleteDoc(friendUserFriendsRef);
+    
+          // Update the friends list in the state
+          setFriends((prev) => prev.filter((id) => id !== friendId));
+    
+          console.log('Friend removed successfully.');
+        } catch (error) {
+          console.error('Error removing friend:', error);
+        }
+      };
     return {
         users,
         friends,
@@ -157,9 +180,11 @@ const directoryLogic = () => {
         sendFriendRequest,
         sentRequests,
         friendRequests,
+        removeFriend,
         fetchFriendRequests,
         acceptFriendRequest,
-        rejectFriendRequest
+        rejectFriendRequest,
+        getOrganizedUsers
     };
 };
 
