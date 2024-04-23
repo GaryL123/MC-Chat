@@ -17,15 +17,9 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function DirectoryScreen() {
   const navigation = useNavigation();
-  const {
-    getOrganizedUsers,
-    sendFriendRequest,
-    isFriend,
-    sentRequests,
-    removeFriend,
-  } = directoryLogic();
+  const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
   const [form, setForm] = useState({
-    darkMode: true,
+    darkMode: false,
     fontSize: 17,
   });
   const { friendsList, otherUsersList } = getOrganizedUsers();
@@ -66,13 +60,8 @@ export default function DirectoryScreen() {
     return (
       <View style={styles.userItemContainer}>
         <View style={styles.userInfoContainer}>
-          <Image
-            style={styles.profileImage}
-            source={{ uri: item?.photoURL || defaultProfilePicture }}
-          />
-          <Text style={[styles.emailText, { color: form.darkMode ? 'white' : 'black' }]}>
-            {item.email}
-          </Text>
+        <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }}/>
+          <Text style={[styles.emailText, { color: form.darkMode ? 'white' : 'black' }]}>{item.fName + ' ' + item.lName}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
