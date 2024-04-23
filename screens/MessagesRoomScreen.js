@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Feather } from '@expo/vector-icons';
+import { Ionicons, Feather, Entypo } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import messagesRoomLogic from '../logic/messagesRoomLogic';
+import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
-    const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc } = messagesRoomLogic();
+    const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  // Manage input text directly
     const navigation = useNavigation();
 
@@ -17,13 +18,59 @@ export default function MessagesRoomScreen() {
         navigation.setOptions({
             headerShown: true,
             headerTitle: roomName,
+            headerRight: () => (
+                <TouchableOpacity>
+                    <View style={styles.container}>
+                        <View>
+                            <Menu>
+                                <MenuTrigger>
+                                    <Entypo name="dots-three-vertical" size={24} color="white" />
+                                </MenuTrigger>
+                                <MenuOptions customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
+                                    {isAdmin && (
+                                        <>
+                                            <MenuItem
+                                                text="Add Users"
+                                                action={() => navigation.navigate('RoomsAddUserScreen', { roomId })}
+                                                value={null}
+                                                icon={<Ionicons name="person-add-outline" size={hp(2.5)} color="gray" />}
+                                            />
+                                            <Divider />
+                                            <MenuItem
+                                                text="Remove Users"
+                                                action={() => {/* handle removing users */ }}
+                                                value={null}
+                                                icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
+                                            />
+                                            <Divider />
+                                            <MenuItem
+                                                text="Room Settings"
+                                                action={() => {/* navigate to room settings */ }}
+                                                value={null}
+                                                icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
+                                            />
+                                            <Divider />
+                                        </>
+                                    )}
+                                    <MenuItem
+                                        text="Leave Room"
+                                        action={() => {/* handle leaving the room */ }}
+                                        value={null}
+                                        icon={<Ionicons name="exit-outline" size={hp(2.5)} color="gray" />}
+                                    />
+                                </MenuOptions>
+                            </Menu>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            ),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#166939',
                 height: 120,
             },
         });
-    }, [navigation, roomId]);
+    }, [navigation, roomId, isAdmin]);
 
     const handleSendMessage = async () => {
         await sendMessage();
@@ -45,6 +92,25 @@ export default function MessagesRoomScreen() {
     const handleInputChange = (text) => {
         setInputText(text);  // Update state with text input by user
         textRef.current = text;  // Keep ref updated if needed elsewhere
+    };
+
+    const MenuItem = ({ text, action, value, icon, customContent }) => {
+        return (
+            <MenuOption onSelect={() => action(value)}>
+                <View style={styles.menuItem}>
+                    <Text style={styles.menuItemText}>
+                        {text}
+                    </Text>
+                    {customContent ? customContent : icon}
+                </View>
+            </MenuOption>
+        );
+    };
+
+    const Divider = () => {
+        return (
+            <View style={styles.divider2} />
+        );
     };
 
     return (
@@ -99,6 +165,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderBottomWidth: 1,
         borderBottomColor: 'white',
+    },
+    divider2: {
+        height: 1, // equivalent to p-[1px] in Tailwind for height
+        width: '100%', // w-full in Tailwind
+        backgroundColor: '#e2e8f0',  // This color corresponds to Tailwind's bg-neutral-200
     },
     chatContainer: {
         flex: 1,
@@ -176,5 +247,38 @@ const styles = StyleSheet.create({
         marginBottom: 4,
         fontSize: 14,
         color: 'grey',
+    },
+    container: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingVertical: 6,
+        paddingHorizontal: 20,
+        borderRadius: 30,  // Approximation of rounded-b-3xl in Tailwind
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    menuOptionsStyle: {
+        borderRadius: 10,
+        marginTop: 30,
+        marginLeft: -10,
+        backgroundColor: 'white',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 0 },
+        width: 190
+    },
+    menuItem: {
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    menuItemText: {
+        fontSize: hp(1.7),
+        fontWeight: '600',
+        color: '#4a5568',  // This color corresponds to Tailwind's text-neutral-600
     },
 });
