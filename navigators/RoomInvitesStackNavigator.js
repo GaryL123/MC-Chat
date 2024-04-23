@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import RoomsInvitesScreen from '../screens/RoomInvitesScreen';
+import RoomsInvitesScreen from '../screens/RoomsInvitesScreen';
 import { HeaderScreenOptions } from './navigationConfig';
 
 const RoomInvitesStack = createStackNavigator();
