@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 
 export default function RoomsScreen() {
   const navigation = useNavigation();
-  const { user, rooms, renderLastMessage, renderTime, joinRoom, openRoom, blurhash } = roomsLogic(navigation);
+  const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom, addAdminToRoom, blurhash } = roomsLogic(navigation);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -19,6 +19,16 @@ export default function RoomsScreen() {
       ),
     });
   }, [navigation]);
+
+  const handleJoinRoom = async (roomId) => {
+    const result = await addUserToRoom(roomId, user?.uid);
+    if (result.success) {
+      // Maybe refresh room list or navigate to the room
+    } else {
+      // Handle errors, possibly with a popup or alert
+      console.error("Failed to join room:", result.message);
+    }
+  }
 
   const RoomList = ({ rooms }) => {
     return (
@@ -49,24 +59,27 @@ export default function RoomsScreen() {
           <View style={styles.textContainer}>
             <View style={styles.nameAndTimeRow}>
               <Text style={styles.nameText}>{item?.roomName}</Text>
+              {isMember && (
               <Text style={styles.timeText}>
                 {renderTime(item.id)}
               </Text>
+            )}
             </View>
-            {isMember && (
-            <Text style={styles.lastMessageText}>
-              {renderLastMessage(item.id)}
-            </Text>
-          )}
+            {isMember ? (
+              <Text style={styles.lastMessageText}>
+                {renderLastMessage(item.id)}
+              </Text>
+            ) : (
+              <Text style={styles.lastMessageText}>
+                {item.roomDesc}
+              </Text>
+            )}
           </View>
           {!isMember && (
-          <TouchableOpacity
-            onPress={joinRoom(item)}
-            style={styles.joinButton}
-          >
-            <Text style={styles.joinButtonText}>Join</Text>
-          </TouchableOpacity>
-        )}
+            <TouchableOpacity onPress={() => handleJoinRoom(item.id)} style={styles.joinButton}>
+              <Text style={styles.joinButtonText}>Join</Text>
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       </View>
     );
