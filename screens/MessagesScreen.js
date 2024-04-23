@@ -4,12 +4,15 @@ import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { profanityFilter } from '../logic/commonLogic';
+import { filter } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
+    const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { item, user, messages, textRef, inputRef, scrollViewRef, sendMessage, sendDoc, GPT } = messagesLogic();
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
@@ -33,6 +36,7 @@ export default function MessagesScreen() {
             headerStyle: {
                 backgroundColor: '#166939',
                 height: 120,
+                shadowOpacity: 0,
             },
         });
     }, [navigation, item]);
@@ -56,43 +60,43 @@ export default function MessagesScreen() {
         setInputText(text);  // Update the text state
         textRef.current = text;  // Keep ref updated if needed elsewhere
     };
-    
+
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
-            <StatusBar style="dark" />
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={darkMode ? ldStyles.screenD : ldStyles.screenL} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+            <StatusBar style="dark-content" />
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                        <View style={[styles.messageBubble, message.uid === user.uid ? styles.myMessage : styles.theirMessage]}>
-                            <Text style={message.uid === user.uid ? styles.myMessageText : styles.theirMessageText}>
-                                {message.text}
+                        <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                            <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                                {profanityFilter ? filter.clean(message.text) : message.text}
                             </Text>
                         </View>
                     </View>
                 ))}
             </ScrollView>
-            <View style={styles.inputContainer}>
-                <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
+                <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
-                    <TextInput
-                        onChangeText={handleInputChange}
-                        onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
-                        placeholder='Type a message...'
-                        placeholderTextColor={'gray'}
-                        style={[styles.textInput, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
-                        value={inputText}
-                        multiline={true} // Enable multiline input
-                        scrollEnabled={true} // Allow scrolling inside the input
-                    />
-                <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
+                <TextInput
+                    onChangeText={handleInputChange}
+                    onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                    placeholder='Type a message...'
+                    placeholderTextColor={'gray'}
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                    value={inputText}
+                    multiline={true} // Enable multiline input
+                    scrollEnabled={true} // Allow scrolling inside the input
+                />
+                <TouchableOpacity onPress={handleGPT} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                <TouchableOpacity onPress={handleSendMessage} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
@@ -101,10 +105,6 @@ export default function MessagesScreen() {
 }
 
 const styles = StyleSheet.create({
-    flexWhite: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
     messageListContainer: {
         paddingTop: 15,
         paddingBottom: 60, // Ensure this is enough space for the input container
