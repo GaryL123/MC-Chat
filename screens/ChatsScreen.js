@@ -1,6 +1,6 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StatusBar, SafeAreaView, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons } from '@expo/vector-icons';
 import chatsLogic from '../logic/chatsLogic';
@@ -10,6 +10,10 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 export default function ChatsScreen() {
   const navigation = useNavigation();
   const { friends, renderLastMessage, renderTime, openChat } = chatsLogic(navigation);
+  const [form, setForm] = useState({
+    darkMode: true,
+    fontSize: 17,
+  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -20,6 +24,19 @@ export default function ChatsScreen() {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: form.darkMode ? '#222' : '#166939',
+      },
+      headerTintColor: '#fff',
+    });
+  }, [form.darkMode, navigation]);
+
+  const calculateFontSize = (baseFontSize) => {
+    return baseFontSize * (form.fontSize / 17);
+  };
 
   const ChatList = ({ friends }) => {
     return (
@@ -45,12 +62,14 @@ export default function ChatsScreen() {
         />
         <View style={styles.textContainer}>
           <View style={styles.nameAndTimeRow}>
-            <Text style={styles.nameText}>{item?.fName + ' ' + item?.lName}</Text>
-            <Text style={styles.timeText}>
+            <Text style={[styles.nameText, { color: form.darkMode ? 'white' : 'black' }]}>
+              {item?.fName + ' ' + item?.lName}
+            </Text>
+            <Text style={[styles.timeText, { color: form.darkMode ? 'white' : 'grey' }]}>
               {renderTime(item.id)}
             </Text>
           </View>
-          <Text style={styles.lastMessageText}>
+          <Text style={[styles.lastMessageText, { color: form.darkMode ? 'white' : 'grey' }]}>
             {renderLastMessage(item.id)}
           </Text>
         </View>
@@ -59,25 +78,26 @@ export default function ChatsScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <StatusBar style="dark-content" />
-      {
-        friends.length > 0 ? (
-          <ChatList friends={friends} />
-        ) : (
-          <View style={styles.noFriendsContainer}>
-            <Text>Add some friends!</Text>
-          </View>
-        )
-      }
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
+      <View style={styles.screen}>
+        <StatusBar style={form.darkMode ? 'light-content' : 'dark-content'} />
+        {
+          friends.length > 0 ? (
+            <ChatList friends={friends} />
+          ) : (
+            <View style={styles.noFriendsContainer}>
+              <Text style={{ color: form.darkMode ? 'white' : 'black' }}>Add some friends!</Text>
+            </View>
+          )
+        }
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'white',
   },
   chatItem: {
     flexDirection: 'row',
@@ -103,15 +123,12 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: hp(1.8),
     fontWeight: 'bold',
-    color: 'black',
   },
   timeText: {
     fontSize: hp(1.6),
-    color: 'grey',
   },
   lastMessageText: {
     fontSize: hp(1.6),
-    color: 'grey',
   },
   flatListContent: {
     flexGrow: 1,
@@ -128,5 +145,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     aspectRatio: 1,
     borderRadius: 100,
+  },
+  container: {
+    flex: 1,
   },
 });
