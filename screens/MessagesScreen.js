@@ -9,13 +9,23 @@ import messagesLogic from '../logic/messagesLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-    const { item, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesLogic();
+    const { item, user, messages, textRef, inputRef, scrollViewRef, sendMessage, sendDoc, GPT } = messagesLogic();
     const [inputText, setInputText] = useState('');  // Manage input text directly
 
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");  // Ensure to clear the controlled input text state
+    };
+
+    const handleSendDoc = async () => {
+        await sendDoc();
+    }
+
     // Update this state when AI generates a reply
-    const handleAIIconPress = async () => {
-        const reply = await handleGPT();
+    const handleGPT = async () => {
+        const reply = await GPT();
         setInputText(reply);  // Set input field text with AI reply
+        textRef.current = reply;
     };
 
     // Any text changes in the input are handled here
@@ -49,7 +59,7 @@ export default function MessagesScreen() {
                     style={styles.textInput}
                     value={inputText}  // Controlled component
                 />
-                <TouchableOpacity onPress={handleAIIconPress} style={styles.sendButton}>
+                <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
