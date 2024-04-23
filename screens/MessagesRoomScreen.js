@@ -4,12 +4,16 @@ import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons, Feather, Entypo } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import messagesRoomLogic from '../logic/messagesRoomLogic';
 import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { filter } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
+import ldStyles from '../assets/styles/LightDarkStyles';
+import messagesRoomLogic from '../logic/messagesRoomLogic';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
+    const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  // Manage input text directly
     const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
@@ -69,6 +73,7 @@ export default function MessagesRoomScreen() {
             headerStyle: {
                 backgroundColor: '#166939',
                 height: 120,
+                shadowOpacity: 0,
             },
         });
     }, [navigation, roomId, isAdmin]);
@@ -82,14 +87,6 @@ export default function MessagesRoomScreen() {
         await sendDoc();
     }
 
-    // Update this state when AI generates a reply
-    /*const handleGPT = async () => {
-        const reply = await GPT();
-        setInputText(reply);  // Set input field text with AI reply
-        textRef.current = reply;
-    };*/
-
-    // Any text changes in the input are handled here
     const handleInputChange = (text) => {
         setInputText(text);  // Update state with text input by user
         textRef.current = text;  // Keep ref updated if needed elsewhere
@@ -119,40 +116,35 @@ export default function MessagesRoomScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={darkMode ? ldStyles.screenD : ldStyles.screenL} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <StatusBar style="dark" />
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                        {message.uid !== user.uid && (
-                            <Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>  // Assuming 'senderName' is part of the message object
-                        )}
-                        <View style={[styles.messageBubble, message.uid === user.uid ? styles.myMessage : styles.theirMessage]}>
-                            <Text style={message.uid === user.uid ? styles.myMessageText : styles.theirMessageText}>
-                                {message.text}
+                        {message.uid !== user.uid && (<Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>)}
+                        <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                            <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                                {profanityFilter ? filter.clean(message.text) : message.text}
                             </Text>
                         </View>
                     </View>
                 ))}
             </ScrollView>
-            <View style={styles.inputContainer}>
-                <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
+                <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
-                    <TextInput
-                        onChangeText={handleInputChange}
-                        onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
-                        placeholder='Type a message...'
-                        placeholderTextColor={'gray'}
-                        style={[styles.textInput, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
-                        value={inputText}
-                        multiline={true} // Enable multiline input
-                        scrollEnabled={true} // Allow scrolling inside the input
-                    />
-                {/*<TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
-                    <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
-            </TouchableOpacity>*/}
-                <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                <TextInput
+                    onChangeText={handleInputChange}
+                    onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                    placeholder='Type a message...'
+                    placeholderTextColor={'gray'}
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                    value={inputText}
+                    multiline={true} // Enable multiline input
+                    scrollEnabled={true} // Allow scrolling inside the input
+                />
+                <TouchableOpacity onPress={handleSendMessage} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
