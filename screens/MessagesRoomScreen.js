@@ -9,7 +9,7 @@ import messagesRoomLogic from '../logic/messagesRoomLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
-    const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, handleSendMessage, handleSendDoc } = messagesRoomLogic();
+    const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  // Manage input text directly
     const navigation = useNavigation();
 
@@ -25,11 +25,21 @@ export default function MessagesRoomScreen() {
         });
     }, [navigation, roomId]);
 
-    // Update this state when AI generates a reply
-    const handleAIIconPress = async () => {
-        const reply = await handleGPT();
-        setInputText(reply);  // Set input field text with AI reply
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");  // Ensure to clear the controlled input text state
     };
+
+    const handleSendDoc = async () => {
+        await sendDoc();
+    }
+
+    // Update this state when AI generates a reply
+    /*const handleGPT = async () => {
+        const reply = await GPT();
+        setInputText(reply);  // Set input field text with AI reply
+        textRef.current = reply;
+    };*/
 
     // Any text changes in the input are handled here
     const handleInputChange = (text) => {
@@ -42,7 +52,10 @@ export default function MessagesRoomScreen() {
             <StatusBar style="dark" />
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
-                    <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
+                    <View key={index} style={styles.messageItemContainer}>
+                        {message.uid !== user.uid && (
+                            <Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>  // Assuming 'senderName' is part of the message object
+                        )}
                         <View style={[styles.messageBubble, message.uid === user.uid ? styles.myMessage : styles.theirMessage]}>
                             <Text style={message.uid === user.uid ? styles.myMessageText : styles.theirMessageText}>
                                 {message.text}
@@ -96,7 +109,7 @@ const styles = StyleSheet.create({
         paddingBottom: 60, // Ensure this is enough space for the input container
     },
     messageItemContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         marginBottom: 12,
         marginHorizontal: 12,
     },
@@ -157,5 +170,11 @@ const styles = StyleSheet.create({
     headerButtonsContainer: {
         flexDirection: 'row',
         marginRight: 10
+    },
+    senderName: {
+        alignSelf: 'flex-start',
+        marginBottom: 4,
+        fontSize: 14,
+        color: 'grey',
     },
 });
