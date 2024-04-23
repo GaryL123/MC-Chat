@@ -5,7 +5,7 @@ import directoryRoomsLogic from '../logic/directoryRoomsLogic';
 import { Image } from 'expo-image';
 import { defaultProfilePicture } from '../logic/commonLogic';
 
-export default function RoomInvitesScreen() {
+export default function RoomsInvitesScreen() {
     const { roomInvites, acceptRoomInvite, rejectRoomInvite, fetchRoomInvites } = directoryRoomsLogic();
 
     useEffect(() => {
