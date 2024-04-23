@@ -62,7 +62,7 @@ const messagesLogic = () => {
         });
     }
 
-    const handleSendMessage = async () => {
+    const sendMessage = async () => {
         let message = textRef.current.trim();
         if (!message) return;
         try {
@@ -77,16 +77,17 @@ const messagesLogic = () => {
                 senderName: user?.email,
                 createdAt: Timestamp.fromDate(new Date())
             });
+            textRef.current = "";
         } catch (err) {
             Alert.alert('Message', err.message);
         }
     }
 
-    const handleSendDoc = async () => {
+    const sendDoc = async () => {
         console.log('sending doc...');
     }
 
-    const handleGPT = async () => {
+    const GPT = async () => {
 
         const openai = new OpenAI({
             apiKey: "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", // This is the default and can be omitted
@@ -111,7 +112,7 @@ const messagesLogic = () => {
         // TO DO - Render input field with the AI reply
     }
 
-    return { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, handleSendMessage, handleSendDoc, handleGPT };
+    return { item, user, messages, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendDoc, GPT };
 }
 
 export default messagesLogic;
