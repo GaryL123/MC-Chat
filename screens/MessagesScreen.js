@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     },
     messageItemContainer: {
         flexDirection: 'row',
-        marginBottom: 12,
+        marginBottom: 4,
         marginHorizontal: 12,
     },
     messageBubble: {
