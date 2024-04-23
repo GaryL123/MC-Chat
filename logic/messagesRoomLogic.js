@@ -17,6 +17,7 @@ const messagesRoomLogic = () => {
     const inputRef = useRef(null);
     // const [aiReply, setAiReply] = useState('');
     const scrollViewRef = useRef(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const docRef = doc(db, "chatRooms", roomId);
@@ -40,6 +41,16 @@ const messagesRoomLogic = () => {
         }
 
     }, []);
+
+    useEffect(() => {
+        const roomRef = doc(db, 'chatRooms', roomId);
+        const unsub = onSnapshot(roomRef, (doc) => {
+            const data = doc.data();
+            setIsAdmin(data.admins && data.admins.includes(user?.uid));
+        });
+    
+        return () => unsub();
+    }, [roomId, user.uid]);
 
     useEffect(() => {
         updateScrollView();
@@ -76,7 +87,7 @@ const messagesRoomLogic = () => {
         console.log('sending doc...');
     }
           
-    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc };
+    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin };
 }
 
 export default messagesRoomLogic;
