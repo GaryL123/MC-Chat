@@ -11,7 +11,7 @@ export default function ChatsScreen() {
   const navigation = useNavigation();
   const { friends, renderLastMessage, renderTime, openChat } = chatsLogic(navigation);
   const [form, setForm] = useState({
-    darkMode: true,
+    darkMode: false,
     fontSize: 17,
   });
 
