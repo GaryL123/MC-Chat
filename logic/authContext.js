@@ -8,6 +8,7 @@ export const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [pendingFriendRequests, setPendingFriendRequests] = useState([]);
+    const [pendingRoomInvites, setPendingRoomInvites] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
 
 
@@ -18,10 +19,13 @@ export const AuthContextProvider = ({ children }) => {
                 updateUserState(user);
                 fetchPendingFriendRequests(user.uid);
                 listenForPendingFriendRequests(user.uid);
+                fetchPendingRoomInvites(user.uid);
+                listenForPendingRoomInvites(user.uid);
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
                 setPendingFriendRequests([]);
+                setPendingRoomInvites([]);
             }
         });
         return unsub;
@@ -125,9 +129,31 @@ export const AuthContextProvider = ({ children }) => {
 
         return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
     };
+    const fetchPendingRoomInvites = async (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'invitesReceived');
+        const querySnapshot = await getDocs(requestsRef);
+        const requests = querySnapshot.docs.map(doc => ({
+            id: doc.id, // Friend Request ID
+            ...doc.data()
+        }));
+        setPendingRoomInvites(requests);
+    };
+    const listenForPendingRoomInvites = (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'invitesReceived');
+
+        const unsubscribe = onSnapshot(requestsRef, (snapshot) => {
+            const requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setPendingRoomInvites(requests);
+        });
+
+        return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
+    };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests, updateUserData }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, pendingRoomInvites, login, register, logout, resetPassword, fetchPendingFriendRequests, fetchPendingRoomInvites, updateUserData }}>
             {children}
         </AuthContext.Provider>
     )
