@@ -91,12 +91,9 @@ const roomsLogic = (navigation) => {
                 members: [uid],
             });
 
-            const roomId = docRef.id;
-
-            return { success: true, roomId: docRef.id };
+            navigation.navigate('Rooms');
         } catch (e) {
             console.error("Error creating chat room: ", e);
-            return { success: false, message: e.message };
         }
     }
 
