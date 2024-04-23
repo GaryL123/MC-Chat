@@ -10,6 +10,7 @@ import ChatsScreen from './screens/ChatsScreen';
 import DirectoryScreen from './screens/DirectoryScreen'
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import FriendRequestsScreen from './screens/FriendRequestsScreen';
+import RoomsInvitesScreen from './screens/RoomsInvitesScreen';
 import LoginScreen from './screens/LoginScreen';
 import MessagesRoomScreen from './screens/MessagesRoomScreen';
 import MessagesScreen from './screens/MessagesScreen';
@@ -18,6 +19,8 @@ import RegistrationScreen from './screens/RegistrationScreen';
 import RoomsCreateScreen from './screens/RoomsCreateScreen';
 import RoomsScreen from './screens/RoomsScreen';
 import RoomsAddUserScreen from './screens/RoomsAddUserScreen';
+import RoomsRemUserScreen from './screens/RoomsRemUserScreen';
+import RoomsSettingsScreen from './screens/RoomsSettingsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -33,6 +36,7 @@ const DirectoryStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const FriendRequestsStack = createStackNavigator();
+const RoomInvitesStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function App() {
@@ -112,8 +116,9 @@ function App() {
   };
 
   const ProfileButton = () => {
-    const { user, logout, pendingFriendRequests } = useAuth();
+    const { user, logout, pendingFriendRequests, pendingRoomInvites } = useAuth();
     const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
+    const hasPendingInvites = pendingRoomInvites && pendingRoomInvites.length > 0;
     const navigation = useNavigation();
 
     const handleLogout = async () => {
@@ -155,6 +160,16 @@ function App() {
                     }
                   />
                 )}
+                {hasPendingInvites && (
+                  <MenuItem
+                    text="Room Invites"
+                    action={() => navigation.navigate('RoomInvitesStack')}
+                    value={null}
+                    customContent={
+                      <NotificationBubble count={pendingRoomInvites.length} />
+                    }
+                  />
+                )}
                 <MenuItem
                   text="Log Out"
                   action={handleLogout}
@@ -193,7 +208,9 @@ function App() {
       <RoomStack.Navigator
         initialRouteName="RoomsStack" screenOptions={HeaderScreenOptions}>
         <RoomStack.Screen name="Rooms" component={RoomsScreen} />
-        <RoomStack.Screen name="RoomsAddUserScreen" component={RoomsAddUserScreen} />
+        <RoomStack.Screen name="Add Users" component={RoomsAddUserScreen} />
+        <RoomStack.Screen name="Remove Users" component={RoomsRemUserScreen} />
+        <RoomStack.Screen name="Room Settings" component={RoomsSettingsScreen} />
         <RoomStack.Screen name="MessagesRoom" component={MessagesRoomScreen} />
         <RoomStack.Screen name="Create a Room" component={RoomsCreateScreen} />
       </RoomStack.Navigator>
@@ -232,6 +249,14 @@ function App() {
     );
   }
 
+  function RoomInvitesStackNavigator() {
+    return (
+      <RoomInvitesStack.Navigator initialRouteName="RoomInvitesStack" screenOptions={HeaderScreenOptions}>
+        <RoomInvitesStack.Screen name="Room Invites" component={RoomsInvitesScreen} />
+      </RoomInvitesStack.Navigator>
+    );
+  }
+
   function MainApp() {
     return (
       <Tab.Navigator
@@ -260,7 +285,7 @@ function App() {
           options={{
             tabBarLabel: 'Rooms',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people-outline" size={size} color={color} />
+              <Ionicons name="chatbubbles-outline" size={size} color={color} />
             ),
           }}
         />
@@ -270,7 +295,7 @@ function App() {
           options={{
             tabBarLabel: 'Directory',
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-add-outline" size={size} color={color} />
+              <Ionicons name="people-outline" size={size} color={color} />
             ),
           }}
         />
@@ -294,6 +319,13 @@ function App() {
         <Tab.Screen
           name="FriendRequestsStack"
           component={FriendRequestsStackNavigator}
+          options={{
+            tabBarButton: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="RoomInvitesStack"
+          component={RoomInvitesStackNavigator}
           options={{
             tabBarButton: () => null,
           }}
