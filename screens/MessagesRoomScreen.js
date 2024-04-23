@@ -12,6 +12,7 @@ const ios = Platform.OS == 'ios';
 export default function MessagesRoomScreen() {
     const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  // Manage input text directly
+    const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -31,21 +32,21 @@ export default function MessagesRoomScreen() {
                                         <>
                                             <MenuItem
                                                 text="Add Users"
-                                                action={() => navigation.navigate('RoomsAddUserScreen', { roomId })}
+                                                action={() => navigation.navigate('Add Users', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-add-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <Divider />
                                             <MenuItem
                                                 text="Remove Users"
-                                                action={() => {/* handle removing users */ }}
+                                                action={() => navigation.navigate('Remove Users', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <Divider />
                                             <MenuItem
                                                 text="Room Settings"
-                                                action={() => {/* navigate to room settings */ }}
+                                                action={() => navigation.navigate('Room Settings', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
                                             />
@@ -94,6 +95,10 @@ export default function MessagesRoomScreen() {
         textRef.current = text;  // Keep ref updated if needed elsewhere
     };
 
+    const handleContentSizeChange = (event) => {
+        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
+    };
+
     const MenuItem = ({ text, action, value, icon, customContent }) => {
         return (
             <MenuOption onSelect={() => action(value)}>
@@ -114,11 +119,11 @@ export default function MessagesRoomScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={ios ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <StatusBar style="dark" />
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
-                    <View key={index} style={styles.messageItemContainer}>
+                    <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
                         {message.uid !== user.uid && (
                             <Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>  // Assuming 'senderName' is part of the message object
                         )}
@@ -134,16 +139,19 @@ export default function MessagesRoomScreen() {
                 <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
-                <TextInput
-                    onChangeText={handleInputChange}
-                    placeholder='Type a message...'
-                    placeholderTextColor={'gray'}
-                    style={styles.textInput}
-                    value={inputText}  // Controlled component
-                />
-                {/* <TouchableOpacity onPress={handleAIIconPress} style={styles.sendButton}>
+                    <TextInput
+                        onChangeText={handleInputChange}
+                        onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                        placeholder='Type a message...'
+                        placeholderTextColor={'gray'}
+                        style={[styles.textInput, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                        value={inputText}
+                        multiline={true} // Enable multiline input
+                        scrollEnabled={true} // Allow scrolling inside the input
+                    />
+                {/*<TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
-                </TouchableOpacity> */}
+            </TouchableOpacity>*/}
                 <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
@@ -177,11 +185,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
     },
     messageListContainer: {
+        paddingTop: 15,
         paddingBottom: 60, // Ensure this is enough space for the input container
     },
     messageItemContainer: {
         flexDirection: 'column',
-        marginBottom: 12,
+        marginBottom: 10,
         marginHorizontal: 12,
     },
     messageBubble: {
@@ -215,6 +224,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: '#e0e0e0',
         backgroundColor: 'white',
+        alignItems: 'center',  // Ensure vertical alignment is centered
     },
     inputRow: {
         flexDirection: 'row',
@@ -229,13 +239,23 @@ const styles = StyleSheet.create({
     textInput: {
         flex: 1,
         marginRight: 8,
-        paddingLeft: 20,
+        marginLeft: 8,
+        paddingLeft: 15,
         fontSize: 16,
+        borderWidth: 1,  // Set border width to create the outline
+        borderColor: '#e0e0e0',  // Set border color to match the send button background
+        borderRadius: 20,  // Keep your rounded corners
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        minHeight: 35 // Set a minimum height
     },
     sendButton: {
         padding: 8,
-        marginRight: 1,
-        borderRadius: 30,
+        width: 44,  // Assign a fixed width
+        height: 44, // Assign a fixed height
+        justifyContent: 'center', // Center the icon vertically and horizontally
+        alignItems: 'center',
+        borderRadius: 22,  // Half of width and height to create a circle
         backgroundColor: '#e0e0e0',
     },
     headerButtonsContainer: {
