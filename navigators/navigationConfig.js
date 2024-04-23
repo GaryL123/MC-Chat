@@ -11,6 +11,7 @@ export const HeaderScreenOptions = {
   headerStyle: {
     backgroundColor: '#166939',
     height: 120,
+    shadowOpacity: 0,
   },
   headerTintColor: '#fff',
   headerTitleStyle: {
