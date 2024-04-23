@@ -30,7 +30,7 @@ export const AuthContextProvider = ({ children }) => {
         });
         return unsub;
     }, []);
-    
+
 
     const updateUserState = async (user) => {
         const userData = await updateUserData(user.uid);
@@ -116,6 +116,7 @@ export const AuthContextProvider = ({ children }) => {
         }));
         setPendingFriendRequests(requests);
     };
+
     const listenForPendingFriendRequests = (uid) => {
         const requestsRef = collection(db, 'users', uid, 'friendsReceived');
 
@@ -129,6 +130,7 @@ export const AuthContextProvider = ({ children }) => {
 
         return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
     };
+
     const fetchPendingRoomInvites = async (uid) => {
         const requestsRef = collection(db, 'users', uid, 'invitesReceived');
         const querySnapshot = await getDocs(requestsRef);
@@ -138,6 +140,7 @@ export const AuthContextProvider = ({ children }) => {
         }));
         setPendingRoomInvites(requests);
     };
+
     const listenForPendingRoomInvites = (uid) => {
         const requestsRef = collection(db, 'users', uid, 'invitesReceived');
 
@@ -153,7 +156,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, pendingRoomInvites, login, register, logout, resetPassword, fetchPendingFriendRequests, fetchPendingRoomInvites, updateUserData }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests, updateUserData }}>
             {children}
         </AuthContext.Provider>
     )
