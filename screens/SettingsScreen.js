@@ -1,261 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  Switch,
-  Modal,
-  Button,
-} from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
+import React, { useState } from 'react';
+import { View, Text, Switch, Button, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, Modal } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { useNavigation } from '@react-navigation/native';
+import { useSettings } from '../logic/settingsContext';
+import { Ionicons } from '@expo/vector-icons';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import styles from '../assets/styles/AppStyles';
 
-function SettingsScreen() {
-  const navigation = useNavigation();
-  const [form, setForm] = useState({
-    darkMode: false,
-    fontSize: 17,
-    language: 'English',
-  });
+export default function SettingsScreen() {
+    const { language, languages, changeLanguage, darkMode, toggleDarkMode, profanityFilter, toggleProfanityFilter, textSize, setTextSize } = useSettings();
+    const [showLanguageModal, setShowLanguageModal] = useState(false);
 
-  const [showLanguageModal, setShowLanguageModal] = useState(false);
+    return (
+        <KeyboardAvoidingView style={{ flex: 1, backgroundColor: darkMode ? '#111111' : '#e6e6e6' }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <View style={styles.container}>
 
- 
-  useEffect(() => {
-    navigation.setOptions({
-      headerStyle: {
-        backgroundColor: form.darkMode ? '#222' : '#166939',
-      },
-      headerTintColor: '#fff',
-    });
-  }, [form.darkMode, navigation]);
-
-  const calculateFontSize = (baseFontSize) => {
-    return baseFontSize * (form.fontSize / 17);
-  };
-
-  const translations = {
-    English: {
-      preferences: 'Preferences',
-      language: 'Language',
-      darkMode: 'Dark Mode',
-      textSize: 'Text Size',
-      resources: 'Resources',
-      reportBug: 'Report Bug',
-      selectLanguage: 'Select Language',
-      close: 'Close',
-    },
-    Spanish: {
-      preferences: 'Preferencias',
-      language: 'Idioma',
-      darkMode: 'Modo Oscuro',
-      textSize: 'Tamaño del Texto',
-      resources: 'Recursos',
-      reportBug: 'Reportar Error',
-      selectLanguage: 'Seleccionar Idioma',
-      close: 'Cerrar',
-    },
-    // Add other languages here...
-  };
-
-  const translate = (key) => {
-    return translations[form.language][key];
-  };
-
-  const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
-
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
-      <View style={styles.container}>
-
-        <ScrollView>
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: form.darkMode ? '#9e9e9e' : '#000', fontSize: calculateFontSize(17) }]}>{translate('preferences')}</Text>
-
-            <TouchableOpacity
-              onPress={() => setShowLanguageModal(true)}
-              style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
-                <FeatherIcon color="#fff" name="globe" size={20} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('language')}: {form.language}</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <FeatherIcon
-                color="#C6C6C6"
-                name="chevron-right"
-                size={20} />
-            </TouchableOpacity>
-
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={showLanguageModal}
-              onRequestClose={() => setShowLanguageModal(false)}>
-              <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>{translate('selectLanguage')}</Text>
-                  {languages.map((language, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.modalItem}
-                      onPress={() => {
-                        setForm({ ...form, language });
-                        setShowLanguageModal(false);
-                      }}>
-                      <Text style={styles.modalItemText}>{language}</Text>
+                    <TouchableOpacity onPress={() => setShowLanguageModal(true)} style={styles.inputContainer}>
+                        <Ionicons name={"language-outline"} size={hp(2.7)} color="gray" />
+                        <Text style={{
+                            flex: 1,
+                            paddingHorizontal: 10,
+                            paddingVertical: hp(1.5),
+                            fontSize: hp(2),
+                            color: '#333',
+                            marginRight: 10
+                        }}>
+                            {language}
+                        </Text>
+                        <Ionicons color="gray" name="chevron-forward-outline" size={20} />
                     </TouchableOpacity>
-                  ))}
-                  <Button title={translate('close')} onPress={() => setShowLanguageModal(false)} />
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons name={darkMode ? "flashlight" : "flashlight-outline"} size={hp(2.7)} color="gray" />
+                        <Text style={{
+                            flex: 1,
+                            paddingHorizontal: 10,
+                            paddingVertical: hp(1.5),
+                            fontSize: hp(2),
+                            color: '#333',
+                            marginRight: 10  // Maintain spacing from the switch
+                        }}>
+                            {darkMode ? 'Dark Mode' : 'Light Mode'}
+                        </Text>
+                        <Switch onValueChange={toggleDarkMode} value={darkMode} />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons name={profanityFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
+                        <Text style={{
+                            flex: 1,
+                            paddingHorizontal: 10,
+                            paddingVertical: hp(1.5),
+                            fontSize: hp(2),
+                            color: '#333',
+                            marginRight: 10  // Maintain spacing from the switch
+                        }}>
+                            {profanityFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
+                        </Text>
+                        <Switch onValueChange={toggleProfanityFilter} value={profanityFilter} />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons name={"text"} size={hp(2.7)} color="gray" />
+                        <Text style={{
+                            flex: 1,
+                            paddingHorizontal: 10,
+                            paddingVertical: hp(1.5),
+                            fontSize: hp(2),
+                            color: '#333',
+                            marginRight: 10  // Maintain spacing from the switch
+                        }}>
+                            Text Size
+                        </Text>
+                        <Slider
+                            style={{ flex: 2 }}
+                            minimumValue={8}
+                            maximumValue={32}
+                            step={2}
+                            value={textSize}
+                            onValueChange={(value) => setTextSize(value)}
+                        />
+                    </View>
+
+                    <Modal animationType="none" transparent={true} visible={showLanguageModal} onRequestClose={() => setShowLanguageModal(false)}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Select Language</Text>
+                                {languages.map((language, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.modalItem}
+                                        onPress={() => {
+                                            changeLanguage(language);
+                                            setShowLanguageModal(false);
+                                        }}>
+                                        <Text style={styles.modalItemText}>{language}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-              </View>
-            </Modal>
-
-            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#007afe' }]}>
-                <FeatherIcon color="#fff" name="moon" size={20} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('darkMode')}</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <Switch
-                onValueChange={darkMode => setForm({ ...form, darkMode })}
-                value={form.darkMode} />
-            </View>
-
-            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', flex: 1, fontSize: calculateFontSize(17) }]}>{translate('textSize')}</Text>
-              <Slider
-                style={{ flex: 3 }}
-                minimumValue={10}
-                maximumValue={30}
-                step={1}
-                value={form.fontSize}
-                onValueChange={value => setForm({ ...form, fontSize: value })}
-                minimumTrackTintColor={form.darkMode ? '#fff' : '#007bff'}
-                maximumTrackTintColor={form.darkMode ? '#fff' : '#C6C6C6'}
-                thumbTintColor={form.darkMode ? '#fff' : '#007bff'}
-              />
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
-  );
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 0,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-  },
-  profile: {
-    padding: 24,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileAvatarWrapper: {
-    position: 'relative',
-  },
-  profileAvatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 9999,
-  },
-  profileAction: {
-    position: 'absolute',
-    right: -4,
-    bottom: -10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 28,
-    height: 28,
-    borderRadius: 9999,
-    backgroundColor: '#007bff',
-  },
-  profileName: {
-    marginTop: 20,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  profileAddress: {
-    marginTop: 5,
-    textAlign: 'center',
-  },
-  section: {
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    paddingVertical: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 1.1,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    height: 50,
-    borderRadius: 8,
-    marginBottom: 12,
-    paddingLeft: 12,
-    paddingRight: 12,
-  },
-  rowIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 9999,
-    marginRight: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rowLabel: {
-    fontWeight: '400',
-  },
-  rowSpacer: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  modalItem: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  modalItemText: {
-    fontSize: 18,
-    textAlign: 'center',
-  },
-});
-
-export default SettingsScreen;
