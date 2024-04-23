@@ -56,9 +56,9 @@ export default function SettingsScreen() {
                     </View>
 
                     <Modal animationType="none" transparent={true} visible={showLanguageModal} onRequestClose={() => setShowLanguageModal(false)}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Select Language</Text>
+                        <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                            <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Language</Text>
                                 {languages.map((language, index) => (
                                     <TouchableOpacity
                                         key={index}
@@ -67,7 +67,7 @@ export default function SettingsScreen() {
                                             changeLanguage(language);
                                             setShowLanguageModal(false);
                                         }}>
-                                        <Text style={styles.modalItemText}>{language}</Text>
+                                        <Text style={darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL}>{language}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
