@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SectionList, StatusBar, StyleSheet, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SectionList,
+  StatusBar,
+  SafeAreaView,
+  StyleSheet,
+  Modal,
+} from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
@@ -8,11 +17,19 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function DirectoryScreen() {
   const navigation = useNavigation();
-  const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
-
+  const {
+    getOrganizedUsers,
+    sendFriendRequest,
+    isFriend,
+    sentRequests,
+    removeFriend,
+  } = directoryLogic();
+  const [form, setForm] = useState({
+    darkMode: true,
+    fontSize: 17,
+  });
   const { friendsList, otherUsersList } = getOrganizedUsers();
 
-  // State for managing the "Remove Friend" modal
   const [showRemoveFriendModal, setShowRemoveFriendModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState(null);
 
@@ -21,9 +38,18 @@ export default function DirectoryScreen() {
     setShowRemoveFriendModal(true);
   };
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: form.darkMode ? '#222' : '#166939',
+      },
+      headerTintColor: '#fff',
+    });
+  }, [form.darkMode, navigation]);
+
   const confirmRemoveFriend = async () => {
     if (friendToRemove) {
-      await removeFriend(friendToRemove); // Call the logic function to remove the friend
+      await removeFriend(friendToRemove);
       setShowRemoveFriendModal(false);
       setFriendToRemove(null);
     }
@@ -40,15 +66,20 @@ export default function DirectoryScreen() {
     return (
       <View style={styles.userItemContainer}>
         <View style={styles.userInfoContainer}>
-          <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }}/>
-          <Text style={styles.emailText}>{item.fName + ' ' + item.lName}</Text>
+          <Image
+            style={styles.profileImage}
+            source={{ uri: item?.photoURL || defaultProfilePicture }}
+          />
+          <Text style={[styles.emailText, { color: form.darkMode ? 'white' : 'black' }]}>
+            {item.email}
+          </Text>
         </View>
         <TouchableOpacity
           onPress={() => {
             if (friendshipStatus === 'Friend') {
-              handleFriendButtonPress(friendId); // Open the modal to confirm removal
+              handleFriendButtonPress(friendId);
             } else {
-              sendFriendRequest(friendId); // Send a friend request if not already a friend
+              sendFriendRequest(friendId);
             }
           }}
           style={[
@@ -67,55 +98,60 @@ export default function DirectoryScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <StatusBar style="dark-content" />
-      <SectionList
-        sections={[
-          { title: 'Friends', data: friendsList },
-          { title: 'Add Friends', data: otherUsersList },
-        ]}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderUserItem}
-        renderSectionHeader={({ section }) => (
-          <Text style={styles.sectionHeader}>{section.title}</Text>
-        )}
-      />
+    <SafeAreaView style={[styles.container, { backgroundColor: form.darkMode ? '#222' : '#fff' }]}>
+      <View style={styles.screen}>
+        <StatusBar style={form.darkMode ? 'light-content' : 'dark-content'} />
+        <SectionList
+          sections={[
+            { title: 'Friends', data: friendsList },
+            { title: 'Add Friends', data: otherUsersList },
+          ]}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderUserItem}
+          renderSectionHeader={({ section }) => (
+            <Text style={[styles.sectionHeader, { color: form.darkMode ? 'white' : 'black' }]}>
+              {section.title}
+            </Text>
+          )}
+        />
 
-      {/* Modal for confirming friend removal */}
-      <Modal
-        visible={showRemoveFriendModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowRemoveFriendModal(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Are you sure you want to remove this friend?</Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={confirmRemoveFriend}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButtonCancel}
-                onPress={() => setShowRemoveFriendModal(false)}
-              >
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
+        <Modal
+          visible={showRemoveFriendModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowRemoveFriendModal(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={{ color: form.darkMode ? 'white' : 'black' }}>
+                Are you sure you want to remove this friend?
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={confirmRemoveFriend}
+                >
+                  <Text style={styles.modalButtonText}>Yes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButtonCancel}
+                  onPress={() => setShowRemoveFriendModal(false)}
+                >
+                  <Text style={styles.modalButtonText}>No</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
   },
   sectionHeader: {
     backgroundColor: 'lightgray',
@@ -145,7 +181,6 @@ const styles = StyleSheet.create({
   emailText: {
     marginLeft: wp(4),
     fontSize: hp(2.0),
-    color: 'black',
   },
   friendButton: {
     paddingVertical: 10,
@@ -193,5 +228,8 @@ const styles = StyleSheet.create({
   friendButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  container: {
+    flex: 1,
   },
 });
