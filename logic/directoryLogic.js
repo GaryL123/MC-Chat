@@ -1,6 +1,5 @@
-// directoryLogic.js
 import { useEffect, useState } from 'react';
-import { collection, doc, getDocs, getDoc,deleteDoc,  setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useAuth } from './authContext';
 
@@ -8,14 +7,14 @@ const directoryLogic = () => {
     const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [friends, setFriends] = useState([]);
-    const [sentRequests, setSentRequests] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
+    const [sentRequests, setSentRequests] = useState([]);
 
     useEffect(() => {
         fetchUsers();
         fetchFriends();
         fetchFriendRequests();
-    }, []);
+    }, [user, friends, sentRequests]);
 
     const fetchUserEmail = async (uid) => {
         try {
@@ -31,8 +30,8 @@ const directoryLogic = () => {
             return null;
         }
     };
-    
-    
+
+
     const fetchUsers = async () => {
         try {
             const usersRef = collection(db, 'users');
@@ -40,39 +39,12 @@ const directoryLogic = () => {
             const userData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            }));
+            })).filter((userData) => userData.id !== user.uid);
             setUsers(userData);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
     };
-
-    const fetchFriendRequests = async () => {
-        try {
-            // Get the collection of friend requests
-            const requestsRef = collection(db, 'users', user.uid, 'friendsReceived');
-            const requestsSnapshot = await getDocs(requestsRef);
-    
-            // Prepare an array of promises to fetch user emails
-            const emailPromises = requestsSnapshot.docs.map(async (doc) => {
-                const senderEmail = await fetchUserEmail(doc.id); // Fetch email asynchronously
-                return {
-                    id: doc.id,
-                    senderEmail: senderEmail, // Expected resolved email
-                };
-            });
-    
-            // Wait for all promises to resolve
-            const requestDetails = await Promise.all(emailPromises);
-    
-            setFriendRequests(requestDetails); // Set the state with resolved details
-        } catch (error) {
-            console.error("Error fetching friend requests:", error); // Error handling
-        }
-    };
-    
-    
-    
 
     const fetchFriends = async () => {
         try {
@@ -82,6 +54,30 @@ const directoryLogic = () => {
             setFriends(friendIds);
         } catch (error) {
             console.error('Error fetching friends:', error);
+        }
+    };
+
+    const fetchFriendRequests = async () => {
+        try {
+            // Get the collection of friend requests
+            const requestsRef = collection(db, 'users', user.uid, 'friendsReceived');
+            const requestsSnapshot = await getDocs(requestsRef);
+
+            // Prepare an array of promises to fetch user emails
+            const emailPromises = requestsSnapshot.docs.map(async (doc) => {
+                const senderEmail = await fetchUserEmail(doc.id); // Fetch email asynchronously
+                return {
+                    id: doc.id,
+                    senderEmail: senderEmail, // Expected resolved email
+                };
+            });
+
+            // Wait for all promises to resolve
+            const requestDetails = await Promise.all(emailPromises);
+
+            setFriendRequests(requestDetails); // Set the state with resolved details
+        } catch (error) {
+            console.error("Error fetching friend requests:", error); // Error handling
         }
     };
 
@@ -100,7 +96,7 @@ const directoryLogic = () => {
             console.error('Error sending friend request:', error);
         }
     };
-    
+
     const isFriend = (userId) => {
         return friends.includes(userId);
     };
@@ -131,6 +127,7 @@ const directoryLogic = () => {
             console.error('Error accepting friend request:', error);
         }
     };
+
     const rejectFriendRequest = async (friendId) => {
         try {
             // Remove from current user's 'friendsReceived'
@@ -150,6 +147,32 @@ const directoryLogic = () => {
         }
     };
 
+    const getOrganizedUsers = () => {
+        const friendsList = users.filter((u) => friends.includes(u.id));
+        const otherUsersList = users.filter((u) => !friends.includes(u.id));
+
+        return { friendsList, otherUsersList };
+    };
+
+    const removeFriend = async (friendId) => {
+        try {
+            // Remove from the current user's 'friends' collection
+            const currentUserFriendsRef = doc(db, 'users', user.uid, 'friends', friendId);
+            await deleteDoc(currentUserFriendsRef);
+
+            // Remove from the friend's 'friends' collection
+            const friendUserFriendsRef = doc(db, 'users', friendId, 'friends', user.uid);
+            await deleteDoc(friendUserFriendsRef);
+
+            // Update the friends list in the state
+            setFriends((prev) => prev.filter((id) => id !== friendId));
+
+            console.log('Friend removed successfully.');
+        } catch (error) {
+            console.error('Error removing friend:', error);
+        }
+    };
+
     return {
         users,
         friends,
@@ -157,9 +180,11 @@ const directoryLogic = () => {
         sendFriendRequest,
         sentRequests,
         friendRequests,
+        removeFriend,
         fetchFriendRequests,
         acceptFriendRequest,
-        rejectFriendRequest
+        rejectFriendRequest,
+        getOrganizedUsers,
     };
 };
 

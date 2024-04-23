@@ -14,8 +14,9 @@ import {
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import styles from '../assets/styles/AppStyles';
 import { useAuth } from '../logic/authContext';
+import styles from '../assets/styles/AppStyles';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 function RegistrationScreen() {
   const navigation = useNavigation();

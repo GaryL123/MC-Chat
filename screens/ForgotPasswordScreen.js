@@ -6,6 +6,7 @@ import { Octicons } from '@expo/vector-icons';
 import styles from '../assets/styles/AppStyles';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 function ForgotPasswordScreen() {
   const navigation = useNavigation();

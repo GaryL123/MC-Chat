@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import styles from '../assets/styles/AppStyles';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 function LoginScreen() {
   const navigation = useNavigation();

@@ -1,13 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, setDoc, onSnapshot } from 'firebase/firestore'
 
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [pendingFriendRequests, setPendingFriendRequests] = useState([]);
+    const [pendingRoomInvites, setPendingRoomInvites] = useState([]);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
 
 
@@ -17,15 +18,19 @@ export const AuthContextProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 updateUserState(user);
                 fetchPendingFriendRequests(user.uid);
+                listenForPendingFriendRequests(user.uid);
+                fetchPendingRoomInvites(user.uid);
+                listenForPendingRoomInvites(user.uid);
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
                 setPendingFriendRequests([]);
+                setPendingRoomInvites([]);
             }
         });
         return unsub;
     }, []);
-    
+
 
     const updateUserState = async (user) => {
         const userData = await updateUserData(user.uid);
@@ -112,8 +117,46 @@ export const AuthContextProvider = ({ children }) => {
         setPendingFriendRequests(requests);
     };
 
+    const listenForPendingFriendRequests = (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'friendsReceived');
+
+        const unsubscribe = onSnapshot(requestsRef, (snapshot) => {
+            const requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setPendingFriendRequests(requests);
+        });
+
+        return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
+    };
+
+    const fetchPendingRoomInvites = async (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'invitesReceived');
+        const querySnapshot = await getDocs(requestsRef);
+        const requests = querySnapshot.docs.map(doc => ({
+            id: doc.id, // Friend Request ID
+            ...doc.data()
+        }));
+        setPendingRoomInvites(requests);
+    };
+
+    const listenForPendingRoomInvites = (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'invitesReceived');
+
+        const unsubscribe = onSnapshot(requestsRef, (snapshot) => {
+            const requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setPendingRoomInvites(requests);
+        });
+
+        return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
+    };
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, login, register, logout, resetPassword, fetchPendingFriendRequests, updateUserData }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, pendingRoomInvites, login, register, logout, resetPassword, fetchPendingFriendRequests, fetchPendingRoomInvites, updateUserData }}>
             {children}
         </AuthContext.Provider>
     )

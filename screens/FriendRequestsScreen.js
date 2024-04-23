@@ -5,8 +5,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import directoryLogic from '../logic/directoryLogic';
 import { Image } from 'expo-image';
 import { defaultProfilePicture } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function FriendRequestsScreen() {
+    const { language, darkMode, textSize } = useSettings();
     const { friendRequests, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests } = directoryLogic();
 
     useEffect(() => {

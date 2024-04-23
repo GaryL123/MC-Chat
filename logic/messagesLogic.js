@@ -77,7 +77,6 @@ const messagesLogic = () => {
                 senderName: user?.email,
                 createdAt: Timestamp.fromDate(new Date())
             });
-            textRef.current = "";
         } catch (err) {
             Alert.alert('Message', err.message);
         }

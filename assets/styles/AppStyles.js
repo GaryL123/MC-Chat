@@ -2,8 +2,16 @@ import { StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
+  screenL: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  screenD: {
+    flex: 1,
+    backgroundColor: '#111',
+  },
   container: {
-    paddingTop: hp(5),
+    paddingTop: hp(3),
     paddingHorizontal: wp(5),
     flex: 1,
   },
@@ -44,7 +52,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1.5),
     fontSize: hp(2),
     color: '#333',
-    backgroundColor: '#f0f0f0',
     borderTopRightRadius: 25,
     borderBottomRightRadius: 25,
     paddingHorizontal: wp(2),
@@ -115,6 +122,35 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: '#e0e0e0',
     padding: 8,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: "#333",
+  },
+  modalItem: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  modalItemText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: "#333",
   },
 });
 

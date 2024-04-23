@@ -4,11 +4,14 @@ import { Image } from 'expo-image';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import styles from '../assets/styles/AppStyles';
 import { defaultProfilePicture } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
+import styles from '../assets/styles/AppStyles';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function ProfileScreen() {
+    const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { user, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changePassword } = profileLogic();
     const [fName, setFName] = useState(user?.fName || "");
     const [lName, setLName] = useState(user?.lName || "");
@@ -85,41 +88,37 @@ export default function ProfileScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
+        <KeyboardAvoidingView style={darkMode ? ldStyles.screenD : ldStyles.screenL} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.container}>
                     <View style={styles.centered}>
                         <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || defaultProfilePicture }} />
-                        <TouchableOpacity style={styles.editButton} onPress={handleChangeProfilePicture}>
+                        <TouchableOpacity style={darkMode ? ldStyles.editButtonD : ldStyles.editButtonL} onPress={handleChangeProfilePicture}>
                             <Octicons name="pencil" size={24} color="#737373" />
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.headerText}>{user?.fName + ' ' + user?.lName}</Text>
+                    <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>{user?.fName + ' ' + user?.lName}</Text>
 
                     <View style={styles.inputContainerHoriz}>
-                        <View style={[styles.inputContainer, { flex: 1, marginRight: 5 }]}>
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                             <Octicons name="pencil" size={hp(2.7)} color="gray" />
                             <TextInput
                                 value={fName} 
                                 onChangeText={setFName}
-                                style={styles.input}
+                                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                                 placeholder={user?.fName}
                                 placeholderTextColor={'gray'}
                                 autoCapitalize="none"
                             />
                         </View>
 
-                        <View style={[styles.inputContainer, { flex: 1, marginLeft: 5 }]}>
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                             <Octicons name="pencil" size={hp(2.7)} color="gray" />
                             <TextInput
                                 value={lName}
                                 onChangeText={setLName}
-                                style={styles.input}
+                                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                                 placeholder={user?.lName}
                                 placeholderTextColor={'gray'}
                                 autoCapitalize="none"
@@ -127,24 +126,24 @@ export default function ProfileScreen() {
                         </View>
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name="mail" size={hp(2.7)} color="gray" />
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
-                            style={styles.input}
+                            style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                             placeholder={user?.email.split('@')[0]}
                             placeholderTextColor={'gray'}
                             autoCapitalize="none"
                         />
-                        <Text style={styles.emailDomain}>@manhattan.edu</Text>
+                        <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name="lock" size={hp(2.7)} color="gray" />
                         <TextInput
                             onChangeText={setPassword}
-                            style={styles.input}
+                            style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                             placeholder='Password'
                             secureTextEntry
                             placeholderTextColor={'gray'}
@@ -152,11 +151,11 @@ export default function ProfileScreen() {
                         />
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name="lock" size={hp(2.7)} color="gray" />
                         <TextInput
                             onChangeText={setPasswordConfirm}
-                            style={styles.input}
+                            style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                             placeholder='Confirm Password'
                             secureTextEntry
                             placeholderTextColor={'gray'}
