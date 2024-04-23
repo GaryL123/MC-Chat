@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, doc, getDocs, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useAuth } from './authContext';
 
@@ -12,7 +12,6 @@ const directoryRoomsLogic = () => {
 
     useEffect(() => {
         fetchUsers();
-        fetchRoomInvites();
         fetchRoomInvites();
     }, [user, members, sentRoomInvites]);
 
@@ -64,27 +63,35 @@ const directoryRoomsLogic = () => {
 
     const fetchRoomInvites = async () => {
         try {
-            // Get the collection of friend requests
-            const requestsRef = collection(db, 'users', user.uid, 'invitesReceived');
-            const requestsSnapshot = await getDocs(requestsRef);
-
-            // Prepare an array of promises to fetch user emails
-            const emailPromises = requestsSnapshot.docs.map(async (doc) => {
-                const senderEmail = await fetchUserEmail(doc.id); // Fetch email asynchronously
+            // Get the collection of room invites received by the user
+            const invitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
+            const invitesSnapshot = await getDocs(invitesReceivedRef);
+    
+            // Prepare an array of promises to fetch invite details
+            const invitePromises = invitesSnapshot.docs.map(async (doc) => {
+                // Fetch the room ID from the invite data
+                const inviteData = doc.data();
+                const roomId = inviteData.id; // Assuming this is the room ID
+                const senderId = doc.id; // Assuming this is the ID of the sender
+                const senderEmail = await fetchUserEmail(senderId); // Get sender email
+    
                 return {
-                    id: doc.id,
-                    senderEmail: senderEmail, // Expected resolved email
+                    id: senderId, // Sender's user ID
+                    roomId: roomId, // Room ID from the invite
+                    senderEmail: senderEmail, // Email of the sender
                 };
             });
-
-            // Wait for all promises to resolve
-            const requestDetails = await Promise.all(emailPromises);
-
-            setRoomInvites(requestDetails); // Set the state with resolved details
+    
+            // Resolve all promises to get the complete invite details
+            const roomInvites = await Promise.all(invitePromises);
+    
+            // Set the state with resolved room invite details
+            setRoomInvites(roomInvites);
         } catch (error) {
             console.error("Error fetching room invites:", error); // Error handling
         }
     };
+    
 
     const sendRoomInvite = async (userId, roomId) => {
         try {
@@ -108,49 +115,52 @@ const directoryRoomsLogic = () => {
 
     const acceptRoomInvite = async (roomId, senderId) => {
         try {
-            // Get a reference to the room document
+            console.log(`Accepting room invite for roomId: ${roomId} from senderId: ${senderId}`);
+    
+            // Check if the room exists
             const roomRef = doc(db, 'chatRooms', roomId);
             const roomDoc = await getDoc(roomRef);
+    
             if (!roomDoc.exists()) {
-                throw new Error(`Room with ID/Name '${roomId}' does not exist.`);
-              }
-
+                throw new Error(`Room with ID '${roomId}' does not exist.`);
+            }
+    
             // Add the current user to the room's 'members' array
-            await updateDoc(roomDoc, {
-                members: arrayUnion(user.uid)
+            await updateDoc(roomRef, {
+                members: arrayUnion(user.uid), // Use arrayUnion to add the user to the array
             });
-
+    
+            console.log(`User ${user.uid} added to room ${roomId}'s members`);
+    
             // Remove the invite from the user's 'invitesReceived'
-            const userInvitesReceivedRef = doc(db, 'users', user.uid, 'invitesReceived', roomId);
-            await deleteDoc(userInvitesReceivedRef);
-
+            const userInvitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
+            await deleteDoc(doc(userInvitesReceivedRef, senderId)); // Use senderId, as it is the reference for the invite
+    
             // Remove the invite from the sender's 'invitesSent'
-            const senderInvitesSentRef = doc(db, 'users', senderId, 'invitesSent', roomId);
-            await deleteDoc(senderInvitesSentRef);
-
-            console.log('Room invite accepted successfully.');
-
-            // Optionally refresh the room invites list if this is managed in state
-            if (fetchRoomInvites) fetchRoomInvites();
+            const senderInvitesSentRef = collection(db, 'users', senderId, 'invitesSent');
+            await deleteDoc(doc(senderInvitesSentRef, user.uid));
+    
+            console.log('Room invite accepted, user added to members, and invite references removed.');
+    
         } catch (error) {
             console.error('Error accepting room invite:', error);
         }
     };
+    
+    
 
     const rejectRoomInvite = async (roomId, senderId) => {
         try {
-            // Remove invite from user's 'invitesReceived'
+            // Remove the invite from the user's 'invitesReceived'
             const userInvitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
-            await deleteDoc(doc(userInvitesReceivedRef, roomId));
-
-            // Remove invite from sender's 'invitesSent'
+            await deleteDoc(doc(userInvitesReceivedRef, senderId)); // Use senderId, as it is the reference for the invite
+    
+            // Remove the invite from the sender's 'invitesSent'
             const senderInvitesSentRef = collection(db, 'users', senderId, 'invitesSent');
-            await deleteDoc(doc(senderInvitesSentRef, roomId));
-
+            await deleteDoc(doc(senderInvitesSentRef, user.uid));
+    
             console.log("Room invite rejected successfully.");
 
-            // Refresh friend requests
-            fetchRoomInvites();
         } catch (error) {
             console.error("Error rejecting room invite:", error);
         }
