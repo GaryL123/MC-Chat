@@ -3,17 +3,22 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons } from '@expo/vector-icons';
-import roomsLogic from '../logic/roomsLogic';
 import { Image } from 'expo-image';
+import { filter } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
+import roomsLogic from '../logic/roomsLogic';
+import styles from '../assets/styles/AppStyles';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function RoomsScreen() {
+  const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom, addAdminToRoom, blurhash } = roomsLogic(navigation);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles.createRoomButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles2.createRoomButton}>
           <Ionicons name="add-circle-outline" size={30} color="white" />
         </TouchableOpacity>
       ),
@@ -34,7 +39,7 @@ export default function RoomsScreen() {
     return (
       <FlatList
         data={rooms}
-        contentContainerStyle={styles.flatListContent}
+        contentContainerStyle={styles2.flatListContent}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => <RoomItem
@@ -50,34 +55,34 @@ export default function RoomsScreen() {
 
     return (
       <View>
-        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles.roomItem]}>
+        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles2.roomItem]}>
           <Image
-            style={styles.profileImage}
+            style={styles2.profileImage}
             source={{ blurhash }}
             disabled={!isMember}
           />
-          <View style={styles.textContainer}>
-            <View style={styles.nameAndTimeRow}>
-              <Text style={styles.nameText}>{item?.roomName}</Text>
+          <View style={styles2.textContainer}>
+            <View style={styles2.nameAndTimeRow}>
+              <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item?.roomName}</Text>
               {isMember && (
-              <Text style={styles.timeText}>
+              <Text style={darkMode ? ldStyles.timeTextD : ldStyles.timeTextL}>
                 {renderTime(item.id)}
               </Text>
             )}
             </View>
             {isMember ? (
-              <Text style={styles.lastMessageText}>
-                {renderLastMessage(item.id)}
+              <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
+                {profanityFilter ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
               </Text>
             ) : (
-              <Text style={styles.lastMessageText}>
+              <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
                 {item.roomDesc}
               </Text>
             )}
           </View>
           {!isMember && (
-            <TouchableOpacity onPress={() => handleJoinRoom(item.id)} style={styles.joinButton}>
-              <Text style={styles.joinButtonText}>Join</Text>
+            <TouchableOpacity onPress={() => handleJoinRoom(item.id)} style={styles2.joinButton}>
+              <Text style={styles2.joinButtonText}>Join</Text>
             </TouchableOpacity>
           )}
         </TouchableOpacity>
@@ -86,13 +91,13 @@ export default function RoomsScreen() {
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={darkMode ? styles.screenD : styles.screenL}>
       <StatusBar style="dark-content" />
       {
         rooms.length > 0 ? (
           <RoomList rooms={rooms} />
         ) : (
-          <View style={styles.noFriendsContainer}>
+          <View style={styles2.noFriendsContainer}>
             <Text>No rooms</Text>
           </View>
         )
@@ -101,7 +106,7 @@ export default function RoomsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles2 = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: 'white',
