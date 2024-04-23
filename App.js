@@ -17,6 +17,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import RoomsCreateScreen from './screens/RoomsCreateScreen';
 import RoomsScreen from './screens/RoomsScreen';
+import RoomsAddUserScreen from './screens/RoomsAddUserScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -192,6 +193,7 @@ function App() {
       <RoomStack.Navigator
         initialRouteName="RoomsStack" screenOptions={HeaderScreenOptions}>
         <RoomStack.Screen name="Rooms" component={RoomsScreen} />
+        <RoomStack.Screen name="RoomsAddUserScreen" component={RoomsAddUserScreen} />
         <RoomStack.Screen name="MessagesRoom" component={MessagesRoomScreen} />
         <RoomStack.Screen name="Create a Room" component={RoomsCreateScreen} />
       </RoomStack.Navigator>
