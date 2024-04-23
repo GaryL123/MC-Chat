@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, setDoc, onSnapshot } from 'firebase/firestore'
 
 export const AuthContext = createContext();
 
@@ -17,6 +17,7 @@ export const AuthContextProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 updateUserState(user);
                 fetchPendingFriendRequests(user.uid);
+                listenForPendingFriendRequests(user.uid);
             } else {
                 setIsAuthenticated(false);
                 setUser(null);
@@ -110,6 +111,19 @@ export const AuthContextProvider = ({ children }) => {
             ...doc.data()
         }));
         setPendingFriendRequests(requests);
+    };
+    const listenForPendingFriendRequests = (uid) => {
+        const requestsRef = collection(db, 'users', uid, 'friendsReceived');
+
+        const unsubscribe = onSnapshot(requestsRef, (snapshot) => {
+            const requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setPendingFriendRequests(requests);
+        });
+
+        return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
     };
 
     return (
