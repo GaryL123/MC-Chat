@@ -1,5 +1,5 @@
-import { View, Button, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, StyleSheet, Image } from 'react-native'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
@@ -9,7 +9,8 @@ import messagesRoomLogic from '../logic/messagesRoomLogic';
 const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
-    const { roomId, roomName, user, messages, textRef, inputRef, scrollViewRef, handleSendMessage, handleSendDoc, handleGPT } = messagesRoomLogic();
+    const { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc } = messagesRoomLogic();
+    const [inputText, setInputText] = useState('');  // Manage input text directly
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -24,68 +25,64 @@ export default function MessagesRoomScreen() {
         });
     }, [navigation, roomId]);
 
-    const MessageList = ({ messages, user }) => {
-        return (
-            <ScrollView
-                contentContainerStyle={styles.messageListContainer}
-                showsVerticalScrollIndicator={false}
-                ref={scrollViewRef}>
-                {messages.map((message, index) => (
-                    <MessageItem message={message} key={index} user={user} />
-                ))}
-            </ScrollView>
-        );
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");  // Ensure to clear the controlled input text state
     };
 
-    const MessageItem = ({ message, user }) => {
-        const isMyMessage = user?.uid == message?.uid;
-        return (
-            <View style={[styles.messageItemContainer, { justifyContent: isMyMessage ? 'flex-end' : 'flex-start' }]}>
-                <View style={[styles.messageBubble, isMyMessage ? styles.myMessage : styles.theirMessage]}>
-                    <Text style={isMyMessage ? styles.myMessageText : styles.theirMessageText}>
-                        {message?.text}
-                    </Text>
-                </View>
-            </View>
-        );
-    };
+    const handleSendDoc = async () => {
+        await sendDoc();
+    }
 
-    const CustomKeyboardView = ({ children }) => {
-        return (
-            <KeyboardAvoidingView
-                behavior={ios ? 'padding' : 'height'}
-                style={styles.flexWhite}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
-                {children}
-            </KeyboardAvoidingView>
-        );
+    // Update this state when AI generates a reply
+    /*const handleGPT = async () => {
+        const reply = await GPT();
+        setInputText(reply);  // Set input field text with AI reply
+        textRef.current = reply;
+    };*/
+
+    // Any text changes in the input are handled here
+    const handleInputChange = (text) => {
+        setInputText(text);  // Update state with text input by user
+        textRef.current = text;  // Keep ref updated if needed elsewhere
     };
 
     return (
-        <CustomKeyboardView>
-            <View style={styles.flexWhite}>
-                <StatusBar style="dark" />
-                <MessageList messages={messages} user={user} />
-                <View style={styles.inputContainer}>
-                    <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
-                        <Feather name="plus" size={24} color="#737373" />
-                    </TouchableOpacity>
-                    <TextInput
-                        onChangeText={value => textRef.current = value}
-                        placeholder='Type a message...'
-                        placeholderTextColor={'gray'}
-                        style={styles.textInput}
-                        ref={inputRef}
-                    />
-                    <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
-                        <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-                        <Feather name="send" size={24} color="#737373" />
-                    </TouchableOpacity>
-                </View>
+        <KeyboardAvoidingView behavior={ios ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+            <StatusBar style="dark" />
+            <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+                {messages.map((message, index) => (
+                    <View key={index} style={styles.messageItemContainer}>
+                        {message.uid !== user.uid && (
+                            <Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>  // Assuming 'senderName' is part of the message object
+                        )}
+                        <View style={[styles.messageBubble, message.uid === user.uid ? styles.myMessage : styles.theirMessage]}>
+                            <Text style={message.uid === user.uid ? styles.myMessageText : styles.theirMessageText}>
+                                {message.text}
+                            </Text>
+                        </View>
+                    </View>
+                ))}
+            </ScrollView>
+            <View style={styles.inputContainer}>
+                <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
+                    <Feather name="plus" size={24} color="#737373" />
+                </TouchableOpacity>
+                <TextInput
+                    onChangeText={handleInputChange}
+                    placeholder='Type a message...'
+                    placeholderTextColor={'gray'}
+                    style={styles.textInput}
+                    value={inputText}  // Controlled component
+                />
+                {/* <TouchableOpacity onPress={handleAIIconPress} style={styles.sendButton}>
+                    <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
+                </TouchableOpacity> */}
+                <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                    <Feather name="send" size={24} color="#737373" />
+                </TouchableOpacity>
             </View>
-        </CustomKeyboardView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -112,7 +109,7 @@ const styles = StyleSheet.create({
         paddingBottom: 60, // Ensure this is enough space for the input container
     },
     messageItemContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         marginBottom: 12,
         marginHorizontal: 12,
     },
@@ -173,5 +170,11 @@ const styles = StyleSheet.create({
     headerButtonsContainer: {
         flexDirection: 'row',
         marginRight: 10
+    },
+    senderName: {
+        alignSelf: 'flex-start',
+        marginBottom: 4,
+        fontSize: 14,
+        color: 'grey',
     },
 });

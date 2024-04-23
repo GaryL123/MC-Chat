@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Alert } from 'react-native';
 import { useAuth } from './authContext'
 import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -50,18 +51,20 @@ const messagesRoomLogic = () => {
         }, 100)
     }
 
-    const handleSendMessage = async () => {
-        let message = messageText.trim();
+    const sendMessage = async () => {
+        let message = textRef.current.trim();
         if (!message) return;
         try {
-            const docRef = doc(db, 'chatInds', roomId);
+            const docRef = doc(db, 'chatRooms', roomId);
             const messagesRef = collection(docRef, "messages");
-            setMessageText('');
+            textRef.current = "";
             if (inputRef) inputRef?.current?.clear();
             const newDoc = await addDoc(messagesRef, {
                 uid: user?.uid,
                 text: message,
-                senderName: user?.email,
+                senderEmail: user?.email,
+                senderFName: user?.fName,
+                senderLName: user?.lName,
                 createdAt: Timestamp.fromDate(new Date())
             });
         } catch (err) {
@@ -69,35 +72,11 @@ const messagesRoomLogic = () => {
         }
     }
 
-    const handleSendDoc = async () => {
+    const sendDoc = async () => {
         console.log('sending doc...');
     }
-
-    const handleGPT = async() => {
-
-        /*const openai = new OpenAI({
-            apiKey: "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", // This is the default and can be omitted
-        });
-
-        const conversationString = messages.map(message => `${message.senderName.split('@')[0]}: ${message.text}`).join('\n');
-
-        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information. Do not mention the username in your reply.`;
-
-        const user_input = `${roleInstruction}\n\n${conversationString}`;
-        
-        // Non-streaming:
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4-turbo',
-            messages: [{ role: 'user', content: user_input }],
-        });
-
-        const reply = completion.choices[0]?.message?.content;
-        console.log(reply);
-
-        // TO DO - Render input field with the AI reply*/
-    }
           
-    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, handleSendMessage, handleSendDoc, handleGPT };
+    return { roomId, roomName, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc };
 }
 
 export default messagesRoomLogic;

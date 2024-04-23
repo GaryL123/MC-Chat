@@ -41,7 +41,7 @@ export const AuthContextProvider = ({ children }) => {
 
         if (docSnap.exists()) {
             let data = docSnap.data();
-            return { ...user, uid: data.uid, email: data.email, photoURL: data.photoURL }
+            return { ...user, uid: data.uid, email: data.email, fName: data.fName, lName: data.lName, photoURL: data.photoURL }
         } else {
             return null;
         }
