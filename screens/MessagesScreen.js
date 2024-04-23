@@ -10,7 +10,8 @@ const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
     const { item, user, messages, textRef, inputRef, scrollViewRef, sendMessage, sendDoc, GPT } = messagesLogic();
-    const [inputText, setInputText] = useState('');  // Manage input text directly
+    const [inputText, setInputText] = useState('');
+    const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -44,21 +45,22 @@ export default function MessagesScreen() {
         await sendDoc();
     }
 
-    // Update this state when AI generates a reply
     const handleGPT = async () => {
         const reply = await GPT();
         setInputText(reply);  // Set input field text with AI reply
         textRef.current = reply;
     };
 
-    // Any text changes in the input are handled here
     const handleInputChange = (text) => {
-        setInputText(text);  // Update state with text input by user
-        textRef.current = text;  // Keep ref updated if needed elsewhere
+        setInputText(text);  // Update the text state
+    };
+    
+    const handleContentSizeChange = (event) => {
+        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
     };
 
     return (
-        <KeyboardAvoidingView behavior={ios ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flexWhite} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <StatusBar style="dark" />
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
@@ -75,13 +77,16 @@ export default function MessagesScreen() {
                 <TouchableOpacity onPress={handleSendDoc} style={styles.sendButton}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
-                <TextInput
-                    onChangeText={handleInputChange}
-                    placeholder='Type a message...'
-                    placeholderTextColor={'gray'}
-                    style={styles.textInput}
-                    value={inputText}  // Controlled component
-                />
+                    <TextInput
+                        onChangeText={handleInputChange}
+                        onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                        placeholder='Type a message...'
+                        placeholderTextColor={'gray'}
+                        style={[styles.textInput, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                        value={inputText}
+                        multiline={true} // Enable multiline input
+                        scrollEnabled={true} // Allow scrolling inside the input
+                    />
                 <TouchableOpacity onPress={handleGPT} style={styles.sendButton}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
@@ -94,23 +99,9 @@ export default function MessagesScreen() {
 }
 
 const styles = StyleSheet.create({
-    flex: {
-        flex: 1,
-    },
     flexWhite: {
         flex: 1,
         backgroundColor: 'white',
-    },
-    divider: {
-        height: 3,
-        backgroundColor: 'white',
-        borderBottomWidth: 1,
-        borderBottomColor: 'white',
-    },
-    chatContainer: {
-        flex: 1,
-        justifyContent: 'space-between',
-        backgroundColor: '#f0f0f0',
     },
     messageListContainer: {
         paddingBottom: 60, // Ensure this is enough space for the input container
@@ -151,31 +142,28 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: '#e0e0e0',
         backgroundColor: 'white',
-    },
-    inputRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-        borderRadius: 30,
-        padding: 8,
-        marginHorizontal: 12,
+        alignItems: 'center',  // Ensure vertical alignment is centered
     },
     textInput: {
         flex: 1,
         marginRight: 8,
-        paddingLeft: 20,
+        marginLeft: 8,
+        paddingLeft: 15,
         fontSize: 16,
+        borderWidth: 1,  // Set border width to create the outline
+        borderColor: '#e0e0e0',  // Set border color to match the send button background
+        borderRadius: 20,  // Keep your rounded corners
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        minHeight: 35 // Set a minimum height
     },
     sendButton: {
         padding: 8,
-        marginRight: 1,
-        borderRadius: 30,
+        width: 44,  // Assign a fixed width
+        height: 44, // Assign a fixed height
+        justifyContent: 'center', // Center the icon vertically and horizontally
+        alignItems: 'center',
+        borderRadius: 22,  // Half of width and height to create a circle
         backgroundColor: '#e0e0e0',
-    },
-    headerButtonsContainer: {
-        flexDirection: 'row',
-        marginRight: 10
     },
 });
