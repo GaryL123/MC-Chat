@@ -19,8 +19,6 @@ function SettingsScreen() {
   const navigation = useNavigation();
   const [form, setForm] = useState({
     darkMode: false,
-    emailNotifications: true,
-    pushNotifications: false,
     fontSize: 17,
     language: 'English',
   });
@@ -46,8 +44,6 @@ function SettingsScreen() {
       preferences: 'Preferences',
       language: 'Language',
       darkMode: 'Dark Mode',
-      emailNotifications: 'Email Notifications',
-      pushNotifications: 'Push Notifications',
       textSize: 'Text Size',
       resources: 'Resources',
       reportBug: 'Report Bug',
@@ -58,8 +54,6 @@ function SettingsScreen() {
       preferences: 'Preferencias',
       language: 'Idioma',
       darkMode: 'Modo Oscuro',
-      emailNotifications: 'Notificaciones por Correo Electrónico',
-      pushNotifications: 'Notificaciones Push',
       textSize: 'Tamaño del Texto',
       resources: 'Recursos',
       reportBug: 'Reportar Error',
@@ -136,41 +130,6 @@ function SettingsScreen() {
               <Switch
                 onValueChange={darkMode => setForm({ ...form, darkMode })}
                 value={form.darkMode} />
-            </View>
-
-            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
-                <FeatherIcon
-                  color="#fff"
-                  name="at-sign"
-                  size={20} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('emailNotifications')}</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <Switch
-                onValueChange={emailNotifications =>
-                  setForm({ ...form, emailNotifications })
-                }
-                value={form.emailNotifications} />
-            </View>
-
-            <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
-              <View style={[styles.rowIcon, { backgroundColor: '#38C959' }]}>
-                <FeatherIcon color="#fff" name="bell" size={20} />
-              </View>
-
-              <Text style={[styles.rowLabel, { color: form.darkMode ? '#fff' : '#0c0c0c', fontSize: calculateFontSize(17) }]}>{translate('pushNotifications')}</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <Switch
-                onValueChange={pushNotifications =>
-                  setForm({ ...form, pushNotifications })
-                }
-                value={form.pushNotifications} />
             </View>
 
             <View style={[styles.row, { backgroundColor: form.darkMode ? '#333' : '#f2f2f2' }]}>
