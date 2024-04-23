@@ -77,7 +77,6 @@ const messagesLogic = () => {
                 senderName: user?.email,
                 createdAt: Timestamp.fromDate(new Date())
             });
-            textRef.current = "";
         } catch (err) {
             Alert.alert('Message', err.message);
         }
@@ -95,21 +94,7 @@ const messagesLogic = () => {
 
         const conversationString = messages.map(message => `${message.senderName.split('@')[0]}: ${message.text}`).join('\n');
 
-        console.log(`${item?.email.split('@')[0]}`);
-        const roleInstruction = `
-        You are ${user?.fName + ' ' + user?.lName}.
-        You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat.
-        Below this instruction block you might be provided with a dialogue between the two of you. Each line in the dialogue is marked by your email address or the other person's.
-        Your previous lines are preceded by your username which is ${user?.email.split('@')[0]}
-        The other person's lines who are you having a conversation with, are preceded by their username which is ${item?.email.split('@')[0]}
-        Only respond to lines from ${item?.email.split('@')[0]}
-        Generate a reply that fits the conversation flow and sounds as human and natural.
-        Match the tone of the conversation and keep responses relevant and engaging.
-        If the other person makes a question that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information.
-        Try to keep replies within 50 characters, unless the other person is asking for an elaborate reply.
-        If there are no messages beyond this instruction block, simply start with a greeting to the other person.
-        Your incoming response should not be the same format as the dialogue below. Only give a response in a way that someone could read it out in a real conversation and have it make sense. Do no mention the person's username in front of your message.
-        `;
+        const roleInstruction = `You are chatting with ${item.fName + ' ' + item.lName} in an app called MC-Chat. Please generate a reply that fits the conversation flow and sounds like something a person would naturally say. Match the tone of the conversation and keep responses relevant and engaging. If a question arises that you don't have specific knowledge about (such as dynamic calculations like current events), respond in a way that a person might tactfully handle a similar situation where they lack precise information. Do not mention the username in your reply. Try to keep replies within 50 characters, unless the other person is asking for an elaborate reply.`;
 
         const user_input = `${roleInstruction}\n\n${conversationString}`;
 
