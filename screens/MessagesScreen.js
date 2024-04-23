@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { profanityFilter } from '../logic/commonLogic';
 import messagesLogic from '../logic/messagesLogic';
 
 const ios = Platform.OS == 'ios';
@@ -53,6 +54,7 @@ export default function MessagesScreen() {
 
     const handleInputChange = (text) => {
         setInputText(text);  // Update the text state
+        textRef.current = text;  // Keep ref updated if needed elsewhere
     };
     
     const handleContentSizeChange = (event) => {
