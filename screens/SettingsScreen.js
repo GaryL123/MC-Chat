@@ -7,7 +7,6 @@ import {
   Text,
   TouchableOpacity,
   Switch,
-  Image,
   Modal,
   Button,
 } from 'react-native';
@@ -29,7 +28,7 @@ function SettingsScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
-        backgroundColor: form.darkMode ? '#222' : '#166939', // Change header color here
+        backgroundColor: form.darkMode ? '#222' : '#166939',
       },
       headerTintColor: '#fff',
     });
