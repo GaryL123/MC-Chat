@@ -9,7 +9,8 @@ import { blurhash } from '../logic/commonLogic';
 import roomsLogic from '../logic/roomsLogic';
 
 export default function RoomsCreateScreen() {
-    const { user, createRoom } = roomsLogic();
+    const navigation = useNavigation();
+    const { user, createRoom } = roomsLogic(navigation);
     const [roomName, setRoomName] = useState('');
     const [roomDesc, setRoomDesc] = useState('');
     const [roomPublic, setRoomPublic] = useState(true);
