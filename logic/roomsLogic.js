@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './authContext'
-import { collection, doc, addDoc, getDoc, setDoc, onSnapshot, orderBy, query, limit, arrayUnion } from 'firebase/firestore';
+import { collection, doc, addDoc, getDoc, setDoc, updateDoc, onSnapshot, orderBy, query, limit, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { blurhash, getChatId, formatDate } from './commonLogic';
 
@@ -55,10 +55,6 @@ const roomsLogic = (navigation) => {
             setRooms(roomsData); // Update the friends state
         });
     };
-
-    const joinRoom = (item) => {
-        console.log('Joining room');
-    }
 
     const openRoom = (item) => {
         navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName });
@@ -120,12 +116,12 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    const addAdminToRoom = async (roomId, userId) => {
+    const addAdminToRoom = async (roomId, uid) => {
         try {
             const roomRef = doc(db, "chatRooms", roomId);
 
             await updateDoc(roomRef, {
-                admins: arrayUnion(userId)
+                admins: arrayUnion(uid)
             });
 
             return { success: true };
@@ -135,7 +131,7 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    return { user, rooms, renderLastMessage, renderTime, joinRoom, openRoom, createRoom, blurhash };
+    return { user, rooms, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
 }
 
 export default roomsLogic;
