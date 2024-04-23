@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  SectionList,
-  StatusBar,
-  StyleSheet,
-  Modal,
-} from 'react-native';
+import { View, Text, TouchableOpacity, SectionList, StatusBar, StyleSheet, Modal } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
@@ -16,13 +8,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 
 export default function DirectoryScreen() {
   const navigation = useNavigation();
-  const {
-    getOrganizedUsers,
-    sendFriendRequest,
-    isFriend,
-    sentRequests,
-    removeFriend, // New logic function for removing friends
-  } = directoryLogic();
+  const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
 
   const { friendsList, otherUsersList } = getOrganizedUsers();
 
@@ -54,11 +40,8 @@ export default function DirectoryScreen() {
     return (
       <View style={styles.userItemContainer}>
         <View style={styles.userInfoContainer}>
-          <Image
-            style={styles.profileImage}
-            source={{ uri: item?.photoURL || defaultProfilePicture }}
-          />
-          <Text style={styles.emailText}>{item.email}</Text>
+          <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }}/>
+          <Text style={styles.emailText}>{item.fName + ' ' + item.lName}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -211,5 +194,4 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-
 });
