@@ -21,6 +21,7 @@ const MainTabNavigator = () => (
         tabBarStyle: {
           backgroundColor: '#166939',
           height: 100,
+          borderTopWidth: 0,
         },
       }}>
 
