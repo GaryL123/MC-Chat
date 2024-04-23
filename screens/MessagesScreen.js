@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     messageListContainer: {
+        paddingTop: 15,
         paddingBottom: 60, // Ensure this is enough space for the input container
-        paddingTop: 15
     },
     messageItemContainer: {
         flexDirection: 'row',
