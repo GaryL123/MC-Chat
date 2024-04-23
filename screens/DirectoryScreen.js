@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     backgroundColor: 'lightgray',
-    paddingVertical: 10,
+    paddingVertical: 4,
     paddingHorizontal: 20,
     fontSize: 16,
     fontWeight: 'bold',
@@ -161,18 +161,19 @@ const styles = StyleSheet.create({
   },
   emailText: {
     marginLeft: wp(4),
-    fontSize: hp(1.8),
+    fontSize: hp(2.0),
     color: 'black',
   },
   friendButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#166939',
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: hp(1),
-    paddingHorizontal: wp(4),
-    borderRadius: 5,
   },
   friendButtonAdd: {
-    backgroundColor: 'blue',
+    backgroundColor: 'green',
   },
   friendButtonFriend: {
     backgroundColor: '#166939',
@@ -194,8 +195,6 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  modalButton: {
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
@@ -210,6 +209,7 @@ const styles = StyleSheet.create({
   },
   friendButtonText: {
     color: 'white',
+    fontWeight: 'bold',
   },
 
 });
