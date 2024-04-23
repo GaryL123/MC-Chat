@@ -20,9 +20,7 @@ const roomsLogic = (navigation) => {
 
     useEffect(() => {
         rooms.forEach(room => {
-            //let chatId = getChatId(user?.uid, friend.uid);
             const docRef = doc(db, "chatRooms", room.id);
-            //let roomId = room.id;
             const messagesRef = collection(docRef, "messages");
             const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
 
@@ -37,22 +35,23 @@ const roomsLogic = (navigation) => {
         });
     }, [rooms, user?.uid]);
 
-    const getRooms = () => {
+    const getRooms = async () => {
         const roomsRef = collection(db, 'chatRooms');
-
+    
+        // Subscribe to changes on rooms
         onSnapshot(roomsRef, async (roomsSnapshot) => {
-            let roomPromises = roomsSnapshot.docs.map(docSnap => {
-                const roomId = docSnap.id;
-                return getDoc(doc(db, 'chatRooms', roomId));
+            let roomsData = [];
+            roomsSnapshot.forEach(docSnap => {
+                let roomData = docSnap.data();
+                roomData.id = docSnap.id;
+    
+                // Check if room is public or if the user is a member of the room
+                if (roomData.roomPublic || roomData.members.includes(user.uid)) {
+                    roomsData.push(roomData);
+                }
             });
-
-            const roomDocs = await Promise.all(roomPromises);
-            const roomsData = roomDocs.filter(docSnap => docSnap.exists()).map(docSnap => ({
-                id: docSnap.id,
-                ...docSnap.data()
-            }));
-
-            setRooms(roomsData); // Update the friends state
+    
+            setRooms(roomsData); // Update the rooms state
         });
     };
 
