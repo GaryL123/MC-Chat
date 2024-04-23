@@ -5,71 +5,44 @@ import { useSettings } from '../logic/settingsContext';
 import { Ionicons } from '@expo/vector-icons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import styles from '../assets/styles/AppStyles';
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function SettingsScreen() {
     const { language, languages, changeLanguage, darkMode, toggleDarkMode, profanityFilter, toggleProfanityFilter, textSize, setTextSize } = useSettings();
     const [showLanguageModal, setShowLanguageModal] = useState(false);
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1, backgroundColor: darkMode ? '#111111' : '#e6e6e6' }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
+        <KeyboardAvoidingView style={ darkMode ? ldStyles.screenD : ldStyles.screenL } behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.container}>
 
-                    <TouchableOpacity onPress={() => setShowLanguageModal(true)} style={styles.inputContainer}>
+                    <TouchableOpacity onPress={() => setShowLanguageModal(true)} style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={"language-outline"} size={hp(2.7)} color="gray" />
-                        <Text style={{
-                            flex: 1,
-                            paddingHorizontal: 10,
-                            paddingVertical: hp(1.5),
-                            fontSize: hp(2),
-                            color: '#333',
-                            marginRight: 10
-                        }}>
+                        <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             {language}
                         </Text>
                         <Ionicons color="gray" name="chevron-forward-outline" size={20} />
                     </TouchableOpacity>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={darkMode ? "flashlight" : "flashlight-outline"} size={hp(2.7)} color="gray" />
-                        <Text style={{
-                            flex: 1,
-                            paddingHorizontal: 10,
-                            paddingVertical: hp(1.5),
-                            fontSize: hp(2),
-                            color: '#333',
-                            marginRight: 10  // Maintain spacing from the switch
-                        }}>
+                        <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             {darkMode ? 'Dark Mode' : 'Light Mode'}
                         </Text>
                         <Switch onValueChange={toggleDarkMode} value={darkMode} />
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={profanityFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
-                        <Text style={{
-                            flex: 1,
-                            paddingHorizontal: 10,
-                            paddingVertical: hp(1.5),
-                            fontSize: hp(2),
-                            color: '#333',
-                            marginRight: 10  // Maintain spacing from the switch
-                        }}>
+                        <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             {profanityFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
                         </Text>
                         <Switch onValueChange={toggleProfanityFilter} value={profanityFilter} />
                     </View>
 
-                    <View style={styles.inputContainer}>
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={"text"} size={hp(2.7)} color="gray" />
-                        <Text style={{
-                            flex: 1,
-                            paddingHorizontal: 10,
-                            paddingVertical: hp(1.5),
-                            fontSize: hp(2),
-                            color: '#333',
-                            marginRight: 10  // Maintain spacing from the switch
-                        }}>
+                        <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             Text Size
                         </Text>
                         <Slider
@@ -83,9 +56,9 @@ export default function SettingsScreen() {
                     </View>
 
                     <Modal animationType="none" transparent={true} visible={showLanguageModal} onRequestClose={() => setShowLanguageModal(false)}>
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Select Language</Text>
+                        <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                            <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Language</Text>
                                 {languages.map((language, index) => (
                                     <TouchableOpacity
                                         key={index}
@@ -94,7 +67,7 @@ export default function SettingsScreen() {
                                             changeLanguage(language);
                                             setShowLanguageModal(false);
                                         }}>
-                                        <Text style={styles.modalItemText}>{language}</Text>
+                                        <Text style={darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL}>{language}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
