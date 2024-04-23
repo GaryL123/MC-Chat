@@ -1,66 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SectionList, StatusBar, StyleSheet, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet, Modal } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import directoryRoomsLogic from '../logic/directoryRoomsLogic';
 import { defaultProfilePicture } from '../logic/commonLogic';
+import { useRoute } from '@react-navigation/native';
 
 export default function RoomsAddUserScreen() {
     const navigation = useNavigation();
-    const { getOrganizedUsers, sendRoomInvite, isMember, sentRoomInvites, removeMember } = directoryRoomsLogic();
+    const route = useRoute();  // Access route object
+    const { roomId } = route.params;  // Destructure roomId from route parameters
+    const { fetchMembers, getOrganizedUsers, sendRoomInvite, isMember, sentRoomInvites } = directoryRoomsLogic();
+    const { otherUsersList } = getOrganizedUsers();
 
-    const { membersList, otherUsersList } = getOrganizedUsers();
+    useEffect(() => {
+        fetchMembers(roomId);
+    }, [roomId]);
 
-    // State for managing the "Remove Friend" modal
-    const [showRemoveFriendModal, setShowRemoveFriendModal] = useState(false);
-    const [friendToRemove, setFriendToRemove] = useState(null);
-
-    const handleFriendButtonPress = (friendId) => {
-        setFriendToRemove(friendId);
-        setShowRemoveFriendModal(true);
-    };
-
-    const confirmRemoveFriend = async () => {
-        if (friendToRemove) {
-            await removeFriend(friendToRemove); // Call the logic function to remove the friend
-            setShowRemoveFriendModal(false);
-            setFriendToRemove(null);
-        }
+    const handleInvite = async (userId) => {
+        await sendRoomInvite(userId, roomId);
     };
 
     const renderUserItem = ({ item }) => {
-        const friendId = item.id;
-        const membershipStatus = isMember(friendId)
-            ? 'Friend'
-            : sentRoomInvites.includes(friendId)
-                ? 'Sent'
-                : 'Add';
+        const isInvited = sentRoomInvites.includes(item.id);
+        const buttonLabel = isInvited ? "Sent" : "Invite";
+        const buttonColor = isInvited ? "#cccccc" : "green";
 
         return (
             <View style={styles.userItemContainer}>
                 <View style={styles.userInfoContainer}>
                     <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
-                    <Text style={styles.emailText}>{item.email}</Text>
+                    <Text style={styles.emailText}>{item.fName + ' ' + item.lName}</Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => {
-                        if (membershipStatus === 'Friend') {
-                            handleFriendButtonPress(friendId); // Open the modal to confirm removal
-                        } else {
-                            sendFriendRequest(friendId); // Send a friend request if not already a friend
-                        }
-                    }}
-                    style={[
-                        styles.friendButton,
-                        membershipStatus === 'Friend'
-                            ? styles.friendButtonFriend
-                            : membershipStatus === 'Sent'
-                                ? styles.friendButtonSent
-                                : styles.friendButtonAdd,
-                    ]}
+                    onPress={() => handleInvite(item.id)}
+                    disabled={isInvited}
+                    style={[styles.inviteButton, { backgroundColor: buttonColor }]}
                 >
-                    <Text style={styles.friendButtonText}>{membershipStatus}</Text>
+                    <Text style={styles.inviteButtonText}>{buttonLabel}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -69,16 +47,11 @@ export default function RoomsAddUserScreen() {
     return (
         <View style={styles.screen}>
             <StatusBar style="dark-content" />
-            <SectionList
-                sections={[
-                    { title: 'Friends', data: membersList },
-                    { title: 'Add Friends', data: otherUsersList },
-                ]}
-                keyExtractor={(item) => item.id.toString()}
+            <FlatList
+                data={otherUsersList}
+                keyExtractor={item => item.id.toString()}
                 renderItem={renderUserItem}
-                renderSectionHeader={({ section }) => (
-                    <Text style={styles.sectionHeader}>{section.title}</Text>
-                )}
+                contentContainerStyle={styles.listContainer}
             />
         </View>
     );
@@ -119,10 +92,10 @@ const styles = StyleSheet.create({
         fontSize: hp(2.0),
         color: 'black',
     },
-    friendButton: {
+    inviteButton: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#166939',
+        backgroundColor: 'green',
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -162,7 +135,7 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: 'white',
     },
-    friendButtonText: {
+    inviteButtonText: {
         color: 'white',
         fontWeight: 'bold',
     },
