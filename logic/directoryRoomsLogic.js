@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useAuth } from './authContext';
 
@@ -172,7 +172,7 @@ const directoryRoomsLogic = () => {
         return { membersList, otherUsersList };
     };
 
-    const removeMember = async (userId) => {
+    const removeMember = async (roomId, userId) => {
         try {
             // Get a reference to the room document
             const roomRef = doc(db, 'chatRooms', roomId);
