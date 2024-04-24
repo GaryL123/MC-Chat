@@ -39,7 +39,7 @@ export default function RoomsScreen() {
     return (
       <FlatList
         data={rooms}
-        contentContainerStyle={styles2.flatListContent}
+        contentContainerStyle={ldStyles.flatListContent}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => <RoomItem
@@ -55,7 +55,7 @@ export default function RoomsScreen() {
 
     return (
       <View>
-        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles2.roomItem]}>
+        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[ldStyles.itemContainer]}>
           <Image
             style={ldStyles.profileImage}
             source={{ uri: item?.roomPhoto || defaultProfilePicture }}
@@ -72,7 +72,7 @@ export default function RoomsScreen() {
             </View>
             {isMember ? (
               <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
-                {profanityFilter ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
+                {(profanityFilter || item.roomFilter ) ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
               </Text>
             ) : (
               <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
@@ -97,7 +97,7 @@ export default function RoomsScreen() {
         rooms.length > 0 ? (
           <RoomList rooms={rooms} />
         ) : (
-          <View style={styles2.noFriendsContainer}>
+          <View style={ldStyles.loserContainer}>
             <Text>No rooms</Text>
           </View>
         )
@@ -107,23 +107,6 @@ export default function RoomsScreen() {
 }
 
 const styles2 = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  roomItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: wp(4),
-    marginBottom: hp(1),
-    paddingBottom: hp(1),
-  },
-  profileImage: {
-    height: hp(6),
-    width: hp(6),
-    borderRadius: 100,
-  },
   textContainer: {
     flex: 1,
     marginLeft: wp(4),
@@ -131,29 +114,6 @@ const styles2 = StyleSheet.create({
   nameAndTimeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  nameText: {
-    fontSize: hp(1.8),
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  timeText: {
-    fontSize: hp(1.6),
-    color: 'grey',
-  },
-  lastMessageText: {
-    fontSize: hp(1.6),
-    color: 'grey',
-  },
-  flatListContent: {
-    flexGrow: 1,
-    paddingVertical: 25,
-  },
-  noFriendsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: hp(30),
   },
   createRoomButton: {
     height: hp(4.3),
