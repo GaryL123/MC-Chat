@@ -17,7 +17,7 @@ export default function MessagesScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { item, user, messages, textRef, inputRef, scrollViewRef, sendMessage, sendDoc, GPT } = messagesLogic();
     const [inputText, setInputText] = useState('');
-    const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
+    const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -143,7 +143,7 @@ export default function MessagesScreen() {
 const styles = StyleSheet.create({
     messageListContainer: {
         paddingTop: 15,
-        paddingBottom: 60, // Ensure this is enough space for the input container
+        paddingBottom: 60, 
     },
     messageItemContainer: {
         flexDirection: 'row',
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: '#e0e0e0',
         backgroundColor: 'white',
-        alignItems: 'center',  // Ensure vertical alignment is centered
+        alignItems: 'center',  
     },
     textInput: {
         flex: 1,
@@ -189,20 +189,20 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         paddingLeft: 15,
         fontSize: 16,
-        borderWidth: 1,  // Set border width to create the outline
-        borderColor: '#e0e0e0',  // Set border color to match the send button background
-        borderRadius: 20,  // Keep your rounded corners
+        borderWidth: 1,  
+        borderColor: '#e0e0e0',
+        borderRadius: 20,  
         paddingVertical: 10,
         paddingHorizontal: 12,
-        minHeight: 35 // Set a minimum height
+        minHeight: 35 
     },
     sendButton: {
         padding: 8,
-        width: 44,  // Assign a fixed width
-        height: 44, // Assign a fixed height
-        justifyContent: 'center', // Center the icon vertically and horizontally
+        width: 44,  
+        height: 44,
+        justifyContent: 'center', 
         alignItems: 'center',
-        borderRadius: 22,  // Half of width and height to create a circle
+        borderRadius: 22, 
         backgroundColor: '#e0e0e0',
     },
 });
