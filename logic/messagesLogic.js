@@ -9,6 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import { OpenAI } from 'openai';
 import { getChatId } from './commonLogic';
 import * as DocumentPicker from 'expo-document-picker';
+import { Audio } from 'expo-av';
 
 const messagesLogic = () => {
     const route = useRoute();
@@ -146,7 +147,49 @@ const messagesLogic = () => {
             Alert.alert('Error', `Failed to send media message: ${err.message}`);
         }
     };
+    
+    const requestMicPermission = async () => {
+        const { status } = await Audio.requestPermissionsAsync();
+        return status === 'granted';
+    }
+    
+    const sendAudioMessage = async () => {
+        const permissionGranted = await requestMicPermission();
+        if (!permissionGranted) {
+            console.log("Microphone permission is required.");
+            return;
+        }
+        try {
+            const newRecording = new Audio.Recording();
 
+            await newRecording.prepareToRecordAsync(
+                Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+            );
+
+            await newRecording.startAsync();
+            setRecording(newRecording);
+            setIsRecording(true);
+        }
+        catch (error) {
+            console.error('Failed to start recording: ', error);
+        }
+    }
+    
+    const stopRecording = async () => {
+        if (!recording) { return; }
+
+        try {
+            await recording.stopAndUnloadAsync();
+            const audioUri = recording.gegtURI();
+            setRecording(null);
+            setIsRecording(false);
+
+            return audioUri;
+        } catch (error) {
+            console.error('Failed to stop recording: ', error);
+        }
+    }
+    
     const reportMessage = async (textMessage, chatId, message) => {
         const messageRef = (textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id));
 
