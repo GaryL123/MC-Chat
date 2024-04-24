@@ -11,6 +11,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
   },
   container: {
+    paddingTop: hp(5),
+    paddingHorizontal: wp(5),
+    flex: 1,
+  },
+  loginContainer: {
     paddingTop: hp(15),
     paddingHorizontal: wp(5),
     flex: 1,
