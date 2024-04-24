@@ -14,7 +14,7 @@ export default function SettingsScreen() {
     return (
         <KeyboardAvoidingView style={ darkMode ? ldStyles.screenD : ldStyles.screenL } behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={styles.container}>
+                <View style={ldStyles.container}>
 
                     <TouchableOpacity onPress={() => setShowLanguageModal(true)} style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={"language-outline"} size={hp(2.7)} color="gray" />

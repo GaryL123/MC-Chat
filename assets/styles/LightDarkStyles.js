@@ -10,6 +10,11 @@ const ldStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111111',
   },
+  container: {
+    paddingTop: hp(2.5),
+    paddingHorizontal: wp(5),
+    flex: 1,
+  },
   flatListContent: {
     flexGrow: 1,
     paddingVertical: 25,

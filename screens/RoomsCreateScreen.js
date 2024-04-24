@@ -13,7 +13,7 @@ import ldStyles from '../assets/styles/LightDarkStyles';
 export default function RoomsCreateScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
     const navigation = useNavigation();
-    const { user, selectedImageUri, chooseRoomPicture, createRoom } = roomsLogic(navigation);
+    const { user, selectedImageUri, setSelectedImageUri, chooseRoomPicture, createRoom } = roomsLogic(navigation);
     const [roomName, setRoomName] = useState('');
     const [roomDesc, setRoomDesc] = useState('');
     const [roomPublic, setRoomPublic] = useState(true);
@@ -52,7 +52,11 @@ export default function RoomsCreateScreen() {
     };
 
     const handleDiscard = async () => {
-
+        setRoomName("");
+        setRoomDesc("");
+        setRoomPublic(true);
+        setSelectedImageUri(null);
+        Alert.alert("Changes discarded", "All unsaved changes have been discarded.");
     };
 
     return (

@@ -90,7 +90,7 @@ export default function ProfileScreen() {
     return (
         <KeyboardAvoidingView style={darkMode ? ldStyles.screenD : ldStyles.screenL} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={styles.container}>
+                <View style={ldStyles.container}>
                     <View style={styles.centered}>
                         <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || defaultProfilePicture }} />
                         <TouchableOpacity style={darkMode ? ldStyles.editButtonD : ldStyles.editButtonL} onPress={handleChangeProfilePicture}>

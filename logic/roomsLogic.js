@@ -168,7 +168,7 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    return { user, rooms, selectedImageUri, chooseRoomPicture, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
+    return { user, rooms, selectedImageUri, setSelectedImageUri, chooseRoomPicture, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
 }
 
 export default roomsLogic;
