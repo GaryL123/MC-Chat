@@ -13,7 +13,7 @@ export default function RoomsInvitesScreen() {
 
     useEffect(() => {
         fetchRoomInvites();
-    }, []);
+    }, [roomInvites, acceptRoomInvite, rejectRoomInvite]);
 
     const renderRoomInvitesItem = ({ item }) => {
         return (
@@ -26,7 +26,7 @@ export default function RoomsInvitesScreen() {
                 {/* Add space between email and buttons */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        onPress={() => acceptRoomInvite(item.id)}
+                        onPress={() => acceptRoomInvite(item.roomId, item.id)}
                         style={[styles.inviteButton, styles.acceptButton]}
                     >
                         <Text style={styles.buttonText}>✓</Text>
