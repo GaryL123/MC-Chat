@@ -43,7 +43,7 @@ export default function DirectoryScreen() {
       <View style={ldStyles.itemContainer}>
         <Image style={ldStyles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
         <View style={ldStyles.itemContainerText}>
-          <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item.fName + ' ' + item.lName}</Text>
+          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item.fName + ' ' + item.lName}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -79,7 +79,7 @@ export default function DirectoryScreen() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderUserItem}
         renderSectionHeader={({ section }) => (
-          <Text style={darkMode ? ldStyles.sectionHeaderD : ldStyles.sectionHeaderL}>{section.title}</Text>
+          <Text style={[darkMode ? ldStyles.sectionHeaderD : ldStyles.sectionHeaderL, { fontSize: textSize }]}>{section.title}</Text>
         )}
       />
 
