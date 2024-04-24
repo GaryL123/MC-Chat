@@ -22,7 +22,6 @@ function LoginScreen() {
       return;
     }
 
-    // Validate email prefix
     if (emailPrefix.includes('@') || !/^[a-zA-Z0-9_.-]+$/.test(emailPrefix)) {
       Alert.alert('Invalid Email', "Your email should not contain '@' or special characters.");
       return;
@@ -35,7 +34,6 @@ function LoginScreen() {
       const userCredentials = await signInWithEmailAndPassword(auth, email, password);
       console.log('Logged in with:', userCredentials.user.email);
       setLoading(false);
-      // navigation.navigate('Home'); // Navigate to home screen or next screen
     } catch (error) {
       setLoading(false);
       Alert.alert('Login Error', error.message);
@@ -44,36 +42,36 @@ function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={darkMode ? ldStyles.screenD : ldStyles.screenL}
+      style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={styles.centered}>
-            <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
+            <Image style={styles.logo} resizeMode='contain' source={[darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png'), { fontSize: textSize }]} />
           </View>
 
-          <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>Sign In</Text>
+          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL, { fontSize: textSize }]}>Sign In</Text>
 
-            <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
               <Octicons name="mail" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setEmailPrefix}
-                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
                 placeholder='Email Address'
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
               />
-              <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
+              <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL, { fontSize: textSize }]}>@manhattan.edu</Text>
             </View>
 
-            <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
               <Octicons name="lock" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setPassword}
-                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
                 placeholder='Password'
                 secureTextEntry
                 placeholderTextColor={'gray'}
@@ -88,7 +86,6 @@ function LoginScreen() {
 
             {loading ? (
               <View style={styles.centered}>
-                {/* Loading component or activity indicator */}
               </View>
             ) : (
               <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
