@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAuth } from './authContext'
-import { useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
