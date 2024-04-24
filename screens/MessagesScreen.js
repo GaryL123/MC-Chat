@@ -64,7 +64,7 @@ export default function MessagesScreen() {
 
     const handleSendMessage = async () => {
         await sendMessage();
-        setInputText("");  // Ensure to clear the controlled input text state
+        setInputText("");  
     };
 
     const handleSendDoc = async () => {
@@ -73,17 +73,17 @@ export default function MessagesScreen() {
 
     const handleGPT = async () => {
         const reply = await GPT();
-        setInputText(reply);  // Set input field text with AI reply
+        setInputText(reply);  
         textRef.current = reply;
     };
 
     const handleInputChange = (text) => {
-        setInputText(text);  // Update the text state
-        textRef.current = text;  // Keep ref updated if needed elsewhere
+        setInputText(text);  
+        textRef.current = text;  
     };
 
     const handleContentSizeChange = (event) => {
-        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
+        setInputHeight(event.nativeEvent.contentSize.height); 
     };
 
     return (
@@ -125,8 +125,8 @@ export default function MessagesScreen() {
                     placeholderTextColor={'gray'}
                     style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
                     value={inputText}
-                    multiline={true} // Enable multiline input
-                    scrollEnabled={true} // Allow scrolling inside the input
+                    multiline={true} 
+                    scrollEnabled={true} 
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
                 <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         fontSize: 16,
         borderWidth: 1,  
-        borderColor: '#e0e0e0',
+        borderColor: '#e0e0e0', 
         borderRadius: 20,  
         paddingVertical: 10,
         paddingHorizontal: 12,
@@ -198,11 +198,11 @@ const styles = StyleSheet.create({
     },
     sendButton: {
         padding: 8,
-        width: 44,  
-        height: 44,
+        width: 44, 
+        height: 44, 
         justifyContent: 'center', 
         alignItems: 'center',
-        borderRadius: 22, 
+        borderRadius: 22,  
         backgroundColor: '#e0e0e0',
     },
 });
