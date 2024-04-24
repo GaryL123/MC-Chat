@@ -196,7 +196,8 @@ const ldStyles = StyleSheet.create({
     borderRadius: 20,  // Keep your rounded corners
     paddingVertical: 10,
     paddingHorizontal: 12,
-    minHeight: 35 // Set a minimum height
+    minHeight: 35, // Set a minimum height
+    color: "black",
   },
   textInputD: {
     flex: 1,
@@ -209,7 +210,8 @@ const ldStyles = StyleSheet.create({
     borderRadius: 20,  // Keep your rounded corners
     paddingVertical: 10,
     paddingHorizontal: 12,
-    minHeight: 35 // Set a minimum height
+    minHeight: 35, // Set a minimum height
+    color: "#f1f1f1", 
   },
   circleButtonL: {
     padding: 8,
