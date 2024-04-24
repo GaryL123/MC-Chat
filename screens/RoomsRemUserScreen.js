@@ -19,7 +19,7 @@ export default function RoomsAddUserScreen() {
   }, [roomId]);
 
   const handleRemove = async (userId) => {
-    await removeMember(userId);
+    await removeMember(roomId, userId);
   };
 
   const renderUserItem = ({ item }) => {
