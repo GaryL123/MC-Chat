@@ -25,6 +25,12 @@ const ldStyles = StyleSheet.create({
     width: hp(6),
     borderRadius: 100,
   },
+  profileImageSmall: {
+    height: hp(4.3),
+    aspectRatio: 1,
+    borderRadius: 100,
+    marginBottom: 10,
+  },
   emailDomainL: {
     paddingVertical: hp(1.5),
     fontSize: hp(2),
@@ -175,7 +181,7 @@ const ldStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#e0e0e0',
     backgroundColor: 'white',
-    alignItems: 'center',  // Ensure vertical alignment is centered
+    alignItems: 'center',
   },
   inputContainerD: {
     flexDirection: 'row',
@@ -183,7 +189,7 @@ const ldStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#262626',
     backgroundColor: '#1b1b1b',
-    alignItems: 'center',  // Ensure vertical alignment is centered
+    alignItems: 'center',
   },
   textInputL: {
     flex: 1,
@@ -191,12 +197,12 @@ const ldStyles = StyleSheet.create({
     marginLeft: 8,
     paddingLeft: 15,
     fontSize: 16,
-    borderWidth: 1,  // Set border width to create the outline
-    borderColor: '#e0e0e0',  // Set border color to match the send button background
-    borderRadius: 20,  // Keep your rounded corners
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    minHeight: 35, // Set a minimum height
+    minHeight: 35,
     color: "black",
   },
   textInputD: {
@@ -205,30 +211,30 @@ const ldStyles = StyleSheet.create({
     marginLeft: 8,
     paddingLeft: 15,
     fontSize: 16,
-    borderWidth: 1,  // Set border width to create the outline
-    borderColor: '#262626',  // Set border color to match the send button background
-    borderRadius: 20,  // Keep your rounded corners
+    borderWidth: 1,
+    borderColor: '#262626',
+    borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    minHeight: 35, // Set a minimum height
+    minHeight: 35,
     color: "#f1f1f1", 
   },
   circleButtonL: {
     padding: 8,
-    width: 44,  // Assign a fixed width
-    height: 44, // Assign a fixed height
-    justifyContent: 'center', // Center the icon vertically and horizontally
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 22,  // Half of width and height to create a circle
+    borderRadius: 22,
     backgroundColor: '#e0e0e0',
   },
   circleButtonD: {
     padding: 8,
-    width: 44,  // Assign a fixed width
-    height: 44, // Assign a fixed height
-    justifyContent: 'center', // Center the icon vertically and horizontally
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 22,  // Half of width and height to create a circle
+    borderRadius: 22,
     backgroundColor: '#262626',
   },
   editButtonL: {
@@ -252,6 +258,11 @@ const ldStyles = StyleSheet.create({
     marginLeft: 15,
     aspectRatio: 1,
     borderRadius: 100,
+  },
+  menuContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
   },
   menuItem: {
     paddingHorizontal: 16,
@@ -281,12 +292,12 @@ const ldStyles = StyleSheet.create({
   menuItemTextL: {
     fontSize: hp(1.7),
     fontWeight: '600',
-    color: '#333333',  // This color corresponds to Tailwind's text-neutral-600
+    color: '#333333',
   },
   menuItemTextD: {
     fontSize: hp(1.7),
     fontWeight: '600',
-    color: '#f1f1f1',  // This color corresponds to Tailwind's text-neutral-600
+    color: '#f1f1f1',
   },
   headerTextL: {
     fontSize: hp(4),
@@ -355,6 +366,35 @@ const ldStyles = StyleSheet.create({
     textAlign: 'center',
     color: "#f1f1f1",
   },
+  divider: {
+    height: 1,
+    width: '100%',
+    backgroundColor: '#e2e8f0',
+  },
+  notificationBubble: {
+    minWidth: 20,
+    padding: 2,
+    backgroundColor: 'red',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationBubble2: {
+    position: 'absolute',
+    right: -3,
+    bottom: 3,
+    backgroundColor: 'red',
+    borderRadius: 50,
+    width: hp(2),
+    height: hp(2),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: 'white',
+    fontSize: 10, // Adjust size as necessary
+    padding: 1,
+  }
 });
 
 export default ldStyles;

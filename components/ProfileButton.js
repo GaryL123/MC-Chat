@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,6 @@ import { useAuth } from '../logic/authContext';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import MenuItem from './MenuItem';
-import Divider from './Divider';
 import NotificationBubble from './NotificationBubble';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
@@ -26,17 +25,17 @@ const ProfileButton = () => {
 
   return (
     <TouchableOpacity>
-      <View style={styles.container}>
+      <View style={ldStyles.menuContainer}>
         <View>
           <Menu>
             <MenuTrigger>
               <Image
-                style={styles.profileImage}
+                style={ldStyles.profileImageSmall}
                 source={{ uri: user?.photoURL || defaultProfilePicture }}
               />
               {hasNotifications && (
-                <View style={styles.notificationBubble}>
-                  <Text style={styles.notificationText}>{totalNotifications}</Text>
+                <View style={ldStyles.notificationBubble2}>
+                  <Text style={ldStyles.notificationText}>{totalNotifications}</Text>
                 </View>
               )}
             </MenuTrigger>
@@ -81,43 +80,5 @@ const ProfileButton = () => {
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  profileImage: {
-    height: hp(4.3),
-    aspectRatio: 1,
-    borderRadius: 100,
-    marginBottom: 10,
-  },
-  notificationBubble: {
-    position: 'absolute',
-    right: -3,
-    bottom: 3,
-    backgroundColor: 'red',
-    borderRadius: 50,
-    width: hp(2),
-    height: hp(2),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notificationText: {
-    color: 'white',
-    fontSize: 10,
-  },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  menuOptionsStyle: {
-    borderRadius: 10,
-    marginTop: 30,
-    marginLeft: -30,
-    backgroundColor: 'white',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 0 },
-    width: 190
-  },
-});
 
 export default ProfileButton;
