@@ -18,11 +18,10 @@ export default function FriendRequestsScreen() {
 
     const renderFriendRequestItem = ({ item }) => {
         return (
-            <View style={styles.userItemContainer}>
-                {/* Align the user info and email vertically */}
-                <View style={styles.userInfoContainer}>
-                    <Image style={styles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
-                    <Text style={styles.emailText}>{item.senderEmail}</Text>
+            <View style={ldStyles.itemContainer}>
+                <Image style={ldStyles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
+                <View style={ldStyles.itemContainerText}>
+                    <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item.senderEmail}</Text>
                 </View>
     
                 {/* Add space between email and buttons */}
@@ -31,13 +30,13 @@ export default function FriendRequestsScreen() {
                         onPress={() => acceptFriendRequest(item.id)}
                         style={[styles.friendButton, styles.acceptButton]}
                     >
-                        <Text style={styles.buttonText}>Accept</Text>
+                        <Text style={styles.buttonText}>✓</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => rejectFriendRequest(item.id)}
                         style={[styles.friendButton, styles.rejectButton]}
                     >
-                        <Text style={styles.buttonText}>Reject</Text>
+                        <Text style={styles.buttonText}>X</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -47,11 +46,10 @@ export default function FriendRequestsScreen() {
     
 
     return (
-        <View style={styles.screen}>
-            <StatusBar style="dark-content" />
+        <View style={darkMode ? ldStyles.screenD : ldStyles.screenL}>
             <FlatList
                 data={friendRequests}
-                contentContainerStyle={styles.flatListContent}
+                contentContainerStyle={ldStyles.flatListContent}
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderFriendRequestItem}
             />
@@ -60,62 +58,25 @@ export default function FriendRequestsScreen() {
 }
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    flatListContent: {
-        flexGrow: 1,
-        paddingBottom: 25,
-    },
-    userItemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between', // Ensures consistent spacing
-        paddingHorizontal: wp(2), // Reduced padding for tighter layout
-        marginBottom: hp(1),
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        paddingVertical: hp(1),
-    },
-    userInfoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1, // Makes this container flexible
-    },
-    profileImage: {
-        height: hp(6),
-        width: hp(6),
-        borderRadius: 100,
-    },
-    emailText: {
-        fontSize: hp(1.8),
-        color: 'black',
-        marginLeft: wp(2), // Reduced margin between profile pic and email
-        flex: 1, // Takes available space
-        flexShrink: 1, // Avoids breaking into new lines
-        textAlign: 'center', // Centers text
-        overflow: 'hidden', // Truncate text if too long
-    },
     buttonContainer: {
-        flexDirection: 'column', // Stack buttons vertically
+        flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'flex-end', // Align to the right
+        alignItems: 'flex-end',
     },
     friendButton: {
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: hp(1),
-        paddingHorizontal: wp(3), // Reduced padding for smaller buttons
+        paddingHorizontal: wp(1),
         borderRadius: 5,
-        width: wp(18), // Reduced width to allow more space for email
-        marginBottom: hp(1), // Space between buttons
+        width: wp(8),
+        marginLeft: hp(0.5),
     },
     acceptButton: {
         backgroundColor: '#166939',
     },
     rejectButton: {
-        backgroundColor: 'gray',
+        backgroundColor: 'red',
     },
     buttonText: {
         color: 'white',
