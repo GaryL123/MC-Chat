@@ -87,26 +87,26 @@ export default function MessagesScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={darkMode ? ldStyles.screenD : ldStyles.screenL} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     message.uid !== user.uid ? (
                         <Menu key={index}>
                             <MenuTrigger style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start'}]}>
-                                <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                                    <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                                <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                                    <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
                                         {profanityFilter ? filter.clean(message.text) : message.text}
                                     </Text>
                                 </View>
                             </MenuTrigger>
-                            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
+                            <MenuOptions customStyles={{ optionsContainer: [darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL, { fontSize: textSize }]}}>
                                 <MenuItem text="Report" action={() => handleReportMessage(message)}/>
                             </MenuOptions>
                         </Menu>
                     ) : (
                         <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
-                            <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
-                                <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>
+                            <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]}>
+                                <Text style={[darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]}>
                                     {profanityFilter ? filter.clean(message.text) : message.text}
                                 </Text>
                             </View>
@@ -114,25 +114,25 @@ export default function MessagesScreen() {
                     )
                 ))}
             </ScrollView>
-            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
-                <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+            <View style={[darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
-                    onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                    onContentSizeChange={handleContentSizeChange}
                     placeholder='Type a message...'
                     placeholderTextColor={'gray'}
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
                     value={inputText}
                     multiline={true} // Enable multiline input
                     scrollEnabled={true} // Allow scrolling inside the input
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleGPT} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSendMessage} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
