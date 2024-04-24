@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import FriendRequestsScreen from '../screens/FriendRequestsScreen';
-import HeaderScreenOptions from './navigationConfig';
+import { HeaderScreenOptions } from './navigationConfig';
 
 const FriendRequestsStack = createStackNavigator();
 
