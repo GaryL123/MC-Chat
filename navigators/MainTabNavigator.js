@@ -13,7 +13,6 @@ const Tab = createBottomTabNavigator();
 
 const MainTabNavigator = () => (
     <Tab.Navigator
-
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "white",

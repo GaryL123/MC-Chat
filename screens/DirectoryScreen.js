@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, SectionList, StatusBar, SafeAreaView, StyleSheet, Modal } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import directoryLogic from '../logic/directoryLogic';
-import styles from '../assets/styles/AppStyles';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function DirectoryScreen() {
   const { language, darkMode, textSize } = useSettings();
   const navigation = useNavigation();
   const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
-  const [form, setForm] = useState({ darkMode: true, fontSize: 17 });
 
   const { friendsList, otherUsersList } = getOrganizedUsers();
 

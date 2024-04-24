@@ -1,6 +1,5 @@
-// FriendRequestsScreen.js
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import directoryLogic from '../logic/directoryLogic';
 import { Image } from 'expo-image';
