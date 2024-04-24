@@ -92,73 +92,60 @@ const messagesLogic = () => {
             Alert.alert('Message', err.message);
         }
     }
-    // This function allows the user to choose a file and send it as a media message
+
     const sendMediaMessage = async () => {
         try {
-          console.log('Document picker opened!');
-          const result = await DocumentPicker.getDocumentAsync({
-            type: '*/*', // Allows any file type
-          });
-      
-          console.log('Document picker result:', result);
-      
-          if (result.canceled) {
-            console.log('User canceled the file selection.');
-            return;
-          }
-      
-          // Make sure there's at least one asset and get its data
-          if (result.assets && result.assets.length > 0) {
-            const { uri, mimeType, name } = result.assets[0]; // Correctly accessing the first asset
-      
-            console.log('Selected file:', { uri, mimeType, name });
-      
-            if (uri) {
-              console.log('Fetching blob from URI');
-              const response = await fetch(uri);
-              const blob = await response.blob();
-      
-              console.log('Blob created:', blob);
-      
-              console.log('Uploading to Firebase Storage');
-              const storage = getStorage();
-              const chatId = getChatId(user?.uid, item?.uid);
-              const mediaRef = storageRef(storage, `chatMedia/${chatId}/${Date.now()}_${name}`);
-              await uploadBytes(mediaRef, blob);
-      
-              console.log('Upload successful, getting download URL');
-              const downloadURL = await getDownloadURL(mediaRef);
-      
-              console.log('Download URL:', downloadURL);
-      
-              console.log('Adding to Firestore');
-              const docRef = doc(db, 'chatInds', chatId);
-              const messagesRef = collection(docRef, 'media');
-      
-              await addDoc(messagesRef, {
-                uid: user?.uid,
-                senderName: user?.email,
-                mediaType: mimeType,
-                mediaURL: downloadURL,
-                fileName: name,
-                createdAt: Timestamp.fromDate(new Date()),
-              });
-      
-              console.log('Media message sent successfully.');
-            } else {
-              console.error('URI was undefined or empty');
+            const result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+            });
+
+            if (result.canceled) {
+                return;
             }
-      
-          } else {
-            console.error('No assets found in result.');
-          }
-      
+
+            if (result.assets && result.assets.length > 0) {
+                const { uri, mimeType, name } = result.assets[0];
+
+                if (uri) {
+                    const response = await fetch(uri);
+                    const blob = await response.blob();
+
+                    const storage = getStorage();
+                    const chatId = getChatId(user?.uid, item?.uid);
+                    const mediaRef = storageRef(storage, `chatMedia/${chatId}/${Date.now()}_${name}`);
+                    await uploadBytes(mediaRef, blob);
+
+                    const downloadURL = await getDownloadURL(mediaRef);
+
+                    const docRef = doc(db, 'chatInds', chatId);
+                    const messagesRef = collection(docRef, 'media');
+
+                    await addDoc(messagesRef, {
+                        uid: user?.uid,
+                        senderName: user?.email,
+                        mediaType: mimeType,
+                        mediaURL: downloadURL,
+                        fileName: name,
+                        createdAt: Timestamp.fromDate(new Date()),
+                    });
+
+                } else {
+                    console.error('URI was undefined or empty');
+                }
+
+            } else {
+
+            }
+
         } catch (err) {
-          console.error('Error in pickAndSendMedia:', err);
-          Alert.alert('Error', `Failed to send media message: ${err.message}`);
+            Alert.alert('Error', `Failed to send media message: ${err.message}`);
         }
-      };
-      
+    };
+
+    const reportMessage = async (message) => {
+
+    }
+
 
     const sendDoc = async () => {
         console.log('sending doc...');
@@ -183,13 +170,13 @@ const messagesLogic = () => {
         });
 
         const reply = completion.choices[0]?.message?.content;
-        
+
         return reply;
 
         // TO DO - Render input field with the AI reply
     }
 
-    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendDoc, GPT, sendMediaMessage };
+    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, sendDoc, GPT };
 }
 
 export default messagesLogic;
