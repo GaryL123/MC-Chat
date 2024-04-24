@@ -1,14 +1,15 @@
-import * as DocumentPicker from 'expo-document-picker';
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native';
 import { useAuth } from './authContext'
-import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, runTransaction } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db } from '../firebaseConfig';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { OpenAI } from 'openai';
 import { getChatId } from './commonLogic';
+import * as DocumentPicker from 'expo-document-picker';
+
 const messagesLogic = () => {
     const route = useRoute();
     const { item } = route.params;
@@ -31,15 +32,17 @@ const messagesLogic = () => {
         const qm = query(mediaRef, orderBy('createdAt', 'asc'))
 
         let unsub = onSnapshot(q, (snapshot) => {
-            let allMessages = snapshot.docs.map(doc => {
-                return doc.data();
-            });
+            let allMessages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
             setMessages([...allMessages]);
         });
         let unsubMedia = onSnapshot(qm, (snapshot) => {
-            let allMedia = snapshot.docs.map(doc => {
-                return doc.data();
-            });
+            let allMedia = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
             setMedia([...allMedia]);
         });
 
@@ -76,12 +79,15 @@ const messagesLogic = () => {
     const sendMessage = async () => {
         let message = textRef.current.trim();
         if (!message) return;
+
         try {
             let chatId = getChatId(user?.uid, item?.uid);
             const docRef = doc(db, 'chatInds', chatId);
             const messagesRef = collection(docRef, "messages");
             textRef.current = "";
+
             if (inputRef) inputRef?.current?.clear();
+
             const newDoc = await addDoc(messagesRef, {
                 uid: user?.uid,
                 text: message,
@@ -142,44 +148,76 @@ const messagesLogic = () => {
         }
     };
 
-    const reportMessage = async (chatId, messageId) => {
+    const reportMessage = async (chatId, message) => {
+        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
+
         try {
-            const messageRef = doc(db, 'chatInds', chatId, 'messages', messageId);
-            const messageDoc = await getDoc(messageRef);
+            await runTransaction(db, async (transaction) => {
+                const msgDoc = await transaction.get(messageRef);
+                if (!msgDoc.exists()) {
+                    throw new Error("Document does not exist!");
+                }
 
-            if (!messageDoc.exists()) {
-                console.log('No such message!');
-                return;
-            }
+                const data = msgDoc.data();
+                const newReportCount = (data.reportCount || 0) + 1;
+                let reportedBy = data.reportedBy || [];
 
-            const data = messageDoc.data();
-            const newReportCount = (data.reportCount || 0) + 1;
-            let reportedBy = data.reportedBy || [];
+                if (reportedBy.includes(user?.uid)) {
+                    throw new Error("You have already reported this message.");
+                }
 
-            if (reportedBy.includes(user?.uid)) {
-                Alert.alert('Error', 'You have already reported this message.');
-                return;
-            }
+                // Add the user to the reportedBy array and update the report count
+                reportedBy.push(user?.uid);
+                const newText = newReportCount >= 3 ? '*****' : data.text;
 
-            reportedBy.push(user?.uid);
-
-            await updateDoc(messageRef, {
-                reportCount: newReportCount,
-                reportedBy: reportedBy,
-                text: newReportCount >= 3 ? '*****' : data.text
+                transaction.update(messageRef, {
+                    reportCount: newReportCount,
+                    reportedBy: reportedBy,
+                    text: newText
+                });
             });
 
             Alert.alert('Reported', 'The message has been reported.');
         } catch (err) {
             console.error("Error updating message: ", err);
-            Alert.alert('Error', 'Failed to report the message.');
+            Alert.alert('Error', err.message || 'Failed to report the message.');
         }
     };
 
-    const changeGradYear = async (gradYear) => {
-        const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, { gradYear: gradYear });
-        setProfile(prev => ({ ...prev, gradYear: gradYear }));
+    const unreportMessage = async (chatId, message) => {
+        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const msgDoc = await transaction.get(messageRef);
+                if (!msgDoc.exists()) {
+                    throw new Error("Document does not exist!");
+                }
+
+                const data = msgDoc.data();
+                let newReportCount = data.reportCount || 0;
+                let reportedBy = data.reportedBy || [];
+
+                if (!reportedBy.includes(user?.uid)) {
+                    throw new Error("You have not reported this message yet.");
+                }
+
+                reportedBy = reportedBy.filter(id => id !== user?.uid);
+                newReportCount = Math.max(0, newReportCount - 1);
+                const newText = newReportCount >= 3 ? '*****' : data.text;
+
+                transaction.update(messageRef, {
+                    reportCount: newReportCount,
+                    reportedBy: reportedBy,
+                    text: newText
+                });
+            });
+
+            Alert.alert('Unreported', 'The report has been removed.');
+        } catch (err) {
+            console.error("Error updating message: ", err);
+            Alert.alert('Error', err.message || 'Failed to unreport the message.');
+        }
     };
 
     const sendDoc = async () => {
@@ -211,7 +249,7 @@ const messagesLogic = () => {
         // TO DO - Render input field with the AI reply
     }
 
-    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, sendDoc, GPT };
+    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, sendDoc, GPT };
 }
 
 export default messagesLogic;

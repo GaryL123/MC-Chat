@@ -306,14 +306,14 @@ const ldStyles = StyleSheet.create({
     backgroundColor: '#ebebeb',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
-    width: 95,
+    width: 115,
   },
   menuReportStyleD: {
     borderRadius: 10,
     backgroundColor: '#1b1b1b',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
-    width: 95,
+    width: 115,
   },
   menuItemTextL: {
     fontSize: hp(1.7),

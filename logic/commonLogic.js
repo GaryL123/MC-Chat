@@ -21,6 +21,34 @@ export const formatDate = date => {
     return formattedDate;
 }
 
+export const normalizeDate = (timestamp) => {
+    if (!timestamp) {
+        return '';
+    }
+
+    if (timestamp.toDate) {
+        return timestamp.toDate().toISOString();
+    }
+
+    if (timestamp instanceof Date) {
+        return timestamp.toISOString();
+    }
+
+    if (typeof timestamp === 'number') {
+        return new Date(timestamp).toISOString();
+    }
+
+    if (typeof timestamp === 'string') {
+        return new Date(timestamp).toISOString();
+    }
+
+    if (typeof timestamp === 'object') {
+        return new Date(timestamp).toISOString();
+    }
+
+    return '';
+};
+
 export const generateYears = (startYear, endYear) => {
     let years = [];
     for (let year = startYear; year <= endYear; year++) {

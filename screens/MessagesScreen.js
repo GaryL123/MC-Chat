@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { filter, getChatId } from '../logic/commonLogic';
+import { filter, getChatId, normalizeDate } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
@@ -16,13 +16,12 @@ const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, GPT, sendMediaMessage } = messagesLogic();
+    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35);
     const [selectedMessage, setSelectedMessage] = useState(null);
-    const [reportMenuVisible, setReportMenuVisible] = useState(false);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
 
@@ -51,26 +50,25 @@ export default function MessagesScreen() {
     }, [navigation, item]);
 
     const handlePressMessage = async (message) => {
-        setSelectedMessage(message);
-        setReportMenuVisible(true);
+        setSelectedMessage(message.id);
     }
 
-    const handleMenuDismiss = () => {
-        setReportMenuVisible(false);
-    };
+    const handleReportMessage = async (message, isReported) => {
+        const confirmAction = isReported ? 'Unreport' : 'Report';
 
-    const handleReportMessage = async (message) => {
         Alert.alert(
-            "Report Message",
-            "Are you sure you want to report this message?",
+            `${confirmAction} Message`,
+            `Are you sure you want to ${confirmAction.toLowerCase()} this message?`,
             [
+                { text: "No", style: "cancel" },
                 {
-                    text: "No",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => reportMessage(chatId, message.id),
+                    text: "Yes", onPress: () => {
+                        if (isReported) {
+                            unreportMessage(chatId, message);
+                        } else {
+                            reportMessage(chatId, message);
+                        }
+                    },
                     style: "destructive"
                 }
             ],
@@ -78,11 +76,49 @@ export default function MessagesScreen() {
         );
     };
 
+    const normalizedMessages = messages.map((msg) => ({
+        ...msg,
+        createdAt: normalizeDate(msg.createdAt),
+    }));
+
+    const normalizedMedia = media.map((med) => ({
+        ...med,
+        createdAt: normalizeDate(med.createdAt),
+    }));
+
+    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
+
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");
+    };
+
+    const handleSendDoc = async () => {
+        await sendMediaMessage();
+    }
+
+    const handleGPT = async () => {
+        const reply = await GPT();
+        setInputText(reply);
+        textRef.current = reply;
+    };
+
+    const handleInputChange = (text) => {
+        setInputText(text);
+        textRef.current = text;
+    };
+
+    const handleContentSizeChange = (event) => {
+        setInputHeight(event.nativeEvent.contentSize.height);
+    };
+
     const renderMessageContent = (message) => {
         if ("text" in message) {
             return (
                 <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
-                    {message.reportCount >= 3 ? '*****' : (profanityFilter ? filter.clean(message.text) : message.text)}
+                    {message.reportedBy?.includes(user?.uid) || message.reportCount >= 3 ? '*****' : (profanityFilter ? filter.clean(message.text) : message.text)}
                 </Text>
             );
         } else if ("mediaURL" in message) {
@@ -130,87 +166,21 @@ export default function MessagesScreen() {
         }
     };
 
-    const normalizeDate = (timestamp) => {
-        if (!timestamp) {
-            return '';
-        }
-
-        if (timestamp.toDate) {
-            return timestamp.toDate().toISOString();
-        }
-
-        if (timestamp instanceof Date) {
-            return timestamp.toISOString();
-        }
-
-        if (typeof timestamp === 'number') {
-            return new Date(timestamp).toISOString();
-        }
-
-        if (typeof timestamp === 'string') {
-            return new Date(timestamp).toISOString();
-        }
-
-        if (typeof timestamp === 'object') {
-            return new Date(timestamp).toISOString();
-        }
-
-        return '';
-    };
-
-    const normalizedMessages = messages.map((msg) => ({
-        ...msg,
-        createdAt: normalizeDate(msg.createdAt),
-    }));
-
-    const normalizedMedia = media.map((med) => ({
-        ...med,
-        createdAt: normalizeDate(med.createdAt),
-    }));
-
-    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
-    const handleSendMessage = async () => {
-        await sendMessage();
-        setInputText("");
-    };
-
-    const handleSendDoc = async () => {
-        await sendMediaMessage();
-    }
-
-    const handleGPT = async () => {
-        const reply = await GPT();
-        setInputText(reply);
-        textRef.current = reply;
-    };
-
-    const handleInputChange = (text) => {
-        setInputText(text);
-        textRef.current = text;
-    };
-
-    const handleContentSizeChange = (event) => {
-        setInputHeight(event.nativeEvent.contentSize.height);
-    };
-
     return (
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {combinedMessages.map((message, index) => (
                     message.uid !== user.uid ? (
-                        <TouchableOpacity key={index} onLongPress={() => handlePressMessage(message)}>
+                        <TouchableOpacity key={message.id || index} onLongPress={() => handlePressMessage(message)}>
                             <View style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
                                 <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
                                     {renderMessageContent(message)}
                                 </View>
                             </View>
-                            <Menu opened={reportMenuVisible} onBackdropPress={handleMenuDismiss}>
+                            <Menu opened={selectedMessage === message.id} onBackdropPress={() => setSelectedMessage(null)}>
                                 <MenuTrigger />
                                 <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
-                                    <MenuItem text="Report" action={() => handleReportMessage(chatId, message)} />
+                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? "Unreport" : "Report"} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
                                 </MenuOptions>
                             </Menu>
                         </TouchableOpacity>
