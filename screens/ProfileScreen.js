@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Switch, Platform, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Image } from 'expo-image';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons, FontAwesome6 } from '@expo/vector-icons';
-import { defaultProfilePicture, generateYears, currentYear, mcMajors } from '../logic/commonLogic';
+import { filter, defaultProfilePicture, generateYears, currentYear, mcMajors, mcDepts, mcTitles } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
 import styles from '../assets/styles/AppStyles';
@@ -12,7 +12,7 @@ import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function ProfileScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { user, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changePassword } = profileLogic();
+    const { user, chooseProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changeDept, changeTitle, changePassword } = profileLogic();
     const [fName, setFName] = useState(user?.fName || "");
     const [lName, setLName] = useState(user?.lName || "");
     const [email, setEmail] = useState(user?.email.split('@')[0] || "");
@@ -23,6 +23,10 @@ export default function ProfileScreen() {
     const gradYears = generateYears(1950, 2030);
     const [faculty, setFaculty] = useState(user?.faculty || false);
     const [originalFaculty, setOriginalFaculty] = useState(user?.faculty);
+    const [dept, setDept] = useState(user?.dept || "");
+    const [showDeptPicker, setShowDeptPicker] = useState(false);
+    const [title, setTitle] = useState(user?.title || "");
+    const [showTitlePicker, setShowTitlePicker] = useState(false);
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
@@ -41,8 +45,8 @@ export default function ProfileScreen() {
         }
 
         if (fName) {
-            if (fName.length < 2 || fName.length > 30 || invalidChars.test(fName)) {
-                Alert.alert('Profile', 'First Name should be between 2 and 30 characters and not contain special characters')
+            if (fName.length < 2 || fName.length > 30 || invalidChars.test(fName) || filter.isProfane(fName)) {
+                Alert.alert('Profile', 'First Name should be between 2 - 30 characters, not contain special characters, and not be profanity')
                 return;
             }
             else {
@@ -51,8 +55,8 @@ export default function ProfileScreen() {
         }
 
         if (lName) {
-            if (lName.length < 2 || lName.length > 30 || invalidChars.test(lName)) {
-                Alert.alert('Profile', 'Last Name should be between 2 and 30 characters and not contain special characters')
+            if (lName.length < 2 || lName.length > 30 || invalidChars.test(lName) || filter.isProfane(lName)) {
+                Alert.alert('Profile', 'Last Name should be between 2 - 30 characters, not contain special characters, and not be profanity')
                 return;
             }
             else {
@@ -81,6 +85,15 @@ export default function ProfileScreen() {
         if (faculty != originalFaculty) {
             await changeFaculty(faculty);
         }
+
+        if (dept) {
+            await changeDept(dept);
+        }
+
+        if (title) {
+            await changeTitle(title);
+        }
+
 
         if (password) {
             if (passwordConfirm.current != password.current) {
@@ -163,74 +176,134 @@ export default function ProfileScreen() {
                         <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
                     </View>
 
-                    <View style={styles.inputContainerHoriz}>
-                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
-                            <TouchableOpacity onPress={() => setShowMajorPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{major || "Major"}</Text>
-                                <Octicons name="chevron-down" size={24} color="gray" />
-                            </TouchableOpacity>
-                            <Modal animationType="none" transparent={true} visible={showMajorPicker} onRequestClose={() => setShowMajorPicker(false)}>
-                                <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
-                                    <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
-                                        <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Major</Text>
-                                        <Picker
-                                            selectedValue={major}
-                                            onValueChange={(itemValue, itemIndex) => {
-                                                setMajor(itemValue);
-                                                setShowMajorPicker(false);
-                                            }}
-                                            itemStyle={{
-                                                color: darkMode ? '#f1f1f1' : '#333333'
-                                            }}
-                                        >
-                                            {mcMajors.map((major, index) => (
-                                                <Picker.Item key={index} label={major} value={major} />
-                                            ))}
-                                        </Picker>
-                                    </View>
-                                </View>
-                            </Modal>
-                        </View>
-
-                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
-                            <TouchableOpacity onPress={() => setShowGradYearPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{gradYear || "Graduation Year"}</Text>
-                                <Octicons name="chevron-down" size={24} color="gray" />
-                            </TouchableOpacity>
-                            <Modal animationType="none" transparent={true} visible={showGradYearPicker} onRequestClose={() => setShowGradYearPicker(false)}>
-                                <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
-                                    <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
-                                        <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Graduation Year</Text>
-                                        <Picker
-                                            selectedValue={gradYear || currentYear}
-                                            onValueChange={(itemValue, itemIndex) => {
-                                                setGradYear(itemValue);
-                                                setShowGradYearPicker(false);
-                                            }}
-                                            itemStyle={{
-                                                color: darkMode ? '#f1f1f1' : '#333333'
-                                            }}
-                                        >
-                                            {gradYears.map((gradYear, index) => (
-                                                <Picker.Item key={index} label={gradYear} value={gradYear} />
-                                            ))}
-                                        </Picker>
-                                    </View>
-                                </View>
-                            </Modal>
-                        </View>
-                    </View>
-
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <FontAwesome6 name={faculty ? "person-harassing" : "person-drowning"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             {faculty ? 'Faculty' : 'Student'}
                         </Text>
                         <Switch
-                            onValueChange={() => setFaculty(previousState => !previousState)}
+                            onValueChange={() => {setFaculty(previousState => !previousState), setMajor(user?.major || ""), setGradYear(user?.gradYear || ""), setDept(user?.dept || ""), setTitle(user?.title || "")}}
                             value={faculty}
                         />
                     </View>
+
+                    {!faculty ? (
+                        <View style={styles.inputContainerHoriz}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                                <TouchableOpacity onPress={() => setShowMajorPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{major || "Major"}</Text>
+                                    <Octicons name="chevron-down" size={24} color="gray" />
+                                </TouchableOpacity>
+                                <Modal animationType="none" transparent={true} visible={showMajorPicker} onRequestClose={() => setShowMajorPicker(false)}>
+                                    <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                        <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                            <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Major</Text>
+                                            <Picker
+                                                selectedValue={major}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    setMajor(itemValue);
+                                                    setShowMajorPicker(false);
+                                                }}
+                                                itemStyle={{
+                                                    color: darkMode ? '#f1f1f1' : '#333333'
+                                                }}
+                                            >
+                                                {mcMajors.map((major, index) => (
+                                                    <Picker.Item key={index} label={major} value={major} />
+                                                ))}
+                                            </Picker>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </View>
+
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                                <TouchableOpacity onPress={() => setShowGradYearPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{gradYear || "Grad. Year"}</Text>
+                                    <Octicons name="chevron-down" size={24} color="gray" />
+                                </TouchableOpacity>
+                                <Modal animationType="none" transparent={true} visible={showGradYearPicker} onRequestClose={() => setShowGradYearPicker(false)}>
+                                    <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                        <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                            <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Graduation Year</Text>
+                                            <Picker
+                                                selectedValue={gradYear || currentYear}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    setGradYear(itemValue);
+                                                    setShowGradYearPicker(false);
+                                                }}
+                                                itemStyle={{
+                                                    color: darkMode ? '#f1f1f1' : '#333333'
+                                                }}
+                                            >
+                                                {gradYears.map((gradYear, index) => (
+                                                    <Picker.Item key={index} label={gradYear} value={gradYear} />
+                                                ))}
+                                            </Picker>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </View>
+                        </View>
+                    ) : (
+                        <View style={styles.inputContainerHoriz}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                                <TouchableOpacity onPress={() => setShowDeptPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{dept || "Department"}</Text>
+                                    <Octicons name="chevron-down" size={24} color="gray" />
+                                </TouchableOpacity>
+                                <Modal animationType="none" transparent={true} visible={showDeptPicker} onRequestClose={() => setShowDeptPicker(false)}>
+                                    <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                        <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                            <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Department</Text>
+                                            <Picker
+                                                selectedValue={dept}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    setDept(itemValue);
+                                                    setShowDeptPicker(false);
+                                                }}
+                                                itemStyle={{
+                                                    color: darkMode ? '#f1f1f1' : '#333333'
+                                                }}
+                                            >
+                                                {mcDepts.map((dept, index) => (
+                                                    <Picker.Item key={index} label={dept} value={dept} />
+                                                ))}
+                                            </Picker>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </View>
+
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                                <TouchableOpacity onPress={() => setShowTitlePicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{title || "Title"}</Text>
+                                    <Octicons name="chevron-down" size={24} color="gray" />
+                                </TouchableOpacity>
+                                <Modal animationType="none" transparent={true} visible={showTitlePicker} onRequestClose={() => setShowTitlePicker(false)}>
+                                    <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                        <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                            <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Title</Text>
+                                            <Picker
+                                                selectedValue={title}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    setTitle(itemValue);
+                                                    setShowTitlePicker(false);
+                                                }}
+                                                itemStyle={{
+                                                    color: darkMode ? '#f1f1f1' : '#333333'
+                                                }}
+                                            >
+                                                {mcTitles.map((title, index) => (
+                                                    <Picker.Item key={index} label={title} value={title} />
+                                                ))}
+                                            </Picker>
+                                        </View>
+                                    </View>
+                                </Modal>
+                            </View>
+                        </View>
+                    )}
 
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name="lock" size={hp(2.7)} color="gray" />

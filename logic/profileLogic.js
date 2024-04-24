@@ -118,13 +118,25 @@ const profileLogic = () => {
         setProfile(prev => ({ ...prev, faculty: faculty }));
     };
 
+    const changeDept = async (dept) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { dept: dept });
+        setProfile(prev => ({ ...prev, dept: dept }));
+    };
+
+    const changeTitle = async (title) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { title: title });
+        setProfile(prev => ({ ...prev, title: title }));
+    };
+
     const changePassword = async (password) => {
         const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, { password: password });
         setProfile(prev => ({ ...prev, password: password }));
     };
 
-    return { user: profile, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changePassword };
+    return { user: profile, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changeDept, changeTitle, changePassword };
 }
 
 export default profileLogic;
