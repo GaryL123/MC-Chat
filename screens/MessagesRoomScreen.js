@@ -47,6 +47,12 @@ export default function MessagesRoomScreen() {
                                                 icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
+                                                text="Add Admins"
+                                                action={() => navigation.navigate('Add Admins', { roomId })}
+                                                value={null}
+                                                icon={<Ionicons name="person-add" size={hp(2.5)} color="gray" />}
+                                            />
+                                            <MenuItem
                                                 text="Room Settings"
                                                 action={() => navigation.navigate('Room Settings', { roomId })}
                                                 value={null}

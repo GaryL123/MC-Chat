@@ -18,7 +18,7 @@ export default function ChatsScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Create a Group Chat')} style={ldStyles.createRoomButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('New Group Chat')} style={ldStyles.createRoomButton}>
           <Ionicons name="add-circle-outline" size={30} color="white" />
         </TouchableOpacity>
       ),

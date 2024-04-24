@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
@@ -90,7 +89,7 @@ export default function ProfileScreen() {
     return (
         <KeyboardAvoidingView style={darkMode ? ldStyles.screenD : ldStyles.screenL} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={ldStyles.container}>
+                <View style={ldStyles.container2}>
                     <View style={styles.centered}>
                         <Image style={styles.profileImageProfilePage} source={{ uri: user?.photoURL || defaultProfilePicture }} />
                         <TouchableOpacity style={darkMode ? ldStyles.editButtonD : ldStyles.editButtonL} onPress={handleChangeProfilePicture}>
