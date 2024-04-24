@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'r
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { filter } from '../logic/commonLogic';
+import { filter, defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import roomsLogic from '../logic/roomsLogic';
 import styles from '../assets/styles/AppStyles';
@@ -57,8 +57,8 @@ export default function RoomsScreen() {
       <View>
         <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles2.roomItem]}>
           <Image
-            style={styles2.profileImage}
-            source={{ blurhash }}
+            style={ldStyles.profileImage}
+            source={{ uri: item?.roomPhoto || defaultProfilePicture }}
             disabled={!isMember}
           />
           <View style={styles2.textContainer}>

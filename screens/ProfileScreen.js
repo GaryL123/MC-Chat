@@ -110,6 +110,7 @@ export default function ProfileScreen() {
                                 placeholder={user?.fName}
                                 placeholderTextColor={'gray'}
                                 autoCapitalize="none"
+                                keyboardAppearance={darkMode ? 'dark' : 'light'}
                             />
                         </View>
 
@@ -122,6 +123,7 @@ export default function ProfileScreen() {
                                 placeholder={user?.lName}
                                 placeholderTextColor={'gray'}
                                 autoCapitalize="none"
+                                keyboardAppearance={darkMode ? 'dark' : 'light'}
                             />
                         </View>
                     </View>
@@ -135,6 +137,7 @@ export default function ProfileScreen() {
                             placeholder={user?.email.split('@')[0]}
                             placeholderTextColor={'gray'}
                             autoCapitalize="none"
+                            keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
                         <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
                     </View>
@@ -148,6 +151,7 @@ export default function ProfileScreen() {
                             secureTextEntry
                             placeholderTextColor={'gray'}
                             textContentType="oneTimeCode"
+                            keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
                     </View>
 
@@ -160,6 +164,7 @@ export default function ProfileScreen() {
                             secureTextEntry
                             placeholderTextColor={'gray'}
                             textContentType="oneTimeCode"
+                            keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
                     </View>
 
