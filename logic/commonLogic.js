@@ -30,3 +30,29 @@ export const generateYears = (startYear, endYear) => {
 };
 
 export const currentYear = new Date().getFullYear();
+
+export const mcMajors = [
+    "Accounting",
+    "Biology",
+    "Business",
+    "Chemical Engineering",
+    "Civil Engineering",
+    "Computer Science",
+    "Digital Media Art",
+    "Economics",
+    "Electrical Engineering",
+    "English",
+    "Finance",
+    "History",
+    "Management",
+    "Marketing",
+    "Mathematics",
+    "Mechanical Engineering",
+    "Philosophy",
+    "Physics",
+    "Political Science",
+    "Psychology",
+    "Sociology",
+    "Software Engineering",
+    "Undergraduate"
+];

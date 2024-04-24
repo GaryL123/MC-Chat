@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Image } from 'expo-image';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons, FontAwesome6 } from '@expo/vector-icons';
-import { defaultProfilePicture, generateYears, currentYear } from '../logic/commonLogic';
+import { defaultProfilePicture, generateYears, currentYear, mcMajors } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
 import styles from '../assets/styles/AppStyles';
@@ -18,7 +18,6 @@ export default function ProfileScreen() {
     const [email, setEmail] = useState(user?.email.split('@')[0] || "");
     const [major, setMajor] = useState(user?.major || "");
     const [showMajorPicker, setShowMajorPicker] = useState(false);
-    const majors = ["Biology", "Business", "Computer Science", "Engineering", "Arts", "Science"];
     const [gradYear, setGradYear] = useState(user?.gradYear || "");
     const [showGradYearPicker, setShowGradYearPicker] = useState(false);
     const gradYears = generateYears(1950, 2030);
@@ -184,7 +183,7 @@ export default function ProfileScreen() {
                                                 color: darkMode ? '#f1f1f1' : '#333333'
                                             }}
                                         >
-                                            {majors.map((major, index) => (
+                                            {mcMajors.map((major, index) => (
                                                 <Picker.Item key={index} label={major} value={major} />
                                             ))}
                                         </Picker>
