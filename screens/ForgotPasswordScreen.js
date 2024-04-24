@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Image, KeyboardAvoidingView, ScrollView, Platform, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
-import styles from '../assets/styles/AppStyles';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import { useSettings } from '../logic/settingsContext';
+import styles from '../assets/styles/AppStyles';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
 function ForgotPasswordScreen() {
+  const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const [emailPrefix, setEmailPrefix] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,13 +18,13 @@ function ForgotPasswordScreen() {
   const email = `${emailPrefix}@manhattan.edu`;
   const resetPassword = async (email) => {
     try {
-        await sendPasswordResetEmail(auth, email);
-        return { success: true, msg: 'Password reset email sent.' };
+      await sendPasswordResetEmail(auth, email);
+      return { success: true, msg: 'Password reset email sent.' };
     } catch (e) {
-        let msg = e.message;
-        if (msg.includes('auth/invalid-email')) msg = 'Invalid email';
-        if (msg.includes('auth/user-not-found')) msg = 'No user found with this email';
-        return { success: false, msg };
+      let msg = e.message;
+      if (msg.includes('auth/invalid-email')) msg = 'Invalid email';
+      if (msg.includes('auth/user-not-found')) msg = 'No user found with this email';
+      return { success: false, msg };
     }
   }
   const handleResetPassword = async () => {
@@ -34,52 +36,61 @@ function ForgotPasswordScreen() {
     setLoading(true);
     const response = await resetPassword(email);
     setLoading(false);
-    if(!response.success){
-        Alert.alert('Forgot Password', response.msg);
+    if (!response.success) {
+      Alert.alert('Forgot Password', response.msg);
     }
-    else{
-        Alert.alert('Success', 'Check your email to reset your password.');
-        navigation.navigate('Login'); 
+    else {
+      Alert.alert('Success', 'Check your email to reset your password.');
+      navigation.navigate('Login');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.centered}>
-        <Image style={styles.logo} resizeMode='contain' source={require('../assets/MCChat_Color_512px.png')} />
-      </View>
+    <KeyboardAvoidingView
+      style={darkMode ? ldStyles.screenD : ldStyles.screenL}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.container}>
+          <View style={styles.centered}>
+            <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
+          </View>
 
-      <Text style={styles.headerText}>Forgot Password</Text>
+          <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>Forgot Password</Text>
 
-      <View style={styles.inputContainer}>
-        <Octicons name="mail" size={hp(2.7)} color="gray" />
-        <TextInput
-        onChangeText={setEmailPrefix}
-        style={styles.input}
-        placeholder='Email Address'
-        placeholderTextColor={'gray'}
-        autoCapitalize="none"
-        />
-        <Text style={styles.emailDomain}>@manhattan.edu</Text>
-      </View>
+          <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
+            <Octicons name="mail" size={hp(2.7)} color="gray" />
+            <TextInput
+              onChangeText={setEmailPrefix}
+              style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
+              placeholder='Email Address'
+              placeholderTextColor={'gray'}
+              autoCapitalize="none"
+              keyboardAppearance={darkMode ? 'dark' : 'light'}
+            />
+            <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
+          </View>
 
-      {loading ? (
-        <View style={styles.centered}>
-          {/* Loading indicator or component */}
+          {loading ? (
+            <View style={styles.centered}>
+              {/* Loading indicator or component */}
+            </View>
+          ) : (
+            <TouchableOpacity onPress={handleResetPassword} style={styles.loginButton}>
+              <Text style={styles.loginButtonText}>Reset Password</Text>
+            </TouchableOpacity>
+          )}
+
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>Remembered your password? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.registerLink}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      ) : (
-        <TouchableOpacity onPress={handleResetPassword} style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>Reset Password</Text>
-        </TouchableOpacity>
-      )}
-
-      <View style={styles.registerContainer}>
-        <Text style={styles.registerText}>Remembered your password? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.registerLink}>Sign In</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

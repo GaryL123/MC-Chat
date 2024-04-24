@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform
-} from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Image, StyleSheet, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useSettings } from '../logic/settingsContext';
 import styles from '../assets/styles/AppStyles';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
 function LoginScreen() {
+  const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const [emailPrefix, setEmailPrefix] = useState('');
   const [password, setPassword] = useState('');
@@ -53,39 +44,41 @@ function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={darkMode ? ldStyles.screenD : ldStyles.screenL}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={styles.centered}>
-            <Image style={styles.logo} resizeMode='contain' source={require('../assets/MCChat_Color_512px.png')} />
+            <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
           </View>
 
-          <Text style={styles.headerText}>Sign In</Text>
+          <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>Sign In</Text>
 
-            <View style={styles.inputContainer}>
+            <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
               <Octicons name="mail" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setEmailPrefix}
-                style={styles.input}
+                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                 placeholder='Email Address'
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
+                keyboardAppearance={darkMode ? 'dark' : 'light'}
               />
-              <Text style={styles.emailDomain}>@manhattan.edu</Text>
+              <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
               <Octicons name="lock" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setPassword}
-                style={styles.input}
+                style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                 placeholder='Password'
                 secureTextEntry
                 placeholderTextColor={'gray'}
                 textContentType="oneTimeCode"
+                keyboardAppearance={darkMode ? 'dark' : 'light'}
               />
             </View>
 
