@@ -15,8 +15,8 @@ const ios = Platform.OS == 'ios';
 export default function MessagesRoomScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { roomId, roomName, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
-    const [inputText, setInputText] = useState('');  // Manage input text directly
-    const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
+    const [inputText, setInputText] = useState('');  
+    const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -31,7 +31,7 @@ export default function MessagesRoomScreen() {
                                 <MenuTrigger>
                                     <Entypo name="dots-three-vertical" size={24} color="white" />
                                 </MenuTrigger>
-                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
+                                <MenuOptions customStyles={{ optionsContainer: [darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL, { fontSize: textSize }] }}>
                                     {isAdmin && (
                                         <>
                                             <MenuItem
@@ -91,44 +91,44 @@ export default function MessagesRoomScreen() {
     }
 
     const handleInputChange = (text) => {
-        setInputText(text);  // Update state with text input by user
-        textRef.current = text;  // Keep ref updated if needed elsewhere
+        setInputText(text);  
+        textRef.current = text;  
     };
 
     const handleContentSizeChange = (event) => {
-        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
+        setInputHeight(event.nativeEvent.contentSize.height);  
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={darkMode ? ldStyles.screenD : ldStyles.screenL} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
                         {message.uid !== user.uid && (<Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>)}
-                        <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                            <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                        <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                            <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
                                 {(profanityFilter || roomFilter) ? filter.clean(message.text) : message.text}
                             </Text>
                         </View>
                     </View>
                 ))}
             </ScrollView>
-            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
-                <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+            <View style={[darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
-                    onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+                    onContentSizeChange={handleContentSizeChange} 
                     placeholder='Type a message...'
                     placeholderTextColor={'gray'}
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
                     value={inputText}
-                    multiline={true} // Enable multiline input
-                    scrollEnabled={true} // Allow scrolling inside the input
+                    multiline={true} 
+                    scrollEnabled={true} 
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleSendMessage} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
