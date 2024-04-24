@@ -104,7 +104,7 @@ export default function MessagesRoomScreen() {
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                        {message.uid !== user.uid && (<Text style={styles.senderName}>{message.senderFName + ' ' + message.senderLName}</Text>)}
+                        {message.uid !== user.uid && (<Text style={[styles.senderName, { fontSize: textSize }]}>{message.senderFName + ' ' + message.senderLName}</Text>)}
                         <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL), { fontSize: textSize }]}>
                             <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : ([darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }])}>
                                 {(profanityFilter || roomFilter) ? filter.clean(message.text) : message.text}
