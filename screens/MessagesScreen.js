@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, ScrollView, StyleSheet, Image, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+import { Feather } from '@expo/vector-icons';
 import { filter } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
+import MenuItem from '../components/MenuItem';
 import messagesLogic from '../logic/messagesLogic';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
@@ -41,6 +43,25 @@ export default function MessagesScreen() {
         });
     }, [navigation, item]);
 
+    const handleReportMessage = async (message) => {
+        Alert.alert(
+            "Report Message",
+            "Are you sure you want to report this message?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: () => reportMessage(message),
+                    style: "destructive"
+                }
+            ],
+            { cancelable: true }
+        );
+    };
+
     const handleSendMessage = async () => {
         await sendMessage();
         setInputText("");  // Ensure to clear the controlled input text state
@@ -69,13 +90,28 @@ export default function MessagesScreen() {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={darkMode ? ldStyles.screenD : ldStyles.screenL} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
-                    <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                        <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                            <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
-                                {profanityFilter ? filter.clean(message.text) : message.text}
-                            </Text>
+                    message.uid !== user.uid ? (
+                        <Menu key={index}>
+                            <MenuTrigger style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start'}]}>
+                                <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                                    <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                                        {profanityFilter ? filter.clean(message.text) : message.text}
+                                    </Text>
+                                </View>
+                            </MenuTrigger>
+                            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
+                                <MenuItem text="Report" action={() => handleReportMessage(message)}/>
+                            </MenuOptions>
+                        </Menu>
+                    ) : (
+                        <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
+                            <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
+                                <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>
+                                    {profanityFilter ? filter.clean(message.text) : message.text}
+                                </Text>
+                            </View>
                         </View>
-                    </View>
+                    )
                 ))}
             </ScrollView>
             <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
