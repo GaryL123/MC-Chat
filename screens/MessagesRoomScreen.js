@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons, Feather, Entypo } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { filter } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import ldStyles from '../assets/styles/LightDarkStyles';
 import messagesRoomLogic from '../logic/messagesRoomLogic';
+import MenuItem from '../components/MenuItem';
 
 const ios = Platform.OS == 'ios';
 
@@ -25,13 +25,13 @@ export default function MessagesRoomScreen() {
             headerTitle: roomName,
             headerRight: () => (
                 <TouchableOpacity>
-                    <View style={styles.container}>
+                    <View style={ldStyles.menuContainer}>
                         <View>
                             <Menu>
                                 <MenuTrigger>
                                     <Entypo name="dots-three-vertical" size={24} color="white" />
                                 </MenuTrigger>
-                                <MenuOptions customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
+                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
                                     {isAdmin && (
                                         <>
                                             <MenuItem
@@ -40,21 +40,18 @@ export default function MessagesRoomScreen() {
                                                 value={null}
                                                 icon={<Ionicons name="person-add-outline" size={hp(2.5)} color="gray" />}
                                             />
-                                            <Divider />
                                             <MenuItem
                                                 text="Remove Users"
                                                 action={() => navigation.navigate('Remove Users', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
                                             />
-                                            <Divider />
                                             <MenuItem
                                                 text="Room Settings"
                                                 action={() => navigation.navigate('Room Settings', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
                                             />
-                                            <Divider />
                                         </>
                                     )}
                                     <MenuItem
@@ -94,25 +91,6 @@ export default function MessagesRoomScreen() {
 
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
-    };
-
-    const MenuItem = ({ text, action, value, icon, customContent }) => {
-        return (
-            <MenuOption onSelect={() => action(value)}>
-                <View style={styles.menuItem}>
-                    <Text style={styles.menuItemText}>
-                        {text}
-                    </Text>
-                    {customContent ? customContent : icon}
-                </View>
-            </MenuOption>
-        );
-    };
-
-    const Divider = () => {
-        return (
-            <View style={styles.divider2} />
-        );
     };
 
     return (

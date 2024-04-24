@@ -23,7 +23,7 @@ export default function FriendRequestsScreen() {
                 <View style={ldStyles.itemContainerText}>
                     <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item.senderEmail}</Text>
                 </View>
-    
+
                 {/* Add space between email and buttons */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
@@ -42,8 +42,6 @@ export default function FriendRequestsScreen() {
             </View>
         );
     };
-    
-    
 
     return (
         <View style={darkMode ? ldStyles.screenD : ldStyles.screenL}>
