@@ -4146,6 +4146,11 @@ expo-av@^13.10.6:
   resolved "https://registry.npmjs.org/expo-av/-/expo-av-13.10.6.tgz"
   integrity sha512-h3c1fg5yhWnP0RIGO+fhgPx6cmh4B4lnKdXR2i69aC3vs5D5Cu+JlzBon1gLIu6eUo2IVfC0RjSLpfQbcJ4doQ==
 
+expo-blur@^12.9.2:
+  version "12.9.2"
+  resolved "https://registry.npmjs.org/expo-blur/-/expo-blur-12.9.2.tgz"
+  integrity sha512-q+EIOkXw7OCE3VBTLRANsUIdMxtFWDTFpaMulJEXMwtxNQaCcAvzHZvwWP9dlI96FM4A6UdX2/slBNfNJzJcCQ==
+
 expo-constants@*, expo-constants@^15.4.5, expo-constants@~15.4.0, expo-constants@~15.4.3:
   version "15.4.5"
   resolved "https://registry.npmjs.org/expo-constants/-/expo-constants-15.4.5.tgz"

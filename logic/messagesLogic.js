@@ -18,7 +18,6 @@ const messagesLogic = () => {
     const [media, setMedia] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
-    // const [aiReply, setAiReply] = useState('');
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
@@ -148,8 +147,8 @@ const messagesLogic = () => {
         }
     };
 
-    const reportMessage = async (chatId, message) => {
-        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
+    const reportMessage = async (textMessage, chatId, message) => {
+        const messageRef = (textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id));
 
         try {
             await runTransaction(db, async (transaction) => {
@@ -166,15 +165,18 @@ const messagesLogic = () => {
                     throw new Error("You have already reported this message.");
                 }
 
-                // Add the user to the reportedBy array and update the report count
                 reportedBy.push(user?.uid);
-                const newText = newReportCount >= 3 ? '*****' : data.text;
 
-                transaction.update(messageRef, {
+                const updateData = {
                     reportCount: newReportCount,
-                    reportedBy: reportedBy,
-                    text: newText
-                });
+                    reportedBy: reportedBy
+                };
+
+                if (data.text !== undefined) {
+                    updateData.text = newReportCount >= 3 ? '*****' : data.text;
+                }
+
+                transaction.update(messageRef, updateData);
             });
 
             Alert.alert('Reported', 'The message has been reported.');
@@ -184,35 +186,42 @@ const messagesLogic = () => {
         }
     };
 
-    const unreportMessage = async (chatId, message) => {
-        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
-
+    const unreportMessage = async (textMessage, chatId, message) => {
+        const messageRef = textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id);
+    
         try {
             await runTransaction(db, async (transaction) => {
                 const msgDoc = await transaction.get(messageRef);
                 if (!msgDoc.exists()) {
                     throw new Error("Document does not exist!");
                 }
-
+    
                 const data = msgDoc.data();
                 let newReportCount = data.reportCount || 0;
                 let reportedBy = data.reportedBy || [];
-
+    
                 if (!reportedBy.includes(user?.uid)) {
                     throw new Error("You have not reported this message yet.");
                 }
-
+    
+                // Remove user from reportedBy array and decrement report count
                 reportedBy = reportedBy.filter(id => id !== user?.uid);
                 newReportCount = Math.max(0, newReportCount - 1);
-                const newText = newReportCount >= 3 ? '*****' : data.text;
-
-                transaction.update(messageRef, {
+    
+                // Update only relevant fields
+                const updateData = {
                     reportCount: newReportCount,
-                    reportedBy: reportedBy,
-                    text: newText
-                });
+                    reportedBy: reportedBy
+                };
+    
+                // Modify text only if it's a text message and report count is below 3
+                if (textMessage) {
+                    updateData.text = newReportCount >= 3 ? '*****' : data.text;
+                }
+    
+                transaction.update(messageRef, updateData);
             });
-
+    
             Alert.alert('Unreported', 'The report has been removed.');
         } catch (err) {
             console.error("Error updating message: ", err);

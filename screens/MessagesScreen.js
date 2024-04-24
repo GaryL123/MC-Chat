@@ -55,6 +55,7 @@ export default function MessagesScreen() {
 
     const handleReportMessage = async (message, isReported) => {
         const confirmAction = isReported ? 'Unreport' : 'Report';
+        const textMessage = "text" in message;
 
         Alert.alert(
             `${confirmAction} Message`,
@@ -64,9 +65,9 @@ export default function MessagesScreen() {
                 {
                     text: "Yes", onPress: () => {
                         if (isReported) {
-                            unreportMessage(chatId, message);
+                            unreportMessage(textMessage, chatId, message);
                         } else {
-                            reportMessage(chatId, message);
+                            reportMessage(textMessage, chatId, message);
                         }
                     },
                     style: "destructive"
@@ -124,29 +125,29 @@ export default function MessagesScreen() {
         } else if ("mediaURL" in message) {
             const { mediaType, mediaURL } = message;
             if (mediaType.includes("image")) {
-                return <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
-            } else if (mediaType.includes("video")) {
                 return (
+                    <View>
+                        {!message.reportedBy?.includes(user?.uid) ? (
+                            <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
+                        ) : (
+                            <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This image has been reported</Text>
+                        )}
+                    </View>
+                );
+            } else if (mediaType.includes("video")) {
+                return message.reportedBy?.includes(user?.uid) ? (
+                    <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This video has been reported</Text>
+                ) : (
                     <View style={styles.container}>
                         <Video
                             ref={video}
                             style={styles.mediaVideo}
-                            source={{
-                                uri: mediaURL,
-                            }}
+                            source={{ uri: mediaURL }}
                             useNativeControls
                             resizeMode={ResizeMode.CONTAIN}
                             isLooping
                             onPlaybackStatusUpdate={status => setStatus(() => status)}
                         />
-                        <View style={styles.buttons}>
-                            <Button
-                                title={status.isPlaying ? 'Pause' : 'Play'}
-                                onPress={() =>
-                                    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
-                                }
-                            />
-                        </View>
                     </View>
                 );
             } else {
