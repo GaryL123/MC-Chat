@@ -47,34 +47,33 @@ function ForgotPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={darkMode ? ldStyles.screenD : ldStyles.screenL}
+      style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={styles.centered}>
-            <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
+            <Image style={styles.logo} resizeMode='contain' source={[darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png'), { fontSize: textSize }]} />
           </View>
 
-          <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>Forgot Password</Text>
+          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL, { fontSize: textSize }]}>Forgot Password</Text>
 
-          <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
+          <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
             <Octicons name="mail" size={hp(2.7)} color="gray" />
             <TextInput
               onChangeText={setEmailPrefix}
-              style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
+              style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
               placeholder='Email Address'
               placeholderTextColor={'gray'}
               autoCapitalize="none"
               keyboardAppearance={darkMode ? 'dark' : 'light'}
             />
-            <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
+            <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL, { fontSize: textSize }]}>@manhattan.edu</Text>
           </View>
 
           {loading ? (
             <View style={styles.centered}>
-              {/* Loading indicator or component */}
             </View>
           ) : (
             <TouchableOpacity onPress={handleResetPassword} style={styles.loginButton}>
