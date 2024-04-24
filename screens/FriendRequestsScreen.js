@@ -20,7 +20,7 @@ export default function FriendRequestsScreen() {
             <View style={ldStyles.itemContainer}>
                 <Image style={ldStyles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
                 <View style={ldStyles.itemContainerText}>
-                    <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item.senderEmail}</Text>
+                    <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item.senderEmail}</Text>
                 </View>
 
                 {/* Add space between email and buttons */}
@@ -43,7 +43,7 @@ export default function FriendRequestsScreen() {
     };
 
     return (
-        <View style={darkMode ? ldStyles.screenD : ldStyles.screenL}>
+        <View style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}>
             <FlatList
                 data={friendRequests}
                 contentContainerStyle={ldStyles.flatListContent}
