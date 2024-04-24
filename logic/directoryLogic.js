@@ -16,18 +16,19 @@ const directoryLogic = () => {
         fetchFriendRequests();
     }, [user, friends, sentRequests]);
 
-    const fetchUserEmail = async (uid) => {
+    const fetchUserData = async (uid) => {
         try {
-            const userDoc = await getDoc(doc(db, 'users', uid)); // Get the document
-            if (userDoc.exists()) {
+            const userDoc = await getDoc(doc(db, 'users', uid)); // Fetch the document
+            if (userDoc.exists()) { // Check if the document exists
                 const userData = userDoc.data(); // Get the data
-                return userData.email; // Return the email
+                return { uid, ...userData }; // Return all user fields, along with the UID
             } else {
-                return null;
+                console.warn(`No user found with UID: ${uid}`);
+                return null; // If no document, return null or handle it as needed
             }
         } catch (error) {
-            console.error("Error fetching user email:", error); // Error handling
-            return null;
+            console.error("Error fetching user data:", error); // Log the error
+            return null; // Return null in case of error
         }
     };
 
@@ -63,19 +64,21 @@ const directoryLogic = () => {
             const requestsRef = collection(db, 'users', user.uid, 'friendsReceived');
             const requestsSnapshot = await getDocs(requestsRef);
 
-            // Prepare an array of promises to fetch user emails
-            const emailPromises = requestsSnapshot.docs.map(async (doc) => {
-                const senderEmail = await fetchUserEmail(doc.id); // Fetch email asynchronously
-                return {
-                    id: doc.id,
-                    senderEmail: senderEmail, // Expected resolved email
-                };
-            });
-
-            // Wait for all promises to resolve
-            const requestDetails = await Promise.all(emailPromises);
-
-            setFriendRequests(requestDetails); // Set the state with resolved details
+            // Fetch full user data for each request
+            const friendRequests = await Promise.all(
+                requestsSnapshot.docs.map(async (doc) => {
+                    const friendId = doc.id;
+                    const friendData = await fetchUserData(friendId); // Fetch complete user data
+                    
+                    return {
+                        id: friendId,
+                        senderEmail: friendData.email,
+                        ...friendData, // Include all user data, not just the email
+                    };
+                })
+            );
+    
+            setFriendRequests(friendRequests); // Set the updated friend requests
         } catch (error) {
             console.error("Error fetching friend requests:", error); // Error handling
         }
