@@ -13,7 +13,7 @@ const directoryRoomsLogic = () => {
     useEffect(() => {
         fetchUsers();
         fetchRoomInvites();
-    }, [user, members, sentRoomInvites]);
+    }, [ sentRoomInvites, roomInvites]);
 
     const fetchUserEmail = async (uid) => {
         try {
