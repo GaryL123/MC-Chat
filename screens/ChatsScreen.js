@@ -18,7 +18,7 @@ export default function ChatsScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Create a Group Chat')} style={ldStyles.createRoomButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('New Group Chat')} style={ldStyles.createRoomButton}>
           <Ionicons name="add-circle-outline" size={30} color="white" />
         </TouchableOpacity>
       ),
@@ -49,12 +49,12 @@ export default function ChatsScreen() {
         />
         <View style={ldStyles.itemContainerText}>
           <View style={ldStyles.nameAndTimeRow}>
-            <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item?.fName + ' ' + item?.lName}</Text>
-            <Text style={darkMode ? ldStyles.timeTextD : ldStyles.timeTextL}>
+          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item?.fName + ' ' + item?.lName}</Text>
+            <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL, { fontSize: textSize }]}>
               {renderTime(item.id)}
             </Text>
           </View>
-          <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
+          <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>
             {profanityFilter ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
           </Text>
         </View>

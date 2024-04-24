@@ -10,6 +10,16 @@ const ldStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111111',
   },
+  container: {
+    paddingTop: hp(2.5),
+    paddingHorizontal: wp(5),
+    flex: 1,
+  },
+  container2: {
+    paddingTop: hp(5),
+    paddingHorizontal: wp(5),
+    flex: 1,
+  },
   flatListContent: {
     flexGrow: 1,
     paddingVertical: 25,
@@ -113,7 +123,7 @@ const ldStyles = StyleSheet.create({
     backgroundColor: '#ebebeb',
     paddingHorizontal: wp(4),
     borderRadius: 25,
-    marginBottom: hp(2),
+    marginBottom: hp(1),
   },
   itemContainer2D: {
     flexDirection: 'row',
@@ -121,7 +131,7 @@ const ldStyles = StyleSheet.create({
     backgroundColor: '#1b1b1b',
     paddingHorizontal: wp(4),
     borderRadius: 25,
-    marginBottom: hp(2),
+    marginBottom: hp(1),
   },
   itemContainer2TextL: {
     flex: 1,
@@ -281,6 +291,8 @@ const ldStyles = StyleSheet.create({
     width: 190
   },
   menuOptionsStyleD: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
@@ -288,6 +300,20 @@ const ldStyles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
     width: 190
+  },
+  menuReportStyleL: {
+    borderRadius: 10,
+    backgroundColor: '#ebebeb',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 0 },
+    width: 95,
+  },
+  menuReportStyleD: {
+    borderRadius: 10,
+    backgroundColor: '#1b1b1b',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 0 },
+    width: 95,
   },
   menuItemTextL: {
     fontSize: hp(1.7),

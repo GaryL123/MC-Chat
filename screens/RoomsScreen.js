@@ -1,19 +1,19 @@
 import React, { useLayoutEffect } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import { filter, defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import roomsLogic from '../logic/roomsLogic';
+import { Image } from 'expo-image';
+import { filter, defaultProfilePicture } from '../logic/commonLogic';
 import styles from '../assets/styles/AppStyles';
 import ldStyles from '../assets/styles/LightDarkStyles';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function RoomsScreen() {
-  const { language, darkMode, profanityFilter, textSize } = useSettings();
+  const { darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
-  const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom, addAdminToRoom, blurhash } = roomsLogic(navigation);
+  const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom } = roomsLogic(navigation);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -39,7 +39,7 @@ export default function RoomsScreen() {
     return (
       <FlatList
         data={rooms}
-        contentContainerStyle={styles2.flatListContent}
+        contentContainerStyle={ldStyles.flatListContent}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => <RoomItem
@@ -55,7 +55,7 @@ export default function RoomsScreen() {
 
     return (
       <View>
-        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[styles2.roomItem]}>
+        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[ldStyles.itemContainer, { fontSize: textSize }]}>
           <Image
             style={ldStyles.profileImage}
             source={{ uri: item?.roomPhoto || defaultProfilePicture }}
@@ -63,21 +63,19 @@ export default function RoomsScreen() {
           />
           <View style={styles2.textContainer}>
             <View style={styles2.nameAndTimeRow}>
-              <Text style={darkMode ? ldStyles.nameTextD : ldStyles.nameTextL}>{item?.roomName}</Text>
+            <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item?.roomName}</Text>
               {isMember && (
-              <Text style={darkMode ? ldStyles.timeTextD : ldStyles.timeTextL}>
+                <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL, { fontSize: textSize }]}>
                 {renderTime(item.id)}
               </Text>
-            )}
+              )}
             </View>
             {isMember ? (
-              <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
-                {profanityFilter ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
-              </Text>
+              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>
+              {(profanityFilter || item.roomFilter ) ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
+            </Text>
             ) : (
-              <Text style={darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL}>
-                {item.roomDesc}
-              </Text>
+              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>{item.roomDesc}</Text>
             )}
           </View>
           {!isMember && (
@@ -97,7 +95,7 @@ export default function RoomsScreen() {
         rooms.length > 0 ? (
           <RoomList rooms={rooms} />
         ) : (
-          <View style={styles2.noFriendsContainer}>
+          <View style={ldStyles.loserContainer}>
             <Text>No rooms</Text>
           </View>
         )
@@ -107,23 +105,6 @@ export default function RoomsScreen() {
 }
 
 const styles2 = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  roomItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: wp(4),
-    marginBottom: hp(1),
-    paddingBottom: hp(1),
-  },
-  profileImage: {
-    height: hp(6),
-    width: hp(6),
-    borderRadius: 100,
-  },
   textContainer: {
     flex: 1,
     marginLeft: wp(4),
@@ -131,29 +112,6 @@ const styles2 = StyleSheet.create({
   nameAndTimeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  nameText: {
-    fontSize: hp(1.8),
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  timeText: {
-    fontSize: hp(1.6),
-    color: 'grey',
-  },
-  lastMessageText: {
-    fontSize: hp(1.6),
-    color: 'grey',
-  },
-  flatListContent: {
-    flexGrow: 1,
-    paddingVertical: 25,
-  },
-  noFriendsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: hp(30),
   },
   createRoomButton: {
     height: hp(4.3),

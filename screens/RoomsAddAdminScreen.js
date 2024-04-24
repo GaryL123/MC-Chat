@@ -8,7 +8,7 @@ import { useSettings } from '../logic/settingsContext';
 import styles from '../assets/styles/AppStyles';
 import ldStyles from '../assets/styles/LightDarkStyles';
 
-export default function RoomsSettingsScreen() {
+export default function RoomsAddAdminScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
 
   return (

@@ -20,3 +20,69 @@ export const formatDate = date => {
     var formattedDate = day + ' ' + month;
     return formattedDate;
 }
+
+export const generateYears = (startYear, endYear) => {
+    let years = [];
+    for (let year = startYear; year <= endYear; year++) {
+        years.push(year.toString());
+    }
+    return years;
+};
+
+export const currentYear = new Date().getFullYear();
+
+export const mcMajors = [
+    "Accounting",
+    "Biology",
+    "Business",
+    "Chemical Engineering",
+    "Civil Engineering",
+    "Computer Science",
+    "Digital Media Art",
+    "Economics",
+    "Electrical Engineering",
+    "English",
+    "Finance",
+    "History",
+    "Management",
+    "Marketing",
+    "Mathematics",
+    "Mechanical Engineering",
+    "Philosophy",
+    "Physics",
+    "Political Science",
+    "Psychology",
+    "Sociology",
+    "Software Engineering",
+    "Undergraduate"
+];
+
+export const mcDepts = [
+    "Accounting, Business Analytics, CIS & Law",
+    "Biological and Chemical Sciences",
+    "Chemical Engineering",
+    "Civil & Environmental Engineering",
+    "Communication, Sound and Media Arts",
+    "Computer Science",
+    "Department of Air & Space Studies",
+    "Economics & Finance",
+    "Education",
+    "Electrical & Computer Engineering",
+    "English, World Languages and Literatures",
+    "History, Political Studies and International Studies",
+    "Management & Marketing",
+    "Mathematics and Physics",
+    "Mechanical Engineering",
+    "Organizational Leadership",
+    "Radiation Therapy",
+    "Religion and Philosophy",
+    "Social and Behavioral Sciences"
+];
+
+export const mcTitles = [
+    "Department Chair",
+    "Professor",
+    "Assistant Professor",
+    "Associate Professor",
+    "Adjunct"
+];

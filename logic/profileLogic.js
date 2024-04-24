@@ -100,13 +100,43 @@ const profileLogic = () => {
         setProfile(prev => ({ ...prev, email: email }));
     };
 
+    const changeMajor = async (major) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { major: major });
+        setProfile(prev => ({ ...prev, major: major }));
+    };
+
+    const changeGradYear = async (gradYear) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { gradYear: gradYear });
+        setProfile(prev => ({ ...prev, gradYear: gradYear }));
+    };
+
+    const changeFaculty = async (faculty) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { faculty: faculty });
+        setProfile(prev => ({ ...prev, faculty: faculty }));
+    };
+
+    const changeDept = async (dept) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { dept: dept });
+        setProfile(prev => ({ ...prev, dept: dept }));
+    };
+
+    const changeTitle = async (title) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { title: title });
+        setProfile(prev => ({ ...prev, title: title }));
+    };
+
     const changePassword = async (password) => {
         const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, { password: password });
         setProfile(prev => ({ ...prev, password: password }));
     };
 
-    return { user: profile, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changePassword };
+    return { user: profile, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changeDept, changeTitle, changePassword };
 }
 
 export default profileLogic;

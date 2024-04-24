@@ -86,7 +86,7 @@ const roomsLogic = (navigation) => {
     };
 
     const openRoom = (item) => {
-        navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName });
+        navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName, roomFilter: item.roomFilter, roomPublic: item.roomPublic });
     }
 
     const renderTime = (roomId) => {
@@ -106,12 +106,13 @@ const roomsLogic = (navigation) => {
         return messageText.length > 30 ? `${messageText.slice(0, 30)}...` : messageText;
     };
 
-    const createRoom = async (roomName, roomDesc, roomPublic, uid) => {
+    const createRoom = async (roomName, roomDesc, roomFilter, roomPublic, uid) => {
         try {
             const docRef = await addDoc(collection(db, "chatRooms"), {
                 roomName,
                 roomDesc,
                 roomPhoto: defaultProfilePicture,
+                roomFilter,
                 roomPublic,
                 admins: [uid],
                 members: [uid],
@@ -168,7 +169,7 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    return { user, rooms, selectedImageUri, chooseRoomPicture, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
+    return { user, rooms, selectedImageUri, setSelectedImageUri, chooseRoomPicture, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
 }
 
 export default roomsLogic;
