@@ -93,8 +93,8 @@ export default function MessagesScreen() {
                     message.uid !== user.uid ? (
                         <Menu key={index}>
                             <MenuTrigger style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start'}]}>
-                                <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                                    <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                                <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL, { fontSize: textSize })]}>
+                                    <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : ([darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }])}>
                                         {profanityFilter ? filter.clean(message.text) : message.text}
                                     </Text>
                                 </View>
