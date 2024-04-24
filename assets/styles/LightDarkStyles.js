@@ -253,11 +253,18 @@ const ldStyles = StyleSheet.create({
     aspectRatio: 1,
     borderRadius: 100,
   },
+  menuItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   menuOptionsStyleL: {
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
-    backgroundColor: 'white',
+    backgroundColor: '#ebebeb',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
     width: 190
@@ -266,7 +273,7 @@ const ldStyles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
-    backgroundColor: 'black',
+    backgroundColor: '#1b1b1b',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
     width: 190

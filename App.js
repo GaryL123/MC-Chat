@@ -34,15 +34,15 @@ function App() {
   }, []);
 
   return (
-    <MenuProvider>
-      <SettingsContextProvider>
+    <SettingsContextProvider>
+      <MenuProvider>
         <NavigationContainer>
           <AuthContextProvider>
             {currentUser ? <MainTabNavigator /> : <AuthStackNavigator />}
           </AuthContextProvider>
         </NavigationContainer>
-      </SettingsContextProvider>
-    </MenuProvider>
+      </MenuProvider>
+    </SettingsContextProvider>
   );
 }
 

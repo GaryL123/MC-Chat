@@ -6,12 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useAuth } from '../logic/authContext';
 import { defaultProfilePicture } from '../logic/commonLogic';
+import { useSettings } from '../logic/settingsContext';
 import MenuItem from './MenuItem';
 import Divider from './Divider';
 import NotificationBubble from './NotificationBubble';
-
+import ldStyles from '../assets/styles/LightDarkStyles';
 
 const ProfileButton = () => {
+  const { language, darkMode, textSize } = useSettings();
   const { user, logout, pendingFriendRequests, pendingRoomInvites } = useAuth();
   const navigation = useNavigation();
   const hasPendingRequests = pendingFriendRequests && pendingFriendRequests.length > 0;
@@ -32,21 +34,20 @@ const ProfileButton = () => {
                 style={styles.profileImage}
                 source={{ uri: user?.photoURL || defaultProfilePicture }}
               />
-              {hasNotifications  && (
+              {hasNotifications && (
                 <View style={styles.notificationBubble}>
                   <Text style={styles.notificationText}>{totalNotifications}</Text>
                 </View>
               )}
             </MenuTrigger>
             <MenuOptions
-              customStyles={{ optionsContainer: styles.menuOptionsStyle }}>
+              customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
               <MenuItem
                 text="Profile"
                 action={() => navigation.navigate('ProfileStack')}
                 value={null}
                 icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
               />
-              <Divider />
               {hasPendingRequests && (
                 <MenuItem
                   text="Friend Requests"
@@ -77,7 +78,7 @@ const ProfileButton = () => {
           </Menu>
         </View>
       </View>
-  </TouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
@@ -107,8 +108,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
-  },  
-    menuOptionsStyle: {
+  },
+  menuOptionsStyle: {
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 0 },
     width: 190
-  }
+  },
 });
 
 export default ProfileButton;
