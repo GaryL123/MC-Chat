@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Alert, KeyboardAvoidingView, ScrollView, Switch, Platform, Modal } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { Image } from 'expo-image';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { Octicons } from '@expo/vector-icons';
-import { defaultProfilePicture } from '../logic/commonLogic';
+import { Octicons, FontAwesome6 } from '@expo/vector-icons';
+import { defaultProfilePicture, generateYears, currentYear } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
 import styles from '../assets/styles/AppStyles';
@@ -11,10 +12,18 @@ import ldStyles from '../assets/styles/LightDarkStyles';
 
 export default function ProfileScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { user, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changePassword } = profileLogic();
+    const { user, chooseProfilePicture, changeProfilePicture, changeFName, changeLName, changeEmail, changeMajor, changeGradYear, changeFaculty, changePassword } = profileLogic();
     const [fName, setFName] = useState(user?.fName || "");
     const [lName, setLName] = useState(user?.lName || "");
     const [email, setEmail] = useState(user?.email.split('@')[0] || "");
+    const [major, setMajor] = useState(user?.major || "");
+    const [showMajorPicker, setShowMajorPicker] = useState(false);
+    const majors = ["Biology", "Business", "Computer Science", "Engineering", "Arts", "Science"];
+    const [gradYear, setGradYear] = useState(user?.gradYear || "");
+    const [showGradYearPicker, setShowGradYearPicker] = useState(false);
+    const gradYears = generateYears(1950, 2030);
+    const [faculty, setFaculty] = useState(user?.faculty || false);
+    const [originalFaculty, setOriginalFaculty] = useState(user?.faculty);
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
@@ -27,13 +36,13 @@ export default function ProfileScreen() {
         const capitalizationNames = string => string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
         const capitalizationEmail = string => string.toLowerCase();
 
-        if (!fName && !lName && !email && !password) {
+        if (!fName && !lName && !email && !major && !gradYear && !faculty && !password) {
             Alert.alert('Profile', 'No changes have been made');
             return;
         }
 
         if (fName) {
-            if(fName.length < 2 || fName.length > 30 || invalidChars.test(fName)) {
+            if (fName.length < 2 || fName.length > 30 || invalidChars.test(fName)) {
                 Alert.alert('Profile', 'First Name should be between 2 and 30 characters and not contain special characters')
                 return;
             }
@@ -43,13 +52,13 @@ export default function ProfileScreen() {
         }
 
         if (lName) {
-            if(lName.length < 2 || lName.length > 30 || invalidChars.test(lName)) {
+            if (lName.length < 2 || lName.length > 30 || invalidChars.test(lName)) {
                 Alert.alert('Profile', 'Last Name should be between 2 and 30 characters and not contain special characters')
                 return;
             }
             else {
                 await changeLName(capitalizationNames(lName));
-            } 
+            }
         }
 
         if (email) {
@@ -60,6 +69,18 @@ export default function ProfileScreen() {
             else {
                 await changeEmail(capitalizationEmail(email));
             }
+        }
+
+        if (major) {
+            await changeMajor(major);
+        }
+
+        if (gradYear) {
+            await changeGradYear(gradYear);
+        }
+
+        if (faculty != originalFaculty) {
+            await changeFaculty(faculty);
         }
 
         if (password) {
@@ -81,6 +102,8 @@ export default function ProfileScreen() {
         setFName(user?.fName || "");
         setLName(user?.lName || "");
         setEmail(user?.email.split('@')[0] || "");
+        setMajor(user?.major || "");
+        setGradYear(user?.gradYear || "");
         setPassword("");
         setPasswordConfirm("");
         Alert.alert("Changes discarded", "All unsaved changes have been discarded.");
@@ -103,7 +126,7 @@ export default function ProfileScreen() {
                         <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                             <Octicons name="pencil" size={hp(2.7)} color="gray" />
                             <TextInput
-                                value={fName} 
+                                value={fName}
                                 onChangeText={setFName}
                                 style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
                                 placeholder={user?.fName}
@@ -139,6 +162,75 @@ export default function ProfileScreen() {
                             keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
                         <Text style={darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL}>@manhattan.edu</Text>
+                    </View>
+
+                    <View style={styles.inputContainerHoriz}>
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                            <TouchableOpacity onPress={() => setShowMajorPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{major || "Major"}</Text>
+                                <Octicons name="chevron-down" size={24} color="gray" />
+                            </TouchableOpacity>
+                            <Modal animationType="none" transparent={true} visible={showMajorPicker} onRequestClose={() => setShowMajorPicker(false)}>
+                                <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                    <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                        <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Major</Text>
+                                        <Picker
+                                            selectedValue={major}
+                                            onValueChange={(itemValue, itemIndex) => {
+                                                setMajor(itemValue);
+                                                setShowMajorPicker(false);
+                                            }}
+                                            itemStyle={{
+                                                color: darkMode ? '#f1f1f1' : '#333333'
+                                            }}
+                                        >
+                                            {majors.map((major, index) => (
+                                                <Picker.Item key={index} label={major} value={major} />
+                                            ))}
+                                        </Picker>
+                                    </View>
+                                </View>
+                            </Modal>
+                        </View>
+
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
+                            <TouchableOpacity onPress={() => setShowGradYearPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{gradYear || "Graduation Year"}</Text>
+                                <Octicons name="chevron-down" size={24} color="gray" />
+                            </TouchableOpacity>
+                            <Modal animationType="none" transparent={true} visible={showGradYearPicker} onRequestClose={() => setShowGradYearPicker(false)}>
+                                <View style={darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL}>
+                                    <View style={darkMode ? ldStyles.modalContentD : ldStyles.modalContentL}>
+                                        <Text style={darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL}>Select Graduation Year</Text>
+                                        <Picker
+                                            selectedValue={gradYear || currentYear}
+                                            onValueChange={(itemValue, itemIndex) => {
+                                                setGradYear(itemValue);
+                                                setShowGradYearPicker(false);
+                                            }}
+                                            itemStyle={{
+                                                color: darkMode ? '#f1f1f1' : '#333333'
+                                            }}
+                                        >
+                                            {gradYears.map((gradYear, index) => (
+                                                <Picker.Item key={index} label={gradYear} value={gradYear} />
+                                            ))}
+                                        </Picker>
+                                    </View>
+                                </View>
+                            </Modal>
+                        </View>
+                    </View>
+
+                    <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
+                        <FontAwesome6 name={faculty ? "person-harassing" : "person-drowning"} size={hp(2.7)} color="gray" />
+                        <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
+                            {faculty ? 'Faculty' : 'Student'}
+                        </Text>
+                        <Switch
+                            onValueChange={() => setFaculty(previousState => !previousState)}
+                            value={faculty}
+                        />
                     </View>
 
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>

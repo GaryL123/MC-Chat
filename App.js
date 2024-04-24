@@ -17,7 +17,6 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
-      console.log('App.js first use effect')
       setCurrentUser(user);
     });
 
@@ -26,7 +25,6 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, user => {
-      console.log('App.js second use effect')
       setCurrentUser(user);
     });
 

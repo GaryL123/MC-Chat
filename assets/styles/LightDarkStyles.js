@@ -123,7 +123,7 @@ const ldStyles = StyleSheet.create({
     backgroundColor: '#ebebeb',
     paddingHorizontal: wp(4),
     borderRadius: 25,
-    marginBottom: hp(2),
+    marginBottom: hp(1),
   },
   itemContainer2D: {
     flexDirection: 'row',
@@ -131,7 +131,7 @@ const ldStyles = StyleSheet.create({
     backgroundColor: '#1b1b1b',
     paddingHorizontal: wp(4),
     borderRadius: 25,
-    marginBottom: hp(2),
+    marginBottom: hp(1),
   },
   itemContainer2TextL: {
     flex: 1,

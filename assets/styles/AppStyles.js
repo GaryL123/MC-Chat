@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
     color: '#166939',
   },
   profileImageProfilePage: {
-    height: hp(15),
+    height: hp(12),
     aspectRatio: 1,
     borderRadius: 100,
-    marginBottom: hp(4),
+    marginBottom: hp(3),
   },
   submitDiscardButtonProfilePage: {
     flexDirection: 'row',

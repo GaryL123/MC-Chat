@@ -20,3 +20,13 @@ export const formatDate = date => {
     var formattedDate = day + ' ' + month;
     return formattedDate;
 }
+
+export const generateYears = (startYear, endYear) => {
+    let years = [];
+    for (let year = startYear; year <= endYear; year++) {
+        years.push(year.toString());
+    }
+    return years;
+};
+
+export const currentYear = new Date().getFullYear();
