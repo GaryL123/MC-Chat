@@ -291,8 +291,6 @@ const ldStyles = StyleSheet.create({
     width: 190
   },
   menuOptionsStyleD: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
