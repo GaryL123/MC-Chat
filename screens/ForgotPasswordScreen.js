@@ -54,7 +54,7 @@ function ForgotPasswordScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <View style={styles.centered}>
-            <Image style={styles.logo} resizeMode='contain' source={[darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png'), { fontSize: textSize }]} />
+            <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
           </View>
 
           <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL, { fontSize: textSize }]}>Forgot Password</Text>
