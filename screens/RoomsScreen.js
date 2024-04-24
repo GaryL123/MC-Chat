@@ -96,7 +96,7 @@ export default function RoomsScreen() {
           <RoomList rooms={rooms} />
         ) : (
           <View style={ldStyles.loserContainer}>
-            <Text>No rooms</Text>
+            <Text style={darkMode? ldStyles.nameTextD : ldStyles.nameTextL}>No rooms</Text>
           </View>
         )
       }

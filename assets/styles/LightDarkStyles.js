@@ -28,7 +28,7 @@ const ldStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp(30),
+    //marginTop: hp(30),
   },
   profileImage: {
     height: hp(6),

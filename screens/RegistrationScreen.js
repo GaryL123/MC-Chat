@@ -58,7 +58,7 @@ function RegistrationScreen() {
             <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
             </View>
 
-            <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL, { fontSize: textSize }]}>Sign Up</Text>
+            <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Sign Up</Text>
 
             {/* First Name */}
             <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
