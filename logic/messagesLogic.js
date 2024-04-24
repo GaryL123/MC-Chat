@@ -142,10 +142,45 @@ const messagesLogic = () => {
         }
     };
 
-    const reportMessage = async (message) => {
+    const reportMessage = async (chatId, messageId) => {
+        try {
+            const messageRef = doc(db, 'chatInds', chatId, 'messages', messageId);
+            const messageDoc = await getDoc(messageRef);
 
-    }
+            if (!messageDoc.exists()) {
+                console.log('No such message!');
+                return;
+            }
 
+            const data = messageDoc.data();
+            const newReportCount = (data.reportCount || 0) + 1;
+            let reportedBy = data.reportedBy || [];
+
+            if (reportedBy.includes(user?.uid)) {
+                Alert.alert('Error', 'You have already reported this message.');
+                return;
+            }
+
+            reportedBy.push(user?.uid);
+
+            await updateDoc(messageRef, {
+                reportCount: newReportCount,
+                reportedBy: reportedBy,
+                text: newReportCount >= 3 ? '*****' : data.text
+            });
+
+            Alert.alert('Reported', 'The message has been reported.');
+        } catch (err) {
+            console.error("Error updating message: ", err);
+            Alert.alert('Error', 'Failed to report the message.');
+        }
+    };
+
+    const changeGradYear = async (gradYear) => {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { gradYear: gradYear });
+        setProfile(prev => ({ ...prev, gradYear: gradYear }));
+    };
 
     const sendDoc = async () => {
         console.log('sending doc...');

@@ -4,10 +4,10 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { filter } from '../logic/commonLogic';
+import { filter, getChatId } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
-import { Video, ResizeMode } from 'expo-av'; // If you want to support video playback
+import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
 import MenuItem from '../components/MenuItem';
 import ldStyles from '../assets/styles/LightDarkStyles';
@@ -20,8 +20,13 @@ export default function MessagesScreen() {
     const video = React.useRef(null);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
-    const [inputHeight, setInputHeight] = useState(35); // Initial height of the input field
+    const [inputHeight, setInputHeight] = useState(35);
+    const [selectedMessage, setSelectedMessage] = useState(null);
+    const [reportMenuVisible, setReportMenuVisible] = useState(false);
+    const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
+
+
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
@@ -45,6 +50,15 @@ export default function MessagesScreen() {
         });
     }, [navigation, item]);
 
+    const handlePressMessage = async (message) => {
+        setSelectedMessage(message);
+        setReportMenuVisible(true);
+    }
+
+    const handleMenuDismiss = () => {
+        setReportMenuVisible(false);
+    };
+
     const handleReportMessage = async (message) => {
         Alert.alert(
             "Report Message",
@@ -56,7 +70,7 @@ export default function MessagesScreen() {
                 },
                 {
                     text: "Yes",
-                    onPress: () => reportMessage(message),
+                    onPress: () => reportMessage(chatId, message.id),
                     style: "destructive"
                 }
             ],
@@ -64,11 +78,11 @@ export default function MessagesScreen() {
         );
     };
 
-    const renderMessageContent = (message, index) => {
+    const renderMessageContent = (message) => {
         if ("text" in message) {
             return (
                 <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
-                    {profanityFilter ? filter.clean(message.text) : message.text}
+                    {message.reportCount >= 3 ? '*****' : (profanityFilter ? filter.clean(message.text) : message.text)}
                 </Text>
             );
         } else if ("mediaURL" in message) {
@@ -187,16 +201,19 @@ export default function MessagesScreen() {
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {combinedMessages.map((message, index) => (
                     message.uid !== user.uid ? (
-                        <Menu key={index}>
-                            <MenuTrigger style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
+                        <TouchableOpacity key={index} onLongPress={() => handlePressMessage(message)}>
+                            <View style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
                                 <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                                    {renderMessageContent(message, index)}
+                                    {renderMessageContent(message)}
                                 </View>
-                            </MenuTrigger>
-                            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
-                                <MenuItem text="Report" action={() => handleReportMessage(message)} />
-                            </MenuOptions>
-                        </Menu>
+                            </View>
+                            <Menu opened={reportMenuVisible} onBackdropPress={handleMenuDismiss}>
+                                <MenuTrigger />
+                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
+                                    <MenuItem text="Report" action={() => handleReportMessage(chatId, message)} />
+                                </MenuOptions>
+                            </Menu>
+                        </TouchableOpacity>
                     ) : (
                         <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
                             <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
