@@ -68,7 +68,7 @@ export default function MessagesScreen() {
         if ("text" in message) {
             return (
                 console.log('text message detected. message content: ', message),
-                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
+                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }]}>
                     {profanityFilter ? filter.clean(message.text) : message.text}
                 </Text>
             );
@@ -114,7 +114,7 @@ export default function MessagesScreen() {
             }
         } else {
             return (
-                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
+                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }]}>
                     Unknown message type
                 </Text>
             );
@@ -199,7 +199,7 @@ const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
     return (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={darkMode ? ldStyles.screenD : ldStyles.screenL}
+          style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
         >
           <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}
@@ -218,8 +218,8 @@ const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
                   style={[
                     styles.messageBubble,
                     message.uid === user.uid
-                      ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL)
-                      : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL),
+                      ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }])
+                      : ([darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL, { fontSize: textSize }]),
                   ]}
                 >
                   {renderMessageContent(message)}
@@ -231,26 +231,26 @@ const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
           <View
             style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}
           >
-            <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+            <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
               <Feather name="plus" size={24} color="#737373" />
             </TouchableOpacity>
             <TextInput
               onChangeText={handleInputChange}
-              onContentSizeChange={handleContentSizeChange} // Separate handler for size changes
+              onContentSizeChange={handleContentSizeChange} 
               placeholder="Type a message..."
               placeholderTextColor="gray"
-              style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+              style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
               value={inputText}
               multiline={true} // Enable multiline input
               scrollEnabled={true} // Allow scrolling inside the input
               keyboardAppearance={darkMode ? 'dark' : 'light'}
             />
-            <TouchableOpacity onPress={handleGPT} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+            <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                 <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleSendMessage}
-              style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}
+              style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}
             >
               <Feather name="send" size={24} color="#737373" />
             </TouchableOpacity>
@@ -262,7 +262,7 @@ const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
 const styles = StyleSheet.create({
     messageListContainer: {
         paddingTop: 15,
-        paddingBottom: 60, // Ensure this is enough space for the input container
+        paddingBottom: 60, 
     },
     messageItemContainer: {
         flexDirection: 'row',
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: '#e0e0e0',
         backgroundColor: 'white',
-        alignItems: 'center',  // Ensure vertical alignment is centered
+        alignItems: 'center',  
     },
     textInput: {
         flex: 1,
@@ -308,20 +308,20 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         paddingLeft: 15,
         fontSize: 16,
-        borderWidth: 1,  // Set border width to create the outline
-        borderColor: '#e0e0e0',  // Set border color to match the send button background
-        borderRadius: 20,  // Keep your rounded corners
+        borderWidth: 1,  
+        borderColor: '#e0e0e0',  
+        borderRadius: 20,  
         paddingVertical: 10,
         paddingHorizontal: 12,
-        minHeight: 35 // Set a minimum height
+        minHeight: 35 
     },
     sendButton: {
         padding: 8,
-        width: 44,  // Assign a fixed width
-        height: 44, // Assign a fixed height
-        justifyContent: 'center', // Center the icon vertically and horizontally
+        width: 44,  
+        height: 44, 
+        justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 22,  // Half of width and height to create a circle
+        borderRadius: 22,  
         backgroundColor: '#e0e0e0',
     },
 
