@@ -122,7 +122,7 @@ export default function MessagesRoomScreen() {
                     onContentSizeChange={handleContentSizeChange} 
                     placeholder='Type a message...'
                     placeholderTextColor={'gray'}
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} 
                     value={inputText}
                     multiline={true} 
                     scrollEnabled={true} 
@@ -139,7 +139,7 @@ export default function MessagesRoomScreen() {
 const styles = StyleSheet.create({
     messageListContainer: {
         paddingTop: 15,
-        paddingBottom: 60, // Ensure this is enough space for the input container
+        paddingBottom: 60, 
     },
     messageItemContainer: {
         flexDirection: 'column',
