@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native';
 import { useAuth } from './authContext'
-import { Timestamp, addDoc, collection, doc, getDoc, deleteDoc, onSnapshot, orderBy, query, setDoc, runTransaction } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, deleteDoc, onSnapshot, orderBy, query, setDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
@@ -103,6 +103,15 @@ const messagesRoomLogic = () => {
             const roomData = roomSnap.data();
     
             if (roomData.members.length === 1) {
+                const messagesRef = collection(roomRef, "messages");
+                const snapshot = await getDocs(messagesRef);
+                const batch = writeBatch(db);
+
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+
+                await batch.commit();
                 await deleteDoc(roomRef);
             } else {
                 await updateDoc(roomRef, {
