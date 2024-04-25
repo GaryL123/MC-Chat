@@ -5,10 +5,12 @@ import { collection, doc, addDoc, getDoc, setDoc, updateDoc, onSnapshot, orderBy
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db } from '../firebaseConfig';
 import { blurhash, getChatId, formatDate, defaultProfilePicture } from './commonLogic';
+import { getAuth, updateProfile } from "firebase/auth";
 
 const roomsLogic = (navigation) => {
     const { user } = useAuth();
     const [rooms, setRooms] = useState([]);
+    const [room, setRoom] = useState(null);
     const [lastMessage, setLastMessage] = useState(undefined);
     const [lastMessages, setLastMessages] = useState({});
     const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -65,6 +67,64 @@ const roomsLogic = (navigation) => {
         }
     };
 
+    const chooseRoomPicture2 = async (roomId) => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("You've refused to allow this app to access your photos!");
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.5,
+        });
+
+        if (!result.cancelled) {
+            //console.log(result);
+            const { uri } = result.assets[0];
+            //console.log(uri);
+            if (uri) {
+                return await changeRoomPicture(roomId, uri);
+            } else {
+                console.error('No URI found in result object:', result);
+            }
+        }
+    };
+
+    const changeRoomPicture = async (roomId, uri) => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const storage = getStorage();
+            const roomPicRef = storageRef(storage, `roomPictures/${roomId}`);
+
+            await uploadBytes(roomPicRef, blob);
+
+            const downloadURL = await getDownloadURL(roomPicRef);
+
+            const roomRef = doc(db, "chatRooms", roomId);
+            await updateDoc(roomRef, { roomPhoto: downloadURL });
+
+            const auth = getAuth();
+            await updateProfile(auth.currentUser, {
+                roomPhoto: downloadURL
+            });
+
+            setRoom(prev => ({
+                ...prev,
+                roomPhoto: downloadURL
+            }));
+
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading room picture: ", error);
+            alert("Error uploading room picture: " + error.message);
+        }
+    };
+
     const getRooms = async () => {
         const roomsRef = collection(db, 'chatRooms');
 
@@ -86,7 +146,7 @@ const roomsLogic = (navigation) => {
     };
 
     const openRoom = (item) => {
-        navigation.navigate('MessagesRoom', { roomId: item.id, roomName: item.roomName, roomFilter: item.roomFilter, roomPublic: item.roomPublic });
+        navigation.navigate('MessagesRoom', { roomId: item.id, roomPhoto: item.roomPhoto, roomName: item.roomName, roomDesc: item.roomDesc, roomFilter: item.roomFilter, roomPublic: item.roomPublic });
     }
 
     const renderTime = (roomId) => {
@@ -139,6 +199,30 @@ const roomsLogic = (navigation) => {
         }
     }
 
+    const changeRoomName = async (roomId, roomName) => {
+        const roomRef = doc(db, "chatRooms", roomId);
+        await updateDoc(roomRef, { roomName: roomName });
+        setRoom(prev => ({ ...prev, roomName: roomName }));
+    };
+
+    const changeRoomDesc = async (roomId, roomDesc) => {
+        const roomRef = doc(db, "chatRooms", roomId);
+        await updateDoc(roomRef, { roomDesc: roomDesc });
+        setRoom(prev => ({ ...prev, roomDesc: roomDesc }));
+    };
+
+    const changeRoomFilter = async (roomId, roomFilter) => {
+        const roomRef = doc(db, "chatRooms", roomId);
+        await updateDoc(roomRef, { roomFilter: roomFilter });
+        setRoom(prev => ({ ...prev, roomFilter: roomFilter }));
+    };
+
+    const changeRoomPublic = async (roomId, roomPublic) => {
+        const roomRef = doc(db, "chatRooms", roomId);
+        await updateDoc(roomRef, { roomPublic: roomPublic });
+        setRoom(prev => ({ ...prev, roomPublic: roomPublic }));
+    };
+
     const addUserToRoom = async (roomId, uid) => {
         try {
             const roomRef = doc(db, "chatRooms", roomId);
@@ -169,7 +253,7 @@ const roomsLogic = (navigation) => {
         }
     }
 
-    return { user, rooms, selectedImageUri, setSelectedImageUri, chooseRoomPicture, renderLastMessage, renderTime, openRoom, createRoom, addUserToRoom, addAdminToRoom, blurhash };
+    return { user, rooms, selectedImageUri, setSelectedImageUri, chooseRoomPicture, chooseRoomPicture2, renderLastMessage, renderTime, openRoom, createRoom, changeRoomName, changeRoomDesc, changeRoomFilter, changeRoomPublic, addUserToRoom, addAdminToRoom, blurhash };
 }
 
 export default roomsLogic;

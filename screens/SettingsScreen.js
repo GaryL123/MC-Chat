@@ -73,7 +73,7 @@ export default function SettingsScreen() {
                                 {languages.map((language, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        style={styles.modalItem}
+                                        style={ldStyles.modalItem}
                                         onPress={() => {
                                             changeLanguage(language);
                                             setShowLanguageModal(false);

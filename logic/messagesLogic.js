@@ -7,7 +7,7 @@ import { db } from '../firebaseConfig';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { OpenAI } from 'openai';
-import { getChatId } from './commonLogic';
+import { veryBadWords, getChatId } from './commonLogic';
 import * as DocumentPicker from 'expo-document-picker';
 import { Audio } from 'expo-av';
 
@@ -78,7 +78,16 @@ const messagesLogic = () => {
 
     const sendMessage = async () => {
         let message = textRef.current.trim();
+        let messageLower = message.toLowerCase();
+
         if (!message) return;
+
+        const containsVeryBadWord = veryBadWords.some(badWord => messageLower.includes(badWord));
+
+        if (containsVeryBadWord) {
+            Alert.alert('Message Not Sent', 'Your message contains inappropriate language.');
+            return;
+        }
 
         try {
             let chatId = getChatId(user?.uid, item?.uid);
@@ -86,7 +95,9 @@ const messagesLogic = () => {
             const messagesRef = collection(docRef, "messages");
             textRef.current = "";
 
-            if (inputRef) inputRef?.current?.clear();
+            if (inputRef) {
+                inputRef.current?.clear();
+            }
 
             const newDoc = await addDoc(messagesRef, {
                 uid: user?.uid,
@@ -95,9 +106,10 @@ const messagesLogic = () => {
                 createdAt: Timestamp.fromDate(new Date())
             });
         } catch (err) {
-            Alert.alert('Message', err.message);
+            console.error("Error sending message: ", err);
+            Alert.alert('Message', err.message || 'Failed to send message.');
         }
-    }
+    };
 
     const sendMediaMessage = async () => {
         try {
@@ -147,12 +159,12 @@ const messagesLogic = () => {
             Alert.alert('Error', `Failed to send media message: ${err.message}`);
         }
     };
-    
+
     const requestMicPermission = async () => {
         const { status } = await Audio.requestPermissionsAsync();
         return status === 'granted';
     }
-    
+
     const sendAudioMessage = async () => {
         const permissionGranted = await requestMicPermission();
         if (!permissionGranted) {
@@ -174,7 +186,7 @@ const messagesLogic = () => {
             console.error('Failed to start recording: ', error);
         }
     }
-    
+
     const stopRecording = async () => {
         if (!recording) { return; }
 
@@ -189,7 +201,7 @@ const messagesLogic = () => {
             console.error('Failed to stop recording: ', error);
         }
     }
-    
+
     const reportMessage = async (textMessage, chatId, message) => {
         const messageRef = (textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id));
 
@@ -231,40 +243,40 @@ const messagesLogic = () => {
 
     const unreportMessage = async (textMessage, chatId, message) => {
         const messageRef = textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id);
-    
+
         try {
             await runTransaction(db, async (transaction) => {
                 const msgDoc = await transaction.get(messageRef);
                 if (!msgDoc.exists()) {
                     throw new Error("Document does not exist!");
                 }
-    
+
                 const data = msgDoc.data();
                 let newReportCount = data.reportCount || 0;
                 let reportedBy = data.reportedBy || [];
-    
+
                 if (!reportedBy.includes(user?.uid)) {
                     throw new Error("You have not reported this message yet.");
                 }
-    
+
                 // Remove user from reportedBy array and decrement report count
                 reportedBy = reportedBy.filter(id => id !== user?.uid);
                 newReportCount = Math.max(0, newReportCount - 1);
-    
+
                 // Update only relevant fields
                 const updateData = {
                     reportCount: newReportCount,
                     reportedBy: reportedBy
                 };
-    
+
                 // Modify text only if it's a text message and report count is below 3
                 if (textMessage) {
                     updateData.text = newReportCount >= 3 ? '*****' : data.text;
                 }
-    
+
                 transaction.update(messageRef, updateData);
             });
-    
+
             Alert.alert('Unreported', 'The report has been removed.');
         } catch (err) {
             console.error("Error updating message: ", err);

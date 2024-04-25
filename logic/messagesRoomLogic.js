@@ -10,7 +10,7 @@ import { getChatId } from './commonLogic';
 
 const messagesRoomLogic = () => {
     const route = useRoute();
-    const { roomId, roomName, roomFilter, roomPublic } = route.params;
+    const { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic } = route.params;
     const { user } = useAuth(); // logged in user
     const [messages, setMessages] = useState([]);
     const textRef = useRef('');
@@ -87,7 +87,7 @@ const messagesRoomLogic = () => {
         console.log('sending doc...');
     }
           
-    return { roomId, roomName, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin };
+    return { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin };
 }
 
 export default messagesRoomLogic;

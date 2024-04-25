@@ -14,7 +14,7 @@ const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { roomId, roomName, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
+    const { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  
     const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
@@ -54,7 +54,7 @@ export default function MessagesRoomScreen() {
                                             />
                                             <MenuItem
                                                 text="Room Settings"
-                                                action={() => navigation.navigate('Room Settings', { roomId })}
+                                                action={() => navigation.navigate('Room Settings', { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic })}
                                                 value={null}
                                                 icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
                                             />
