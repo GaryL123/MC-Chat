@@ -9,12 +9,13 @@ import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
-import MenuItem from '../components/MenuItem';
 import ldStyles from '../assets/styles/LightDarkStyles';
+import MenuItem from '../components/MenuItem';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
+
     const { language, darkMode, profanityFilter, textSize } = useSettings();
     const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
@@ -49,27 +50,18 @@ export default function MessagesScreen() {
         });
     }, [navigation, item]);
 
-    const handlePressMessage = async (message) => {
-        setSelectedMessage(message.id);
-    }
-
-    const handleReportMessage = async (message, isReported) => {
-        const confirmAction = isReported ? 'Unreport' : 'Report';
-        const textMessage = "text" in message;
-
+    const handleReportMessage = async (message) => {
         Alert.alert(
-            `${confirmAction} Message`,
-            `Are you sure you want to ${confirmAction.toLowerCase()} this message?`,
+            "Report Message",
+            "Are you sure you want to report this message?",
             [
-                { text: "No", style: "cancel" },
                 {
-                    text: "Yes", onPress: () => {
-                        if (isReported) {
-                            unreportMessage(textMessage, chatId, message);
-                        } else {
-                            reportMessage(textMessage, chatId, message);
-                        }
-                    },
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: () => reportMessage(message),
                     style: "destructive"
                 }
             ],
@@ -77,77 +69,44 @@ export default function MessagesScreen() {
         );
     };
 
-    const normalizedMessages = messages.map((msg) => ({
-        ...msg,
-        createdAt: normalizeDate(msg.createdAt),
-    }));
-
-    const normalizedMedia = media.map((med) => ({
-        ...med,
-        createdAt: normalizeDate(med.createdAt),
-    }));
-
-    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
-    const handleSendMessage = async () => {
-        await sendMessage();
-        setInputText("");
-    };
-
-    const handleSendDoc = async () => {
-        await sendMediaMessage();
-    }
-
-    const handleGPT = async () => {
-        const reply = await GPT();
-        setInputText(reply);
-        textRef.current = reply;
-    };
-
-    const handleInputChange = (text) => {
-        setInputText(text);
-        textRef.current = text;
-    };
-
-    const handleContentSizeChange = (event) => {
-        setInputHeight(event.nativeEvent.contentSize.height);
-    };
-
     const renderMessageContent = (message) => {
         if ("text" in message) {
             return (
-                <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
-                    {message.reportedBy?.includes(user?.uid) || message.reportCount >= 3 ? '*****' : (profanityFilter ? filter.clean(message.text) : message.text)}
+                console.log('text message detected. message content: ', message),
+                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
+                    {profanityFilter ? filter.clean(message.text) : message.text}
                 </Text>
             );
         } else if ("mediaURL" in message) {
             const { mediaType, mediaURL } = message;
+            console.log('media detected message content: ', message)
             if (mediaType.includes("image")) {
-                return (
-                    <View>
-                        {!message.reportedBy?.includes(user?.uid) ? (
-                            <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
-                        ) : (
-                            <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This image has been reported</Text>
-                        )}
-                    </View>
+                return (console.log('image detected message content: ', message),
+                    <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
                 );
             } else if (mediaType.includes("video")) {
-                return message.reportedBy?.includes(user?.uid) ? (
-                    <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This video has been reported</Text>
-                ) : (
+                return (
+                    console.log('video detected message content: ', message),
                     <View style={styles.container}>
                         <Video
                             ref={video}
                             style={styles.mediaVideo}
-                            source={{ uri: mediaURL }}
+                            source={{
+                                uri: mediaURL,
+                            }}
                             useNativeControls
                             resizeMode={ResizeMode.CONTAIN}
                             isLooping
                             onPlaybackStatusUpdate={status => setStatus(() => status)}
                         />
+                        <View style={styles.buttons}>
+                            <Button
+                                title={status.isPlaying ? 'Pause' : 'Play'}
+                                onPress={() =>
+                                    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
+                                }
+                            />
+                        </View>
                     </View>
                 );
             } else {
@@ -160,44 +119,148 @@ export default function MessagesScreen() {
             }
         } else {
             return (
-                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }]}>
+                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
                     Unknown message type
                 </Text>
             );
         }
     };
 
+
+    // Normalize 'createdAt' for messages and media arrays
+    const normalizeDate = (timestamp) => {
+        if (!timestamp) {
+            return ''; // Return empty string or handle appropriately for undefined cases
+        }
+
+        // If it's a Firestore Timestamp, convert to Date and then to ISO 8601 string
+        if (timestamp.toDate) {
+            return timestamp.toDate().toISOString();
+        }
+
+        // If it's already a Date object
+        if (timestamp instanceof Date) {
+            return timestamp.toISOString();
+        }
+
+        // If it's a numeric timestamp (milliseconds since epoch)
+        if (typeof timestamp === 'number') {
+            return new Date(timestamp).toISOString();
+        }
+
+        // If it's a string, attempt to convert to Date and then to ISO 8601
+        if (typeof timestamp === 'string') {
+            return new Date(timestamp).toISOString();
+        }
+
+        // If it's a object, attempt to convert to Date and then to ISO 8601
+        if (typeof timestamp === 'object') {
+            return new Date(timestamp).toISOString();
+        }
+
+        return ''; // Fallback
+    };
+
+    // Normalize 'createdAt' in messages and media arrays
+    const normalizedMessages = messages.map((msg) => ({
+        ...msg,
+        createdAt: normalizeDate(msg.createdAt), // Ensure normalization
+    }));
+
+    const normalizedMedia = media.map((med) => ({
+        ...med,
+        createdAt: normalizeDate(med.createdAt), // Ensure normalization
+    }));
+
+    // Combine and sort the normalized messages and media
+    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
+
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");  // Ensure to clear the controlled input text state
+    };
+
+    const handleSendDoc = async () => {
+        await sendMediaMessage();
+    }
+
+    const handleGPT = async () => {
+        const reply = await GPT();
+        setInputText(reply);  // Set input field text with AI reply
+        textRef.current = reply;
+    };
+
+    const handleInputChange = (text) => {
+        setInputText(text);  // Update the text state
+        textRef.current = text;  // Keep ref updated if needed elsewhere
+    };
+
+    const handleContentSizeChange = (event) => {
+        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
+    };
+
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}>
-            <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={darkMode ? ldStyles.screenD : ldStyles.screenL}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+        >
+            <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}
+            >
                 {combinedMessages.map((message, index) => (
-                    message.uid !== user.uid ? (
-                        <TouchableOpacity key={message.id || index} onLongPress={() => handlePressMessage(message)}>
-                            <View style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                                <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
-                                    {renderMessageContent(message)}
-                                </View>
-                            </View>
-                            <Menu opened={selectedMessage === message.id} onBackdropPress={() => setSelectedMessage(null)}>
-                                <MenuTrigger />
-                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
-                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? "Unreport" : "Report"} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
-                                </MenuOptions>
-                            </Menu>
-                        </TouchableOpacity>
-                    ) : (
-                        <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
-                            <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
-                                {renderMessageContent(message, index)}
-                            </View>
+                    <View
+                        key={index}
+                        style={[
+                            styles.messageItemContainer,
+                            {
+                                justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start',
+                            },
+                        ]}
+                    >
+                        <View
+                            style={[
+                                styles.messageBubble,
+                                message.uid === user.uid
+                                    ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL)
+                                    : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL),
+                            ]}
+                        >
+                            {renderMessageContent(message)}
                         </View>
-                    )
+                    </View>
                 ))}
             </ScrollView>
 
-            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
-                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+            <View
+                style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}
+            >
+                {/* <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                     <Feather name="plus" size={24} color="#737373" />
+                </TouchableOpacity> */}
+                <TouchableOpacity>
+                    <View style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+                        <View>
+                            <MenuTrigger>
+                                <Feather name="plus" size={24} color="#737373" />
+                            </MenuTrigger>
+                            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
+                                <MenuItem
+                                text="send file"
+                                action = {handleSendDoc}
+                                value={null}
+                                icon={<Ionicons name="mail-icon" size={heightPercentageToDP(2.5)} color='gray' />}
+                                />
+                                <MenuItem
+                                text="record audio"
+                                action = {handleSendDoc}
+                                value={null}
+                                icon={<Ionicons name="mail-icon" size={heightPercentageToDP(2.5)} color='gray' />}
+                                />
+                            </MenuOptions>
+                        </View>
+                    </View>
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}

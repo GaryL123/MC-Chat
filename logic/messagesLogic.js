@@ -10,6 +10,7 @@ import { OpenAI } from 'openai';
 import { getChatId } from './commonLogic';
 import * as DocumentPicker from 'expo-document-picker';
 import { Audio } from 'expo-av';
+import { downloadAsync } from 'expo-file-system';
 
 const messagesLogic = () => {
     const route = useRoute();
@@ -19,6 +20,8 @@ const messagesLogic = () => {
     const [media, setMedia] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
+    const [recording, setRecording] = useState();
+    const [isRecording, setIsRecording] = useState();
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
@@ -147,13 +150,11 @@ const messagesLogic = () => {
             Alert.alert('Error', `Failed to send media message: ${err.message}`);
         }
     };
-    
     const requestMicPermission = async () => {
         const { status } = await Audio.requestPermissionsAsync();
         return status === 'granted';
     }
-    
-    const sendAudioMessage = async () => {
+    const startRecording = async () => {
         const permissionGranted = await requestMicPermission();
         if (!permissionGranted) {
             console.log("Microphone permission is required.");
@@ -174,7 +175,6 @@ const messagesLogic = () => {
             console.error('Failed to start recording: ', error);
         }
     }
-    
     const stopRecording = async () => {
         if (!recording) { return; }
 
@@ -189,9 +189,50 @@ const messagesLogic = () => {
             console.error('Failed to stop recording: ', error);
         }
     }
-    
-    const reportMessage = async (textMessage, chatId, message) => {
-        const messageRef = (textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id));
+    const uploadAudio = async(uri, fileName) => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const storage = getStorage();
+            const chatId = getChatId(user?.uid, item?.uid);
+            const mediaRef = storageRef(storage);
+
+            await uploadBytes(mediaRef, blob);
+
+            const downLoadUrl = await getDownloadURL(mediaRef);
+            return downLoadUrl;
+        } catch (error) {
+            console.error('Failed to upload audio: ', error);
+        }
+    }
+    const sendVoiceMessage = async() => {
+        const uri = await stopRecording();
+        if (!uri) { return; }
+
+        const downloadUrl = await uploadAudio(uri);
+        if (!downloadUrl) { 
+            console.error('Failed to get download URL...');
+        return;
+     }
+        try {
+            const chatId = getChatId(user?.uid, item?.uid);
+            const docRef = doc(db, 'chatInds', chatId);
+            const messageRef = collection(docRef, 'media');
+
+            await addDoc(messagesRef, {
+                uid: user?.uid,
+                email: user?.email,
+                mediaType: 'audio',
+                mediaURL: downloadUrl,
+                fileName: 'voiceMessage',
+                createdAt: Timestamp.fromDate(new Date()),
+            });
+        } catch (error) {
+            console.log('Failed to send voice message: ', error);
+        }
+    };
+    const reportMessage = async (chatId, message) => {
+        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
 
         try {
             await runTransaction(db, async (transaction) => {
@@ -208,18 +249,15 @@ const messagesLogic = () => {
                     throw new Error("You have already reported this message.");
                 }
 
+                // Add the user to the reportedBy array and update the report count
                 reportedBy.push(user?.uid);
+                const newText = newReportCount >= 3 ? '*****' : data.text;
 
-                const updateData = {
+                transaction.update(messageRef, {
                     reportCount: newReportCount,
-                    reportedBy: reportedBy
-                };
-
-                if (data.text !== undefined) {
-                    updateData.text = newReportCount >= 3 ? '*****' : data.text;
-                }
-
-                transaction.update(messageRef, updateData);
+                    reportedBy: reportedBy,
+                    text: newText
+                });
             });
 
             Alert.alert('Reported', 'The message has been reported.');
@@ -229,42 +267,35 @@ const messagesLogic = () => {
         }
     };
 
-    const unreportMessage = async (textMessage, chatId, message) => {
-        const messageRef = textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id);
-    
+    const unreportMessage = async (chatId, message) => {
+        const messageRef = doc(db, 'chatInds', chatId, 'messages', message.id);
+
         try {
             await runTransaction(db, async (transaction) => {
                 const msgDoc = await transaction.get(messageRef);
                 if (!msgDoc.exists()) {
                     throw new Error("Document does not exist!");
                 }
-    
+
                 const data = msgDoc.data();
                 let newReportCount = data.reportCount || 0;
                 let reportedBy = data.reportedBy || [];
-    
+
                 if (!reportedBy.includes(user?.uid)) {
                     throw new Error("You have not reported this message yet.");
                 }
-    
-                // Remove user from reportedBy array and decrement report count
+
                 reportedBy = reportedBy.filter(id => id !== user?.uid);
                 newReportCount = Math.max(0, newReportCount - 1);
-    
-                // Update only relevant fields
-                const updateData = {
+                const newText = newReportCount >= 3 ? '*****' : data.text;
+
+                transaction.update(messageRef, {
                     reportCount: newReportCount,
-                    reportedBy: reportedBy
-                };
-    
-                // Modify text only if it's a text message and report count is below 3
-                if (textMessage) {
-                    updateData.text = newReportCount >= 3 ? '*****' : data.text;
-                }
-    
-                transaction.update(messageRef, updateData);
+                    reportedBy: reportedBy,
+                    text: newText
+                });
             });
-    
+
             Alert.alert('Unreported', 'The report has been removed.');
         } catch (err) {
             console.error("Error updating message: ", err);
@@ -301,7 +332,7 @@ const messagesLogic = () => {
         // TO DO - Render input field with the AI reply
     }
 
-    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, sendDoc, GPT };
+    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, sendDoc, GPT, startRecording, sendVoiceMessage };
 }
 
 export default messagesLogic;
