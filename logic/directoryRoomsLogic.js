@@ -13,19 +13,19 @@ const directoryRoomsLogic = () => {
     useEffect(() => {
         fetchUsers();
         fetchRoomInvites();
-    }, [ sentRoomInvites, roomInvites]);
+    }, [sentRoomInvites, roomInvites]);
 
     const fetchUserEmail = async (uid) => {
         try {
-            const userDoc = await getDoc(doc(db, 'users', uid)); // Get the document
+            const userDoc = await getDoc(doc(db, 'users', uid));
             if (userDoc.exists()) {
-                const userData = userDoc.data(); // Get the data
-                return userData.email; // Return the email
+                const userData = userDoc.data();
+                return userData.email;
             } else {
                 return null;
             }
         } catch (error) {
-            console.error("Error fetching user email:", error); // Error handling
+            console.error("Error fetching user email:", error);
             return null;
         }
     };
@@ -48,13 +48,13 @@ const directoryRoomsLogic = () => {
         try {
             const roomRef = doc(db, 'chatRooms', roomId);
             const roomDoc = await getDoc(roomRef);
+
             if (roomDoc.exists()) {
                 const roomData = roomDoc.data();
-                const memberIds = roomData.members || [];  // Ensure there's a fallback to an empty array if undefined
+                const memberIds = roomData.members || [];
                 setMembers(memberIds);
             } else {
-                console.log('No room found with the given ID:', roomId);
-                setMembers([]); // Optionally reset to empty if no room data found
+                setMembers([]);
             }
         } catch (error) {
             console.error('Error fetching room members:', error);
@@ -63,32 +63,27 @@ const directoryRoomsLogic = () => {
 
     const fetchRoomInvites = async () => {
         try {
-            // Get the collection of room invites received by the user
             const invitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
             const invitesSnapshot = await getDocs(invitesReceivedRef);
-    
-            // Prepare an array of promises to fetch invite details
+
             const invitePromises = invitesSnapshot.docs.map(async (doc) => {
-                // Fetch the room ID from the invite data
                 const inviteData = doc.data();
-                const roomId = inviteData.id; // Assuming this is the room ID
-                const senderId = doc.id; // Assuming this is the ID of the sender
-                const senderEmail = await fetchUserEmail(senderId); // Get sender email
-    
+                const roomId = inviteData.id;
+                const senderId = doc.id;
+                const senderEmail = await fetchUserEmail(senderId);
+
                 return {
-                    id: senderId, // Sender's user ID
-                    roomId: roomId, // Room ID from the invite
-                    senderEmail: senderEmail, // Email of the sender
+                    id: senderId,
+                    roomId: roomId,
+                    senderEmail: senderEmail,
                 };
             });
-    
-            // Resolve all promises to get the complete invite details
+
             const roomInvites = await Promise.all(invitePromises);
-    
-            // Set the state with resolved room invite details
+
             setRoomInvites(roomInvites);
         } catch (error) {
-            console.error("Error fetching room invites:", error); // Error handling
+            console.error("Error fetching room invites:", error);
         }
     };
 
@@ -114,51 +109,37 @@ const directoryRoomsLogic = () => {
 
     const acceptRoomInvite = async (roomId, senderId) => {
         try {
-            console.log(`Accepting room invite for roomId: ${roomId} from senderId: ${senderId}`);
-    
-            // Check if the room exists
             const roomRef = doc(db, 'chatRooms', roomId);
             const roomDoc = await getDoc(roomRef);
-    
+
             if (!roomDoc.exists()) {
                 throw new Error(`Room with ID '${roomId}' does not exist.`);
             }
-    
-            // Add the current user to the room's 'members' array
+
             await updateDoc(roomRef, {
-                members: arrayUnion(user.uid), // Use arrayUnion to add the user to the array
+                members: arrayUnion(user.uid),
             });
-    
-            console.log(`User ${user.uid} added to room ${roomId}'s members`);
-    
-            // Remove the invite from the user's 'invitesReceived'
+
             const userInvitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
-            await deleteDoc(doc(userInvitesReceivedRef, senderId)); // Use senderId, as it is the reference for the invite
-    
-            // Remove the invite from the sender's 'invitesSent'
+            await deleteDoc(doc(userInvitesReceivedRef, senderId));
+
             const senderInvitesSentRef = collection(db, 'users', senderId, 'invitesSent');
             await deleteDoc(doc(senderInvitesSentRef, user.uid));
-    
-            console.log('Room invite accepted, user added to members, and invite references removed.');
-    
+
         } catch (error) {
             console.error('Error accepting room invite:', error);
         }
     };
-    
-    
+
+
 
     const rejectRoomInvite = async (roomId, senderId) => {
         try {
-            // Remove the invite from the user's 'invitesReceived'
             const userInvitesReceivedRef = collection(db, 'users', user.uid, 'invitesReceived');
-            await deleteDoc(doc(userInvitesReceivedRef, senderId)); // Use senderId, as it is the reference for the invite
-    
-            // Remove the invite from the sender's 'invitesSent'
+            await deleteDoc(doc(userInvitesReceivedRef, senderId));
+
             const senderInvitesSentRef = collection(db, 'users', senderId, 'invitesSent');
             await deleteDoc(doc(senderInvitesSentRef, user.uid));
-    
-            console.log("Room invite rejected successfully.");
 
         } catch (error) {
             console.error("Error rejecting room invite:", error);
@@ -172,20 +153,31 @@ const directoryRoomsLogic = () => {
         return { membersList, otherUsersList };
     };
 
-    const removeMember = async (roomId, userId) => {
+    const addAdmin = async (roomId, userId) => {
         try {
-            // Get a reference to the room document
             const roomRef = doc(db, 'chatRooms', roomId);
 
-            // Remove the user from the room's 'members' array
+            await updateDoc(roomRef, {
+                admins: arrayUnion(userId)
+            });
+
+            setMembers((prev) => prev.filter((id) => id !== userId));
+
+        } catch (error) {
+            console.error('Error adding admin:', error);
+        }
+    };
+
+    const removeMember = async (roomId, userId) => {
+        try {
+            const roomRef = doc(db, 'chatRooms', roomId);
+
             await updateDoc(roomRef, {
                 members: arrayRemove(userId)
             });
 
-            // Update the friends list in the state
             setMembers((prev) => prev.filter((id) => id !== userId));
 
-            console.log('Member removed successfully.');
         } catch (error) {
             console.error('Error removing member:', error);
         }
@@ -199,6 +191,7 @@ const directoryRoomsLogic = () => {
         sendRoomInvite,
         sentRoomInvites,
         roomInvites,
+        addAdmin,
         removeMember,
         fetchRoomInvites,
         acceptRoomInvite,
