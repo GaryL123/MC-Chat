@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native';
 import { useAuth } from './authContext'
-import { Timestamp, addDoc, collection, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, deleteDoc, onSnapshot, orderBy, query, setDoc, runTransaction } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
@@ -45,8 +45,12 @@ const messagesRoomLogic = () => {
     useEffect(() => {
         const roomRef = doc(db, 'chatRooms', roomId);
         const unsub = onSnapshot(roomRef, (doc) => {
-            const data = doc.data();
-            setIsAdmin(data.admins && data.admins.includes(user?.uid));
+            if (doc.exists()) {
+                const data = doc.data();
+                setIsAdmin(data.admins && data.admins.includes(user?.uid));
+            } else {
+                setIsAdmin(false);
+            }
         });
     
         return () => unsub();
@@ -86,8 +90,32 @@ const messagesRoomLogic = () => {
     const sendDoc = async () => {
         console.log('sending doc...');
     }
+
+    const leaveRoom = async (roomId) => {
+        try {
+            const roomRef = doc(db, 'chatRooms', roomId);
+            const roomSnap = await getDoc(roomRef);
+    
+            if (!roomSnap.exists()) {
+                return;
+            }
+    
+            const roomData = roomSnap.data();
+    
+            if (roomData.members.length === 1) {
+                await deleteDoc(roomRef);
+            } else {
+                await updateDoc(roomRef, {
+                    members: arrayRemove(user?.uid)
+                });
+            }
+        } catch (error) {
+            console.error('Error removing member or deleting room:', error);
+            throw error;
+        }
+    }
           
-    return { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin };
+    return { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin, leaveRoom };
 }
 
 export default messagesRoomLogic;

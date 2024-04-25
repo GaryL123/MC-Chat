@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons, Feather, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +14,7 @@ const ios = Platform.OS == 'ios';
 
 export default function MessagesRoomScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin } = messagesRoomLogic();
+    const { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic, user, messages, inputRef, scrollViewRef, updateScrollView, textRef, sendMessage, sendDoc, isAdmin, leaveRoom } = messagesRoomLogic();
     const [inputText, setInputText] = useState('');  
     const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
@@ -62,7 +62,7 @@ export default function MessagesRoomScreen() {
                                     )}
                                     <MenuItem
                                         text="Leave Room"
-                                        action={() => {/* handle leaving the room */ }}
+                                        action={() => {handleLeaveRoom(roomId)}}
                                         value={null}
                                         icon={<Ionicons name="exit-outline" size={hp(2.5)} color="gray" />}
                                     />
@@ -80,6 +80,33 @@ export default function MessagesRoomScreen() {
             },
         });
     }, [navigation, roomId, isAdmin]);
+
+    const handleLeaveRoom = async (roomId) => {
+        Alert.alert(
+            "Leave Room",
+            "Are you sure you want to leave this room?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: async () => {
+                        await leaveRoom(roomId)
+                            .then(() => {
+                                navigation.goBack();
+                            })
+                            .catch((error) => {
+                                Alert.alert('Error', 'Failed to leave the room: ' + error.message);
+                            });
+                    },
+                    style: "destructive"
+                }
+            ],
+            { cancelable: true }
+        );
+    };
 
     const handleSendMessage = async () => {
         await sendMessage();
