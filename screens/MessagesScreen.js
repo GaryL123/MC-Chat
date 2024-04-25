@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
-import { Feather } from '@expo/vector-icons';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert, Modal } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as dp } from 'react-native-responsive-screen';
+import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { filter, getChatId, normalizeDate } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
@@ -12,16 +12,19 @@ import { Image } from 'expo-image';
 import ldStyles from '../assets/styles/LightDarkStyles';
 import MenuItem from '../components/MenuItem';
 
+
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
 
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
+    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, startRecording, sendVoiceMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35);
+    const [isRecording, setIsRecording] = useState();
     const [selectedMessage, setSelectedMessage] = useState(null);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
@@ -126,41 +129,6 @@ export default function MessagesScreen() {
         }
     };
 
-
-    // Normalize 'createdAt' for messages and media arrays
-    const normalizeDate = (timestamp) => {
-        if (!timestamp) {
-            return ''; // Return empty string or handle appropriately for undefined cases
-        }
-
-        // If it's a Firestore Timestamp, convert to Date and then to ISO 8601 string
-        if (timestamp.toDate) {
-            return timestamp.toDate().toISOString();
-        }
-
-        // If it's already a Date object
-        if (timestamp instanceof Date) {
-            return timestamp.toISOString();
-        }
-
-        // If it's a numeric timestamp (milliseconds since epoch)
-        if (typeof timestamp === 'number') {
-            return new Date(timestamp).toISOString();
-        }
-
-        // If it's a string, attempt to convert to Date and then to ISO 8601
-        if (typeof timestamp === 'string') {
-            return new Date(timestamp).toISOString();
-        }
-
-        // If it's a object, attempt to convert to Date and then to ISO 8601
-        if (typeof timestamp === 'object') {
-            return new Date(timestamp).toISOString();
-        }
-
-        return ''; // Fallback
-    };
-
     // Normalize 'createdAt' in messages and media arrays
     const normalizedMessages = messages.map((msg) => ({
         ...msg,
@@ -200,6 +168,23 @@ export default function MessagesScreen() {
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
     };
+    
+    const handleStartRecording = async () => {
+        await startRecording();
+        setIsRecording(true); // Update state to indicate recording has started
+    };
+    
+    const handleStopRecording = async () => {
+        setIsRecording(false); // Update state before stopping recording
+        await stopRecording(); // Stop recording and obtain the audio URI
+        await sendVoiceMessage(); // Upload and send the voice message
+        setIsModalVisible(false); // Close modal after stopping recording
+    };
+    
+    const handlePauseRecording = async () => {
+        console.log('Pausing recording not implemented yet');
+        // Placeholder for future implementation of pause functionality
+    };
 
     return (
         <KeyboardAvoidingView
@@ -236,29 +221,26 @@ export default function MessagesScreen() {
             <View
                 style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}
             >
-                {/* <TouchableOpacity onPress={handleSendDoc} style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
-                    <Feather name="plus" size={24} color="#737373" />
-                </TouchableOpacity> */}
                 <TouchableOpacity>
                     <View style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
                         <View>
-                            <MenuTrigger>
-                                <Feather name="plus" size={24} color="#737373" />
-                            </MenuTrigger>
-                            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
-                                <MenuItem
-                                text="send file"
-                                action = {handleSendDoc}
-                                value={null}
-                                icon={<Ionicons name="mail-icon" size={heightPercentageToDP(2.5)} color='gray' />}
-                                />
-                                <MenuItem
-                                text="record audio"
-                                action = {handleSendDoc}
-                                value={null}
-                                icon={<Ionicons name="mail-icon" size={heightPercentageToDP(2.5)} color='gray' />}
-                                />
-                            </MenuOptions>
+                            <Menu>
+                                <MenuTrigger>
+                                    <Feather name="plus" size={24} color="#737373" />
+                                </MenuTrigger>
+                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.mediaMenusStyleD : ldStyles.mediaMenusStyleL }}>
+                                    <MenuItem
+                                        action={handleSendDoc}
+                                        value={null}
+                                        icon={<Ionicons name="mail" size={dp(2.5)} color='gray' />}
+                                    />
+                                    <MenuItem
+                                        action={() => setIsModalVisible(true)}
+                                        value={null}
+                                        icon={<Ionicons name="mic-circle" size={dp(2.5)} color='gray' />}
+                                    />
+                                </MenuOptions>
+                            </Menu>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -280,6 +262,45 @@ export default function MessagesScreen() {
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
+            {/* Modal for recording controls */}
+            <Modal
+                animationType="none"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => setIsModalVisible(false)}
+            >
+                <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
+           
+                <View style={[darkMode ? ldStyles.modalRecordContentD : ldStyles.modalRecordContentL]}>
+                        <TouchableOpacity 
+                        style={ldStyles.modalItem}
+                        onPress={console.log('startRecording')
+                        }>
+                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Start</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                        style={ldStyles.modalItem}
+                        onPress={console.log('pauseRecording')
+                        }>
+                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Pause</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                        style={ldStyles.modalItem}
+                        onPress={console.log('stopRecording')
+                        }>
+                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Stop</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                        style={ldStyles.modalItem}
+                        onPress={() => setIsModalVisible(false)
+                        }>
+                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextl]}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Rest of your screen */}
         </KeyboardAvoidingView>
     );
 }
@@ -367,4 +388,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 16,
     },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark background with some transparency
+      },
+      modalContent: {
+        backgroundColor: 'white', // Main content area background
+        padding: 20,
+        borderRadius: 10, // Soft corners for a modern look
+        width: '80%', // Width as a percentage for flexibility
+        alignItems: 'center', // Center elements horizontally
+      },
 });
+    

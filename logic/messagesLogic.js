@@ -20,8 +20,7 @@ const messagesLogic = () => {
     const [media, setMedia] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
-    const [recording, setRecording] = useState();
-    const [isRecording, setIsRecording] = useState();
+    const [setRecording, setIsRecording] = useState();
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
@@ -180,7 +179,7 @@ const messagesLogic = () => {
 
         try {
             await recording.stopAndUnloadAsync();
-            const audioUri = recording.gegtURI();
+            const audioUri = recording.getURI();
             setRecording(null);
             setIsRecording(false);
 
@@ -332,7 +331,7 @@ const messagesLogic = () => {
         // TO DO - Render input field with the AI reply
     }
 
-    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, sendDoc, GPT, startRecording, sendVoiceMessage };
+    return { item, user, messages, media, inputRef, scrollViewRef, updateScrollView, createChatIfNotExists, textRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, sendDoc, GPT, startRecording, stopRecording, sendVoiceMessage };
 }
 
 export default messagesLogic;
