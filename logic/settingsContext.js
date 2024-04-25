@@ -7,7 +7,7 @@ export const SettingsContextProvider = ({ children }) => {
     const languages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
     const [darkMode, setDarkMode] = useState(true);
     const [profanityFilter, setProfanityFilter] = useState(false);
-    const [textSize, setTextSize] = useState(16);
+    const [textSize, setTextSize] = useState(0);
 
     const toggleDarkMode = () => setDarkMode(!darkMode);
     const toggleProfanityFilter = () => setProfanityFilter(!profanityFilter);

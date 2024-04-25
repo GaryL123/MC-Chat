@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../logic/authContext';
 import { useSettings } from '../logic/settingsContext';
 import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 function RegistrationScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
@@ -17,6 +17,7 @@ function RegistrationScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { register } = useAuth();
+  const ldStyles = getldStyles(textSize);
 
   const handleRegister = async () => {
     if (!firstName || !lastName || !emailPrefix || !password || !confirmPassword) {
@@ -61,11 +62,11 @@ function RegistrationScreen() {
             <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Sign Up</Text>
 
             {/* First Name */}
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                 <Octicons name="person" size={hp(2.7)} color="gray" />
                 <TextInput
                 onChangeText={setFirstName}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='First Name'
                 placeholderTextColor={'gray'}
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -73,11 +74,11 @@ function RegistrationScreen() {
             </View>
 
             {/* Last Name */}
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                 <Octicons name="person" size={hp(2.7)} color="gray" />
                 <TextInput
                 onChangeText={setLastName}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Last Name'
                 placeholderTextColor={'gray'}
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -85,11 +86,11 @@ function RegistrationScreen() {
             </View>
 
             {/* Email */}
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                 <Octicons name="mail" size={hp(2.7)} color="gray" />
                 <TextInput
                 onChangeText={setEmailPrefix}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Email'
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
@@ -99,11 +100,11 @@ function RegistrationScreen() {
             </View>
 
             {/* Password */}
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                 <Octicons name="lock" size={hp(2.7)} color="gray" />
                 <TextInput
                 onChangeText={setPassword}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Password'
                 secureTextEntry
                 placeholderTextColor={'gray'}
@@ -113,11 +114,11 @@ function RegistrationScreen() {
             </View>
 
             {/* Confirm Password */}
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                 <Octicons name="lock" size={hp(2.7)} color="gray" />
                 <TextInput
                 onChangeText={setConfirmPassword}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Confirm Password'
                 secureTextEntry
                 placeholderTextColor={'gray'}

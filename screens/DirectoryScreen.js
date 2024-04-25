@@ -5,12 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import directoryLogic from '../logic/directoryLogic';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function DirectoryScreen() {
   const { language, darkMode, textSize } = useSettings();
   const navigation = useNavigation();
   const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
+  const ldStyles = getldStyles(textSize);
 
   const { friendsList, otherUsersList } = getOrganizedUsers();
 
@@ -43,7 +44,7 @@ export default function DirectoryScreen() {
       <View style={ldStyles.itemContainer}>
         <Image style={ldStyles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
         <View style={ldStyles.itemContainerText}>
-          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item.fName + ' ' + item.lName}</Text>
+          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL]}>{item.fName + ' ' + item.lName}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -79,7 +80,7 @@ export default function DirectoryScreen() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderUserItem}
         renderSectionHeader={({ section }) => (
-          <Text style={[darkMode ? ldStyles.sectionHeaderD : ldStyles.sectionHeaderL, { fontSize: textSize }]}>{section.title}</Text>
+          <Text style={[darkMode ? ldStyles.sectionHeaderD : ldStyles.sectionHeaderL]}>{section.title}</Text>
         )}
       />
 

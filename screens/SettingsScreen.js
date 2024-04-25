@@ -3,22 +3,19 @@ import { View, Text, Switch, TouchableOpacity, KeyboardAvoidingView, ScrollView,
 import { useSettings } from '../logic/settingsContext';
 import { Ionicons } from '@expo/vector-icons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function SettingsScreen() {
     const { language, languages, changeLanguage, darkMode, toggleDarkMode, profanityFilter, toggleProfanityFilter, textSize, setTextSize } = useSettings();
     const [showLanguageModal, setShowLanguageModal] = useState(false);
+    const ldStyles = getldStyles(textSize);
 
     const handleIncreaseTextSize = () => {
-        if (textSize < 45) {
             setTextSize(textSize + 1);
-        }
     };
 
     const handleDecreaseTextSize = () => {
-        if (textSize > 7) {
             setTextSize(textSize - 1);
-        }
     };
 
     return (
@@ -28,7 +25,7 @@ export default function SettingsScreen() {
 
                     <TouchableOpacity onPress={() => setShowLanguageModal(true)} style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={"language-outline"} size={hp(2.7)} color="gray" />
-                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}>
+                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
                             {language}
                         </Text>
                         <Ionicons color="gray" name="chevron-forward-outline" size={20} />
@@ -36,7 +33,7 @@ export default function SettingsScreen() {
 
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={darkMode ? "flashlight" : "flashlight-outline"} size={hp(2.7)} color="gray" />
-                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}>
+                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
                             {darkMode ? 'Dark Mode' : 'Light Mode'}
                         </Text>
                         <Switch onValueChange={toggleDarkMode} value={darkMode} />
@@ -44,7 +41,7 @@ export default function SettingsScreen() {
 
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={profanityFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
-                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}>
+                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
                             {profanityFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
                         </Text>
                         <Switch onValueChange={toggleProfanityFilter} value={profanityFilter} />
@@ -52,7 +49,7 @@ export default function SettingsScreen() {
 
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={"text"} size={hp(2.7)} color="gray" />
-                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}>
+                        <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
                             Text Size
                         </Text>
                         <View style={styles.buttonContainer}>
@@ -78,7 +75,7 @@ export default function SettingsScreen() {
                                             changeLanguage(language);
                                             setShowLanguageModal(false);
                                         }}>
-                                        <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL, { fontSize: textSize }]}>{language}</Text>
+                                        <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>{language}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>

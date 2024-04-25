@@ -5,11 +5,12 @@ import directoryLogic from '../logic/directoryLogic';
 import { Image } from 'expo-image';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function FriendRequestsScreen() {
     const { language, darkMode, textSize } = useSettings();
     const { friendRequests, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests } = directoryLogic();
+    const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
         fetchFriendRequests();
@@ -20,7 +21,7 @@ export default function FriendRequestsScreen() {
             <View style={ldStyles.itemContainer}>
                 <Image style={ldStyles.profileImage} source={{ uri: item?.photoURL || defaultProfilePicture }} />
                 <View style={ldStyles.itemContainerText}>
-                    <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item.senderEmail}</Text>
+                    <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL]}>{item.senderEmail}</Text>
                 </View>
 
                 {/* Add space between email and buttons */}
@@ -43,7 +44,7 @@ export default function FriendRequestsScreen() {
     };
 
     return (
-        <View style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}>
+        <View style={[darkMode ? ldStyles.screenD : ldStyles.screenL]}>
             <FlatList
                 data={friendRequests}
                 contentContainerStyle={ldStyles.flatListContent}

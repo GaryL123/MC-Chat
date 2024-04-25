@@ -5,11 +5,11 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
-import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
 import roomsLogic from '../logic/roomsLogic';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import styles from '../assets/styles/AppStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsSettingsScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
@@ -23,6 +23,7 @@ export default function RoomsSettingsScreen() {
   const navigation = useNavigation();
   const { chooseRoomPicture2, changeRoomName, changeRoomDesc, changeRoomFilter, changeRoomPublic } = roomsLogic(navigation);
   const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+  const ldStyles = getldStyles(textSize);
 
   const handleChangeRoomPicture = async () => {
     const newRoomPhotoUrl = await chooseRoomPicture2(roomId);

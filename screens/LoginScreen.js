@@ -7,7 +7,7 @@ import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useSettings } from '../logic/settingsContext';
 import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 function LoginScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
@@ -15,6 +15,7 @@ function LoginScreen() {
   const [emailPrefix, setEmailPrefix] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const ldStyles = getldStyles(textSize);
 
   const handleLogin = async () => {
     if (!emailPrefix || !password) {
@@ -42,7 +43,7 @@ function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]}
+      style={[darkMode ? ldStyles.screenD : ldStyles.screenL]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
@@ -54,24 +55,24 @@ function LoginScreen() {
 
           <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Sign In</Text>
 
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
               <Octicons name="mail" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setEmailPrefix}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Email Address'
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
               />
-              <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL, { fontSize: textSize }]}>@manhattan.edu</Text>
+              <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL]}>@manhattan.edu</Text>
             </View>
 
-            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
               <Octicons name="lock" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setPassword}
-                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                 placeholder='Password'
                 secureTextEntry
                 placeholderTextColor={'gray'}

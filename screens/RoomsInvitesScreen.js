@@ -5,11 +5,12 @@ import directoryRoomsLogic from '../logic/directoryRoomsLogic';
 import { Image } from 'expo-image';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsInvitesScreen() {
     const { language, darkMode, textSize } = useSettings();
     const { roomInvites, acceptRoomInvite, rejectRoomInvite, fetchRoomInvites } = directoryRoomsLogic();
+    const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
         fetchRoomInvites();

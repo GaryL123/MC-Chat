@@ -8,7 +8,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import roomsLogic from '../logic/roomsLogic';
 import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsCreateScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
@@ -19,6 +19,7 @@ export default function RoomsCreateScreen() {
     const [roomFilter, setRoomFilter] = useState(true);
     const [roomPublic, setRoomPublic] = useState(true);
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const ldStyles = getldStyles(textSize);
 
     const handleChangeRoomPicture = async () => {
         await chooseRoomPicture();

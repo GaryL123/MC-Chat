@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { filter } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 import messagesRoomLogic from '../logic/messagesRoomLogic';
 import MenuItem from '../components/MenuItem';
 
@@ -18,6 +18,7 @@ export default function MessagesRoomScreen() {
     const [inputText, setInputText] = useState('');  
     const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
+    const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
         navigation.setOptions({
@@ -31,7 +32,7 @@ export default function MessagesRoomScreen() {
                                 <MenuTrigger>
                                     <Entypo name="dots-three-vertical" size={24} color="white" />
                                 </MenuTrigger>
-                                <MenuOptions customStyles={{ optionsContainer: [darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL, { fontSize: textSize }] }}>
+                                <MenuOptions customStyles={{ optionsContainer: [darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL] }}>
                                     {isAdmin && (
                                         <>
                                             <MenuItem
@@ -127,21 +128,21 @@ export default function MessagesRoomScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL]} keyboardVerticalOffset={Platform.OS === "ios" ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {messages.map((message, index) => (
                     <View key={index} style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
-                        {message.uid !== user.uid && (<Text style={[styles.senderName, { fontSize: textSize }]}>{message.senderFName + ' ' + message.senderLName}</Text>)}
-                        <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL, { fontSize: textSize }]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL), { fontSize: textSize }]}>
-                            <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL, { fontSize: textSize }]) : ([darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }])}>
+                        {message.uid !== user.uid && (<Text style={[styles.senderName]}>{message.senderFName + ' ' + message.senderLName}</Text>)}
+                        <View style={[styles.messageBubble, message.uid === user.uid ? ([darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                            <Text style={message.uid === user.uid ? ([darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL]) : ([darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL])}>
                                 {(profanityFilter || roomFilter) ? filter.clean(message.text) : message.text}
                             </Text>
                         </View>
                     </View>
                 ))}
             </ScrollView>
-            <View style={[darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL, { fontSize: textSize }]}>
-                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+            <View style={[darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL]}>
+                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
                 <TextInput
@@ -149,13 +150,13 @@ export default function MessagesRoomScreen() {
                     onContentSizeChange={handleContentSizeChange} 
                     placeholder='Type a message...'
                     placeholderTextColor={'gray'}
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} 
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} 
                     value={inputText}
                     multiline={true} 
                     scrollEnabled={true} 
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>

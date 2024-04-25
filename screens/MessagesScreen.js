@@ -9,7 +9,7 @@ import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 import MenuItem from '../components/MenuItem';
 
 
@@ -28,6 +28,7 @@ export default function MessagesScreen() {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
+    const ldStyles = getldStyles(textSize);
 
 
     useEffect(() => {
@@ -249,16 +250,16 @@ export default function MessagesScreen() {
                     onContentSizeChange={handleContentSizeChange}
                     placeholder="Type a message..."
                     placeholderTextColor="gray"
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
                     value={inputText}
                     multiline={true} // Enable multiline input
                     scrollEnabled={true} // Allow scrolling inside the input
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>

@@ -5,7 +5,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useRoute } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import directoryRoomsLogic from '../logic/directoryRoomsLogic';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsAddUserScreen() {
   const { language, darkMode, textSize } = useSettings();
@@ -13,6 +13,7 @@ export default function RoomsAddUserScreen() {
   const { roomId } = route.params;  // Destructure roomId from route parameters
   const { fetchMembers, getOrganizedUsers, removeMember } = directoryRoomsLogic();
   const { membersList } = getOrganizedUsers();
+  const ldStyles = getldStyles(textSize);
 
   useEffect(() => {
     fetchMembers(roomId);

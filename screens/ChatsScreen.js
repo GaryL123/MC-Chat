@@ -8,12 +8,13 @@ import { filter, defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import chatsLogic from '../logic/chatsLogic';
 import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function ChatsScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const { friends, renderLastMessage, renderTime, openChat } = chatsLogic(navigation);
+  const ldStyles = getldStyles(textSize);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,12 +50,12 @@ export default function ChatsScreen() {
         />
         <View style={ldStyles.itemContainerText}>
           <View style={ldStyles.nameAndTimeRow}>
-          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item?.fName + ' ' + item?.lName}</Text>
-            <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL, { fontSize: textSize }]}>
+          <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL]}>{item?.fName + ' ' + item?.lName}</Text>
+            <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL]}>
               {renderTime(item.id)}
             </Text>
           </View>
-          <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>
+          <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL]}>
             {profanityFilter ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
           </Text>
         </View>

@@ -8,7 +8,7 @@ import { filter, defaultProfilePicture, generateYears, currentYear, mcMajors, mc
 import { useSettings } from '../logic/settingsContext';
 import profileLogic from '../logic/profileLogic';
 import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function ProfileScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
@@ -30,6 +30,7 @@ export default function ProfileScreen() {
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const ldStyles = getldStyles(textSize);
 
     const handleChangeProfilePicture = async () => {
         await chooseProfilePicture();
@@ -135,12 +136,12 @@ export default function ProfileScreen() {
                     <Text style={darkMode ? ldStyles.headerTextD : ldStyles.headerTextL}>{user?.fName + ' ' + user?.lName}</Text>
 
                     <View style={styles.inputContainerHoriz}>
-                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                             <Octicons name="pencil" size={hp(2.7)} color="gray" />
                             <TextInput
                                 value={fName}
                                 onChangeText={setFName}
-                                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                                style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                                 placeholder={user?.fName}
                                 placeholderTextColor={'gray'}
                                 autoCapitalize="none"
@@ -148,7 +149,7 @@ export default function ProfileScreen() {
                             />
                         </View>
 
-                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                        <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                             <Octicons name="pencil" size={hp(2.7)} color="gray" />
                             <TextInput
                                 value={lName}
@@ -162,21 +163,21 @@ export default function ProfileScreen() {
                         </View>
                     </View>
 
-                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Octicons name="mail" size={hp(2.7)} color="gray" />
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
-                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                             placeholder={user?.email.split('@')[0]}
                             placeholderTextColor={'gray'}
                             autoCapitalize="none"
                             keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
-                        <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL, { fontSize: textSize }]}>@manhattan.edu</Text>
+                        <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL]}>@manhattan.edu</Text>
                     </View>
 
-                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <FontAwesome6 name={faculty ? "person-harassing" : "person-drowning"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
                             {faculty ? 'Faculty' : 'Student'}
@@ -189,15 +190,15 @@ export default function ProfileScreen() {
 
                     {!faculty ? (
                         <View style={styles.inputContainerHoriz}>
-                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                                 <TouchableOpacity onPress={() => setShowMajorPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}>{major || "Major"}</Text>
+                                    <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>{major || "Major"}</Text>
                                     <Octicons name="chevron-down" size={24} color="gray" />
                                 </TouchableOpacity>
                                 <Modal animationType="none" transparent={true} visible={showMajorPicker} onRequestClose={() => setShowMajorPicker(false)}>
-                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL, { fontSize: textSize }]}>
-                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL, { fontSize: textSize }]}>
-                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL, { fontSize: textSize }]}>Select Major</Text>
+                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
+                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL]}>
+                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>Select Major</Text>
                                             <Picker
                                                 selectedValue={major}
                                                 onValueChange={(itemValue, itemIndex) => {
@@ -217,15 +218,15 @@ export default function ProfileScreen() {
                                 </Modal>
                             </View>
 
-                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                                 <TouchableOpacity onPress={() => setShowGradYearPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2Text, { fontSize: textSize }]}>{gradYear || "Grad. Year"}</Text>
+                                    <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2Text]}>{gradYear || "Grad. Year"}</Text>
                                     <Octicons name="chevron-down" size={24} color="gray" />
                                 </TouchableOpacity>
                                 <Modal animationType="none" transparent={true} visible={showGradYearPicker} onRequestClose={() => setShowGradYearPicker(false)}>
-                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL, { fontSize: textSize }]}>
-                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL, { fontSize: textSize }]}>
-                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL, { fontSize: textSize }]}>Select Graduation Year</Text>
+                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
+                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL]}>
+                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>Select Graduation Year</Text>
                                             <Picker
                                                 selectedValue={gradYear || currentYear}
                                                 onValueChange={(itemValue, itemIndex) => {
@@ -247,15 +248,15 @@ export default function ProfileScreen() {
                         </View>
                     ) : (
                         <View style={styles.inputContainerHoriz}>
-                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                                 <TouchableOpacity onPress={() => setShowDeptPicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{dept || "Department"}</Text>
                                     <Octicons name="chevron-down" size={24} color="gray" />
                                 </TouchableOpacity>
                                 <Modal animationType="none" transparent={true} visible={showDeptPicker} onRequestClose={() => setShowDeptPicker(false)}>
-                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL, { fontSize: textSize }]}>
-                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL, { fontSize: textSize }]}>
-                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL, { fontSize: textSize }]}>Select Department</Text>
+                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
+                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL]}>
+                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>Select Department</Text>
                                             <Picker
                                                 selectedValue={dept}
                                                 onValueChange={(itemValue, itemIndex) => {
@@ -275,15 +276,15 @@ export default function ProfileScreen() {
                                 </Modal>
                             </View>
 
-                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }, { fontSize: textSize }]}>
+                            <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { flex: 1, marginRight: 5 }]}>
                                 <TouchableOpacity onPress={() => setShowTitlePicker(true)} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>{title || "Title"}</Text>
                                     <Octicons name="chevron-down" size={24} color="gray" />
                                 </TouchableOpacity>
                                 <Modal animationType="none" transparent={true} visible={showTitlePicker} onRequestClose={() => setShowTitlePicker(false)}>
-                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL, { fontSize: textSize }]}>
-                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL, { fontSize: textSize }]}>
-                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL, { fontSize: textSize }]}>Select Title</Text>
+                                    <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
+                                        <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL]}>
+                                            <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>Select Title</Text>
                                             <Picker
                                                 selectedValue={title}
                                                 onValueChange={(itemValue, itemIndex) => {
@@ -305,11 +306,11 @@ export default function ProfileScreen() {
                         </View>
                     )}
 
-                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Octicons name="lock" size={hp(2.7)} color="gray" />
                         <TextInput
                             onChangeText={setPassword}
-                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                             placeholder='Password'
                             secureTextEntry
                             placeholderTextColor={'gray'}
@@ -318,11 +319,11 @@ export default function ProfileScreen() {
                         />
                     </View>
 
-                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L, { fontSize: textSize }]}>
+                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Octicons name="lock" size={hp(2.7)} color="gray" />
                         <TextInput
                             onChangeText={setPasswordConfirm}
-                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL, { fontSize: textSize }]}
+                            style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
                             placeholder='Confirm Password'
                             secureTextEntry
                             placeholderTextColor={'gray'}

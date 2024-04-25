@@ -4,16 +4,17 @@ import { useSettings } from '../logic/settingsContext';
 import roomsLogic from '../logic/roomsLogic';
 import { Image } from 'expo-image';
 import { filter, defaultProfilePicture } from '../logic/commonLogic';
-import styles from '../assets/styles/AppStyles';
-import ldStyles from '../assets/styles/LightDarkStyles';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import styles from '../assets/styles/AppStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsScreen() {
   const { darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom } = roomsLogic(navigation);
+  const ldStyles = getldStyles(textSize);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -55,7 +56,7 @@ export default function RoomsScreen() {
 
     return (
       <View>
-        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[ldStyles.itemContainer, { fontSize: textSize }]}>
+        <TouchableOpacity onPress={() => isMember && openRoom(item)} disabled={!isMember} style={[ldStyles.itemContainer]}>
           <Image
             style={ldStyles.profileImage}
             source={{ uri: item?.roomPhoto || defaultProfilePicture }}
@@ -63,19 +64,19 @@ export default function RoomsScreen() {
           />
           <View style={styles2.textContainer}>
             <View style={styles2.nameAndTimeRow}>
-            <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL, { fontSize: textSize }]}>{item?.roomName}</Text>
+            <Text style={[darkMode ? ldStyles.nameTextD : ldStyles.nameTextL]}>{item?.roomName}</Text>
               {isMember && (
-                <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL, { fontSize: textSize }]}>
+                <Text style={[darkMode ? ldStyles.timeTextD : ldStyles.timeTextL]}>
                 {renderTime(item.id)}
               </Text>
               )}
             </View>
             {isMember ? (
-              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>
+              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL]}>
               {(profanityFilter || item.roomFilter ) ? filter.clean(renderLastMessage(item.id)) : renderLastMessage(item.id)}
             </Text>
             ) : (
-              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL, { fontSize: textSize }]}>{item.roomDesc}</Text>
+              <Text style={[darkMode ? ldStyles.lastMessageTextD : ldStyles.lastMessageTextL]}>{item.roomDesc}</Text>
             )}
           </View>
           {!isMember && (
