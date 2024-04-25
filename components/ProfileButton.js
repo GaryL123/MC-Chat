@@ -9,7 +9,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import MenuItem from './MenuItem';
 import NotificationBubble from './NotificationBubble';
-import ldStyles from '../assets/styles/LightDarkStyles';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 const ProfileButton = () => {
   const { language, darkMode, textSize } = useSettings();
@@ -19,6 +19,8 @@ const ProfileButton = () => {
   const hasPendingInvites = pendingRoomInvites && pendingRoomInvites.length > 0;
   const totalNotifications = (hasPendingRequests ? pendingFriendRequests.length : 0) + (hasPendingInvites ? pendingRoomInvites.length : 0);
   const hasNotifications = hasPendingRequests || hasPendingInvites;
+  const ldStyles = getldStyles(textSize);
+  
   const handleLogout = async () => {
     await logout();
   };
