@@ -5,17 +5,18 @@ import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import { defaultProfilePicture } from '../logic/commonLogic';
 import directoryLogic from '../logic/directoryLogic';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function DirectoryScreen() {
   const { language, darkMode, textSize } = useSettings();
   const navigation = useNavigation();
   const { getOrganizedUsers, sendFriendRequest, isFriend, sentRequests, removeFriend } = directoryLogic();
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   const { friendsList, otherUsersList } = getOrganizedUsers();
 
-  // State for managing the "Remove Friend" modal
   const [showRemoveFriendModal, setShowRemoveFriendModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState(null);
 
@@ -26,7 +27,7 @@ export default function DirectoryScreen() {
 
   const confirmRemoveFriend = async () => {
     if (friendToRemove) {
-      await removeFriend(friendToRemove); // Call the logic function to remove the friend
+      await removeFriend(friendToRemove);
       setShowRemoveFriendModal(false);
       setFriendToRemove(null);
     }
@@ -49,9 +50,9 @@ export default function DirectoryScreen() {
         <TouchableOpacity
           onPress={() => {
             if (friendshipStatus === 'Friend') {
-              handleFriendButtonPress(friendId); // Open the modal to confirm removal
+              handleFriendButtonPress(friendId);
             } else {
-              sendFriendRequest(friendId); // Send a friend request if not already a friend
+              sendFriendRequest(friendId);
             }
           }}
           style={[
@@ -74,8 +75,8 @@ export default function DirectoryScreen() {
       <StatusBar style="dark-content" />
       <SectionList
         sections={[
-          { title: 'Friends', data: friendsList },
-          { title: 'Users', data: otherUsersList },
+          { title: t("Friends"), data: friendsList },
+          { title: t('Users'), data: otherUsersList },
         ]}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderUserItem}
@@ -84,7 +85,6 @@ export default function DirectoryScreen() {
         )}
       />
 
-      {/* Modal for confirming friend removal */}
       <Modal
         visible={showRemoveFriendModal}
         transparent

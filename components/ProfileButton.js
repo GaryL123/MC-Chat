@@ -9,6 +9,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import MenuItem from './MenuItem';
 import NotificationBubble from './NotificationBubble';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 const ProfileButton = () => {
@@ -19,6 +20,7 @@ const ProfileButton = () => {
   const hasPendingInvites = pendingRoomInvites && pendingRoomInvites.length > 0;
   const totalNotifications = (hasPendingRequests ? pendingFriendRequests.length : 0) + (hasPendingInvites ? pendingRoomInvites.length : 0);
   const hasNotifications = hasPendingRequests || hasPendingInvites;
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
   
   const handleLogout = async () => {
@@ -43,14 +45,14 @@ const ProfileButton = () => {
             </MenuTrigger>
             <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
               <MenuItem
-                text="Profile"
+                text={t("Profile")}
                 action={() => navigation.navigate('ProfileStack')}
                 value={null}
                 icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
               />
               {hasPendingRequests && (
                 <MenuItem
-                  text="Friend Requests"
+                  text={t("Friend Requests")}
                   action={() => navigation.navigate('FriendRequestsStack')}
                   value={null}
                   customContent={
@@ -60,7 +62,7 @@ const ProfileButton = () => {
               )}
               {hasPendingInvites && (
                 <MenuItem
-                  text="Room Invites"
+                  text={t("Room Invites")}
                   action={() => navigation.navigate('RoomInvitesStack')}
                   value={null}
                   customContent={
@@ -69,7 +71,7 @@ const ProfileButton = () => {
                 />
               )}
               <MenuItem
-                text="Log Out"
+                text={t("Log Out")}
                 action={handleLogout}
                 value={null}
                 icon={<Ionicons name="log-out-outline" size={hp(2.5)} color="gray" />}

@@ -44,7 +44,7 @@ export default function SettingsScreen() {
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={profanityFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
                         <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
-                            {profanityFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
+                            {profanityFilter ? t("Profanity Filter On") : t("Profanity Filter Off")}
                         </Text>
                         <Switch onValueChange={toggleProfanityFilter} value={profanityFilter} />
                     </View>
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
                     <Modal animationType="none" transparent={true} visible={showLanguageModal} onRequestClose={() => setShowLanguageModal(false)}>
                         <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
                             <View style={[darkMode ? ldStyles.modalContentD : ldStyles.modalContentL]}>
-                                <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>Select Language</Text>
+                                <Text style={[darkMode ? ldStyles.modalTitleD : ldStyles.modalTitleL]}>{t("Select Language")}</Text>
                                 {languages.map((language, index) => (
                                     <TouchableOpacity
                                         key={index}

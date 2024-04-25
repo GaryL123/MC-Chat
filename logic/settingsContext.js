@@ -13,17 +13,6 @@ export const SettingsContextProvider = ({ children }) => {
     const toggleProfanityFilter = () => setProfanityFilter(!profanityFilter);
     const changeLanguage = (newLanguage) => setLanguage(newLanguage);
 
-    const translations = {
-        "Text Size": {
-            English: "Text Size",
-            Spanish: "Tamaño del Texto",
-            French: "Taille du Texte",
-            German: "Textgröße",
-            Chinese: "文字大小"
-        },
-        // Add other translatable strings here
-    };
-
     return (
         <SettingsContext.Provider value={{ language, languages, changeLanguage, darkMode, toggleDarkMode, profanityFilter, toggleProfanityFilter, textSize, setTextSize }}>
             {children}

@@ -6,9 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { filter } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
-import { getldStyles } from '../assets/styles/LightDarkStyles';
 import messagesRoomLogic from '../logic/messagesRoomLogic';
 import MenuItem from '../components/MenuItem';
+import translations from '../assets/styles/Translations';
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 const ios = Platform.OS == 'ios';
 
@@ -18,6 +19,7 @@ export default function MessagesRoomScreen() {
     const [inputText, setInputText] = useState('');  
     const [inputHeight, setInputHeight] = useState(35); 
     const navigation = useNavigation();
+    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
@@ -36,25 +38,25 @@ export default function MessagesRoomScreen() {
                                     {isAdmin && (
                                         <>
                                             <MenuItem
-                                                text="Add Users"
+                                                text={t("Add Users")}
                                                 action={() => navigation.navigate('Add Users', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-add-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
-                                                text="Remove Users"
+                                                text={t("Remove Users")}
                                                 action={() => navigation.navigate('Remove Users', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
-                                                text="Add Admins"
+                                                text={t("Add Admins")}
                                                 action={() => navigation.navigate('Add Admins', { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-add" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
-                                                text="Room Settings"
+                                                text={t("Room Settings")}
                                                 action={() => navigation.navigate('Room Settings', { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic })}
                                                 value={null}
                                                 icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
@@ -62,7 +64,7 @@ export default function MessagesRoomScreen() {
                                         </>
                                     )}
                                     <MenuItem
-                                        text="Leave Room"
+                                        text={t("Leave Room")}
                                         action={() => {handleLeaveRoom(roomId)}}
                                         value={null}
                                         icon={<Ionicons name="exit-outline" size={hp(2.5)} color="gray" />}
