@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Alert } from 'react-native';
 import { useAuth } from './authContext'
-import { Timestamp, addDoc, collection, doc, getDoc, getDocs, deleteDoc, onSnapshot, orderBy, query, setDoc, writeBatch } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, deleteDoc, onSnapshot, orderBy, query, setDoc, writeBatch, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { Keyboard } from 'react-native';
 import { useRoute } from '@react-navigation/native';
