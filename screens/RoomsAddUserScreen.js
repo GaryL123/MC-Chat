@@ -5,14 +5,16 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useRoute } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import directoryRoomsLogic from '../logic/directoryRoomsLogic';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsAddUserScreen() {
     const { language, darkMode, textSize } = useSettings();
-    const route = useRoute();  // Access route object
-    const { roomId } = route.params;  // Destructure roomId from route parameters
+    const route = useRoute();
+    const { roomId } = route.params;
     const { fetchMembers, getOrganizedUsers, sendRoomInvite, isMember, sentRoomInvites } = directoryRoomsLogic();
     const { otherUsersList } = getOrganizedUsers();
+    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
@@ -25,7 +27,7 @@ export default function RoomsAddUserScreen() {
 
     const renderUserItem = ({ item }) => {
         const isInvited = sentRoomInvites.includes(item.id);
-        const buttonLabel = isInvited ? "Sent" : "Invite";
+        const buttonLabel = isInvited ? t("Sent") : t("Invite");
         const buttonColor = isInvited ? "grey" : "#166939";
 
         return (

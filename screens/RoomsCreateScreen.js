@@ -8,6 +8,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import roomsLogic from '../logic/roomsLogic';
 import styles from '../assets/styles/AppStyles';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsCreateScreen() {
@@ -19,6 +20,7 @@ export default function RoomsCreateScreen() {
     const [roomFilter, setRoomFilter] = useState(true);
     const [roomPublic, setRoomPublic] = useState(true);
     const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     const handleChangeRoomPicture = async () => {
@@ -78,7 +80,7 @@ export default function RoomsCreateScreen() {
                             value={roomName}
                             onChangeText={setRoomName}
                             style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
-                            placeholder={'Room Name'}
+                            placeholder={t("Room Name")}
                             placeholderTextColor={'gray'}
                             autoCapitalize="none"
                             keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -91,7 +93,7 @@ export default function RoomsCreateScreen() {
                             value={roomDesc}
                             onChangeText={setRoomDesc}
                             style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}
-                            placeholder={'Room Description'}
+                            placeholder={t("Room Description")}
                             placeholderTextColor={'gray'}
                             autoCapitalize="none"
                             keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -101,7 +103,7 @@ export default function RoomsCreateScreen() {
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={roomFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
-                            {roomFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
+                            {roomFilter ? t("Profanity Filter On") : t("Profanity Filter Off")}
                         </Text>
                         <Switch
                             onValueChange={() => setRoomFilter(previousState => !previousState)}
@@ -113,13 +115,13 @@ export default function RoomsCreateScreen() {
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name={roomPublic ? "eye" : "eye-closed"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
-                            {roomPublic ? 'Public' : 'Private'}
+                            {roomPublic ? t("Public") : t("Private")}
                         </Text>
                         <Switch
                             onValueChange={(newValue) => {
                                 setRoomPublic(newValue);
-                                if (newValue) { // If setting the room to public
-                                    setRoomFilter(true); // Force-enable the profanity filter
+                                if (newValue) {
+                                    setRoomFilter(true);
                                 }
                             }}
                             value={roomPublic}
@@ -128,10 +130,10 @@ export default function RoomsCreateScreen() {
 
                     <View style={styles.inputContainerHoriz}>
                         <TouchableOpacity onPress={handleCreate} style={styles.submitDiscardButtonProfilePage}>
-                            <Text style={styles.loginButtonText}>Create</Text>
+                            <Text style={styles.loginButtonText}>{t("Create")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleDiscard} style={styles.submitDiscardButtonProfilePage}>
-                            <Text style={styles.loginButtonText}>Discard</Text>
+                            <Text style={styles.loginButtonText}>{t("Discard")}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

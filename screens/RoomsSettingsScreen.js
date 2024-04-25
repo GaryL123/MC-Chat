@@ -9,6 +9,7 @@ import roomsLogic from '../logic/roomsLogic';
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/styles/AppStyles';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsSettingsScreen() {
@@ -23,6 +24,7 @@ export default function RoomsSettingsScreen() {
   const navigation = useNavigation();
   const { chooseRoomPicture2, changeRoomName, changeRoomDesc, changeRoomFilter, changeRoomPublic } = roomsLogic(navigation);
   const invalidChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   const handleChangeRoomPicture = async () => {
@@ -120,7 +122,7 @@ export default function RoomsSettingsScreen() {
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Ionicons name={roomFilter ? "ear-outline" : "ear"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
-                            {roomFilter ? 'Profanity Filter On' : 'Profanity Filter Off'}
+                            {roomFilter ? t("Profanity Filter On") : t("Profanity Filter Off")}
                         </Text>
                         <Switch
                             onValueChange={() => setRoomFilter(previousState => !previousState)}
@@ -132,7 +134,7 @@ export default function RoomsSettingsScreen() {
                     <View style={darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L}>
                         <Octicons name={roomPublic ? "eye" : "eye-closed"} size={hp(2.7)} color="gray" />
                         <Text style={darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL}>
-                            {roomPublic ? 'Public' : 'Private'}
+                            {roomPublic ? t("Public") : t("Private")}
                         </Text>
                         <Switch
                             onValueChange={(newValue) => {
@@ -147,10 +149,10 @@ export default function RoomsSettingsScreen() {
 
                     <View style={styles.inputContainerHoriz}>
                         <TouchableOpacity onPress={handleSubmit} style={styles.submitDiscardButtonProfilePage}>
-                            <Text style={styles.loginButtonText}>Submit</Text>
+                            <Text style={styles.loginButtonText}>{t("Submit")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleDiscard} style={styles.submitDiscardButtonProfilePage}>
-                            <Text style={styles.loginButtonText}>Discard</Text>
+                            <Text style={styles.loginButtonText}>{t("Discard")}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

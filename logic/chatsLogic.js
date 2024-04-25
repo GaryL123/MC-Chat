@@ -3,12 +3,16 @@ import { useAuth } from './authContext'
 import { collection, doc, getDoc, onSnapshot, orderBy, query, limit } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { blurhash, getChatId, formatDate } from './commonLogic';
+import { useSettings } from '../logic/settingsContext';
+import translations from '../assets/styles/Translations';
 
 const chatsLogic = (navigation) => {
     const { user } = useAuth();
+    const { language, darkMode, profanityFilter, textSize } = useSettings();
     const [friends, setFriends] = useState([]);
     const [lastMessage, setLastMessage] = useState(undefined);
     const [lastMessages, setLastMessages] = useState({});
+    const t = (key) => translations[key][language] || translations[key]['English'];
 
     useEffect(() => {
         //console.log("ChatsLogic use effect started");
@@ -58,7 +62,7 @@ const chatsLogic = (navigation) => {
     };
 
     const openChat = (item) => {
-        navigation.navigate('Messages', { item });
+        navigation.navigate(t("Messages"), { item });
     }
 
     const renderTime = (friendId) => {
@@ -71,9 +75,9 @@ const chatsLogic = (navigation) => {
 
     const renderLastMessage = (friendId) => {
         const lastMessage = lastMessages[friendId];
-        if (!lastMessage) return 'Say Hi 👋';
+        if (!lastMessage) return (t("Say Hi") + ' 👋');
     
-        const messageText = user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
+        const messageText = user?.uid === lastMessage.uid ? (t("You") + `: ${lastMessage.text}`) : lastMessage.text;
     
         return messageText.length > 30 ? `${messageText.slice(0, 30)}...` : messageText;
     };

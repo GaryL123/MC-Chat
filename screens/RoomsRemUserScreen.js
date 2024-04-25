@@ -5,6 +5,7 @@ import { defaultProfilePicture } from '../logic/commonLogic';
 import { useRoute } from '@react-navigation/native';
 import { useSettings } from '../logic/settingsContext';
 import directoryRoomsLogic from '../logic/directoryRoomsLogic';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsAddUserScreen() {
@@ -13,6 +14,7 @@ export default function RoomsAddUserScreen() {
   const { roomId } = route.params;  // Destructure roomId from route parameters
   const { fetchMembers, getOrganizedUsers, removeMember } = directoryRoomsLogic();
   const { membersList } = getOrganizedUsers();
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function RoomsAddUserScreen() {
           onPress={() => handleRemove(item.id)}
           style={styles.removeButton}
         >
-          <Text style={styles.removeButtonText}>Remove</Text>
+          <Text style={styles.removeButtonText}>{t("Remove")}</Text>
         </TouchableOpacity>
       </View>
     );

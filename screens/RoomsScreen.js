@@ -8,18 +8,20 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../assets/styles/AppStyles';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function RoomsScreen() {
-  const { darkMode, profanityFilter, textSize } = useSettings();
+  const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const { user, rooms, renderLastMessage, renderTime, openRoom, addUserToRoom } = roomsLogic(navigation);
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Create a Room')} style={styles2.createRoomButton}>
+        <TouchableOpacity onPress={() => navigation.navigate(t("Create a Room"))} style={styles2.createRoomButton}>
           <Ionicons name="add-circle-outline" size={30} color="white" />
         </TouchableOpacity>
       ),
@@ -29,9 +31,7 @@ export default function RoomsScreen() {
   const handleJoinRoom = async (roomId) => {
     const result = await addUserToRoom(roomId, user?.uid);
     if (result.success) {
-      // Maybe refresh room list or navigate to the room
     } else {
-      // Handle errors, possibly with a popup or alert
       console.error("Failed to join room:", result.message);
     }
   }
@@ -81,7 +81,7 @@ export default function RoomsScreen() {
           </View>
           {!isMember && (
             <TouchableOpacity onPress={() => handleJoinRoom(item.id)} style={styles2.joinButton}>
-              <Text style={styles2.joinButtonText}>Join</Text>
+              <Text style={styles2.joinButtonText}>{t("Join")}</Text>
             </TouchableOpacity>
           )}
         </TouchableOpacity>

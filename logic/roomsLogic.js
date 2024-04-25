@@ -6,14 +6,18 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'fire
 import { db } from '../firebaseConfig';
 import { blurhash, getChatId, formatDate, defaultProfilePicture } from './commonLogic';
 import { getAuth, updateProfile } from "firebase/auth";
+import { useSettings } from '../logic/settingsContext';
+import translations from '../assets/styles/Translations';
 
 const roomsLogic = (navigation) => {
     const { user } = useAuth();
+    const { language, darkMode, profanityFilter, textSize } = useSettings();
     const [rooms, setRooms] = useState([]);
     const [room, setRoom] = useState(null);
     const [lastMessage, setLastMessage] = useState(undefined);
     const [lastMessages, setLastMessages] = useState({});
     const [selectedImageUri, setSelectedImageUri] = useState(null);
+    const t = (key) => translations[key][language] || translations[key]['English'];
 
     useEffect(() => {
         //console.log("ChatsLogic use effect started");
@@ -159,9 +163,9 @@ const roomsLogic = (navigation) => {
 
     const renderLastMessage = (roomId) => {
         const lastMessage = lastMessages[roomId];
-        if (!lastMessage) return 'Say Hi 👋';
+        if (!lastMessage) return (t("Say Hi") + ' 👋');
 
-        const messageText = user?.uid === lastMessage.uid ? `You: ${lastMessage.text}` : lastMessage.text;
+        const messageText = user?.uid === lastMessage.uid ? (t("You") + `: ${lastMessage.text}`) : lastMessage.text;
 
         return messageText.length > 30 ? `${messageText.slice(0, 30)}...` : messageText;
     };
@@ -193,7 +197,7 @@ const roomsLogic = (navigation) => {
                 });
             }
 
-            navigation.navigate('Rooms');
+            navigation.navigate(t("Rooms"));
         } catch (e) {
             console.error("Error creating chat room: ", e);
         }
