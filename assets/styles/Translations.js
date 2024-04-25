@@ -69,7 +69,15 @@ const translations = {
     },
     "Chats": {
         English: "Chats",
-        Spanish: "Chats"
+        Spanish: "Charlas"
+    },
+    "New Group Chat": {
+        English: "New Group Chat",
+        Spanish: "Nuevo Chat Grupal"
+    },
+    "Messages": {
+        English: "Messages",
+        Spanish: "Mensajes"
     },
     "Rooms": {
         English: "Rooms",
@@ -142,6 +150,10 @@ const translations = {
     "Dark Mode": {
         English: "Dark Mode",
         Spanish: "Modo Oscuro"
+    },
+    "Light Mode": {
+        English: "Light Mode",
+        Spanish: "Modo de luz"
     },
     "Profanity Filter On": {
         English: "Profanity Filter On",

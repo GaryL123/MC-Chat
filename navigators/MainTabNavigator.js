@@ -10,7 +10,6 @@ import FriendRequestsStackNavigator from './FriendRequestsStackNavigator';
 import RoomInvitesStackNavigator from './RoomInvitesStackNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettings } from '../logic/settingsContext';
-import { HeaderScreenOptions } from './navigationConfig';
 
 const Tab = createBottomTabNavigator();
 
