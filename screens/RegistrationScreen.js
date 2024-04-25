@@ -5,6 +5,7 @@ import { Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../logic/authContext';
 import { useSettings } from '../logic/settingsContext';
+import translations from '../assets/styles/Translations';
 import styles from '../assets/styles/AppStyles';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
@@ -17,6 +18,7 @@ function RegistrationScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { register } = useAuth();
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   const handleRegister = async () => {
@@ -59,7 +61,7 @@ function RegistrationScreen() {
             <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
             </View>
 
-            <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Sign Up</Text>
+            <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>{t("Sign Up")}</Text>
 
             {/* First Name */}
             <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
@@ -67,7 +69,7 @@ function RegistrationScreen() {
                 <TextInput
                 onChangeText={setFirstName}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='First Name'
+                placeholder={t("First Name")}
                 placeholderTextColor={'gray'}
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
@@ -79,7 +81,7 @@ function RegistrationScreen() {
                 <TextInput
                 onChangeText={setLastName}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Last Name'
+                placeholder={t("Last Name")}
                 placeholderTextColor={'gray'}
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
@@ -91,7 +93,7 @@ function RegistrationScreen() {
                 <TextInput
                 onChangeText={setEmailPrefix}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Email'
+                placeholder={t("Email Address")}
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -105,7 +107,7 @@ function RegistrationScreen() {
                 <TextInput
                 onChangeText={setPassword}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Password'
+                placeholder={t("Password")}
                 secureTextEntry
                 placeholderTextColor={'gray'}
                 textContentType="oneTimeCode"
@@ -119,7 +121,7 @@ function RegistrationScreen() {
                 <TextInput
                 onChangeText={setConfirmPassword}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Confirm Password'
+                placeholder={t("Confirm Password")}
                 secureTextEntry
                 placeholderTextColor={'gray'}
                 textContentType="oneTimeCode"
@@ -127,13 +129,13 @@ function RegistrationScreen() {
             </View>
 
             <TouchableOpacity onPress={handleRegister} style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Sign Up</Text>
+                <Text style={styles.loginButtonText}>{t("Sign Up")}</Text>
             </TouchableOpacity>
 
             <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>Already have an account? </Text>
+                <Text style={styles.registerText}>{t("Already have an account")}? </Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.registerLink}>Sign In</Text>
+                <Text style={styles.registerLink}>{t("Sign In")}</Text>
                 </TouchableOpacity>
             </View>
         </View>

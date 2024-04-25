@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useSettings } from '../logic/settingsContext';
+import translations from '../assets/styles/Translations';
 import styles from '../assets/styles/AppStyles';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
@@ -15,6 +16,7 @@ function LoginScreen() {
   const [emailPrefix, setEmailPrefix] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   const handleLogin = async () => {
@@ -33,7 +35,6 @@ function LoginScreen() {
     setLoading(true);
     try {
       const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Logged in with:', userCredentials.user.email);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -53,14 +54,14 @@ function LoginScreen() {
             <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
           </View>
 
-          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Sign In</Text>
+          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>{t("Sign In")}</Text>
 
             <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
               <Octicons name="mail" size={hp(2.7)} color="gray" />
               <TextInput
                 onChangeText={setEmailPrefix}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Email Address'
+                placeholder={t("Email Address")}
                 placeholderTextColor={'gray'}
                 autoCapitalize="none"
                 keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -73,7 +74,7 @@ function LoginScreen() {
               <TextInput
                 onChangeText={setPassword}
                 style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-                placeholder='Password'
+                placeholder={t("Password")}
                 secureTextEntry
                 placeholderTextColor={'gray'}
                 textContentType="oneTimeCode"
@@ -82,7 +83,7 @@ function LoginScreen() {
             </View>
 
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              <Text style={styles.forgotPasswordText}>{t("Forgot Password")}?</Text>
             </TouchableOpacity>
 
             {loading ? (
@@ -90,14 +91,14 @@ function LoginScreen() {
               </View>
             ) : (
               <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Sign In</Text>
+                <Text style={styles.loginButtonText}>{t("Sign In")}</Text>
               </TouchableOpacity>
             )}
 
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account? </Text>
+              <Text style={styles.registerText}>{t("Don't have an account")}? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.registerLink}>Sign Up</Text>
+                <Text style={styles.registerLink}>{t("Sign Up")}</Text>
               </TouchableOpacity>
             </View>
         </View>

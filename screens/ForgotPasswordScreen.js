@@ -6,6 +6,7 @@ import { Octicons } from '@expo/vector-icons';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useSettings } from '../logic/settingsContext';
+import translations from '../assets/styles/Translations';
 import styles from '../assets/styles/AppStyles';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
@@ -14,6 +15,7 @@ function ForgotPasswordScreen() {
   const navigation = useNavigation();
   const [emailPrefix, setEmailPrefix] = useState('');
   const [loading, setLoading] = useState(false);
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   const email = `${emailPrefix}@manhattan.edu`;
@@ -58,14 +60,14 @@ function ForgotPasswordScreen() {
             <Image style={styles.logo} resizeMode='contain' source={darkMode ? require('../assets/MCChat_Dark_512px.png') : require('../assets/MCChat_Color_512px.png')} />
           </View>
 
-          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>Forgot Password</Text>
+          <Text style={[darkMode ? ldStyles.headerTextD : ldStyles.headerTextL]}>{t("Forgot Password")}</Text>
 
           <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
             <Octicons name="mail" size={hp(2.7)} color="gray" />
             <TextInput
               onChangeText={setEmailPrefix}
               style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}
-              placeholder='Email Address'
+              placeholder={t("Email Address")}
               placeholderTextColor={'gray'}
               autoCapitalize="none"
               keyboardAppearance={darkMode ? 'dark' : 'light'}
@@ -78,14 +80,14 @@ function ForgotPasswordScreen() {
             </View>
           ) : (
             <TouchableOpacity onPress={handleResetPassword} style={styles.loginButton}>
-              <Text style={styles.loginButtonText}>Reset Password</Text>
+              <Text style={styles.loginButtonText}>{t("Reset Password")}</Text>
             </TouchableOpacity>
           )}
 
           <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Remembered your password? </Text>
+            <Text style={styles.registerText}>{t("Remembered your password")}? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.registerLink}>Sign In</Text>
+              <Text style={styles.registerLink}>{t("Sign In")}</Text>
             </TouchableOpacity>
           </View>
         </View>

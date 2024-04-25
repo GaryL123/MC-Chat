@@ -3,19 +3,21 @@ import { View, Text, Switch, TouchableOpacity, KeyboardAvoidingView, ScrollView,
 import { useSettings } from '../logic/settingsContext';
 import { Ionicons } from '@expo/vector-icons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function SettingsScreen() {
     const { language, languages, changeLanguage, darkMode, toggleDarkMode, profanityFilter, toggleProfanityFilter, textSize, setTextSize } = useSettings();
     const [showLanguageModal, setShowLanguageModal] = useState(false);
+    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     const handleIncreaseTextSize = () => {
-            setTextSize(textSize + 1);
+        setTextSize(textSize + 1);
     };
 
     const handleDecreaseTextSize = () => {
-            setTextSize(textSize - 1);
+        setTextSize(textSize - 1);
     };
 
     return (
@@ -50,7 +52,7 @@ export default function SettingsScreen() {
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={"text"} size={hp(2.7)} color="gray" />
                         <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
-                            Text Size
+                            {t("Text Size")}
                         </Text>
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity onPress={handleDecreaseTextSize} style={styles.button}>
