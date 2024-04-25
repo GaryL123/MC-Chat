@@ -5,7 +5,6 @@ import MessagesScreen from '../screens/MessagesScreen';
 import ChatsCreateScreen from '../screens/ChatsCreateScreen';
 import { HeaderScreenOptions } from './navigationConfig';
 
-
 const ChatStack = createStackNavigator();
 
 const ChatStackNavigator = () => (
