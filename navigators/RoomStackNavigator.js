@@ -8,19 +8,26 @@ import RoomsSettingsScreen from '../screens/RoomsSettingsScreen';
 import MessagesRoomScreen from '../screens/MessagesRoomScreen';
 import RoomsCreateScreen from '../screens/RoomsCreateScreen';
 import { HeaderScreenOptions } from './navigationConfig';
+import translations from '../assets/styles/Translations';
+import { useSettings } from '../logic/settingsContext';
 
 const RoomStack = createStackNavigator();
 
-const RoomStackNavigator = () => (
-  <RoomStack.Navigator screenOptions={HeaderScreenOptions}>
-    <RoomStack.Screen name="Rooms" component={RoomsScreen} />
-    <RoomStack.Screen name="Add Users" component={RoomsAddUserScreen} />
-    <RoomStack.Screen name="Remove Users" component={RoomsRemUserScreen} />
-    <RoomStack.Screen name="Add Admins" component={RoomsAddAdminScreen} />
-    <RoomStack.Screen name="Room Settings" component={RoomsSettingsScreen} />
-    <RoomStack.Screen name="MessagesRoom" component={MessagesRoomScreen} />
-    <RoomStack.Screen name="Create a Room" component={RoomsCreateScreen} />
-  </RoomStack.Navigator>
-);
+const RoomStackNavigator = () => {
+  const t = (key) => translations[key][language] || translations[key]['English'];
+  const { language } = useSettings();
+
+  return (
+    <RoomStack.Navigator screenOptions={HeaderScreenOptions}>
+      <RoomStack.Screen name={t("Rooms")} component={RoomsScreen} />
+      <RoomStack.Screen name={t("Add Users")} component={RoomsAddUserScreen} />
+      <RoomStack.Screen name={t("Remove Users")} component={RoomsRemUserScreen} />
+      <RoomStack.Screen name={t("Add Admins")} component={RoomsAddAdminScreen} />
+      <RoomStack.Screen name={t("Room Settings")} component={RoomsSettingsScreen} />
+      <RoomStack.Screen name="MessagesRoom" component={MessagesRoomScreen} />
+      <RoomStack.Screen name={t("Create a Room")} component={RoomsCreateScreen} />
+    </RoomStack.Navigator>
+  );
+};
 
 export default RoomStackNavigator;
