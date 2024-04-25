@@ -1,35 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert, Modal } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as dp } from 'react-native-responsive-screen';
-import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { filter, getChatId, normalizeDate } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
-import { getldStyles } from '../assets/styles/LightDarkStyles';
 import MenuItem from '../components/MenuItem';
-
+import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
-
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, startRecording, sendVoiceMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
+    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35);
-    const [isRecording, setIsRecording] = useState();
     const [selectedMessage, setSelectedMessage] = useState(null);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
     const ldStyles = getldStyles(textSize);
-
 
     useEffect(() => {
         navigation.setOptions({
@@ -54,18 +49,27 @@ export default function MessagesScreen() {
         });
     }, [navigation, item]);
 
-    const handleReportMessage = async (message) => {
+    const handlePressMessage = async (message) => {
+        setSelectedMessage(message.id);
+    }
+
+    const handleReportMessage = async (message, isReported) => {
+        const confirmAction = isReported ? 'Unreport' : 'Report';
+        const textMessage = "text" in message;
+
         Alert.alert(
-            "Report Message",
-            "Are you sure you want to report this message?",
+            `${confirmAction} Message`,
+            `Are you sure you want to ${confirmAction.toLowerCase()} this message?`,
             [
+                { text: "No", style: "cancel" },
                 {
-                    text: "No",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => reportMessage(message),
+                    text: "Yes", onPress: () => {
+                        if (isReported) {
+                            unreportMessage(textMessage, chatId, message);
+                        } else {
+                            reportMessage(textMessage, chatId, message);
+                        }
+                    },
                     style: "destructive"
                 }
             ],
@@ -73,44 +77,77 @@ export default function MessagesScreen() {
         );
     };
 
+    const normalizedMessages = messages.map((msg) => ({
+        ...msg,
+        createdAt: normalizeDate(msg.createdAt),
+    }));
+
+    const normalizedMedia = media.map((med) => ({
+        ...med,
+        createdAt: normalizeDate(med.createdAt),
+    }));
+
+    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
+
+    const handleSendMessage = async () => {
+        await sendMessage();
+        setInputText("");
+    };
+
+    const handleSendDoc = async () => {
+        await sendMediaMessage();
+    }
+
+    const handleGPT = async () => {
+        const reply = await GPT();
+        setInputText(reply);
+        textRef.current = reply;
+    };
+
+    const handleInputChange = (text) => {
+        setInputText(text);
+        textRef.current = text;
+    };
+
+    const handleContentSizeChange = (event) => {
+        setInputHeight(event.nativeEvent.contentSize.height);
+    };
+
     const renderMessageContent = (message) => {
         if ("text" in message) {
             return (
-                console.log('text message detected. message content: ', message),
-                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
-                    {profanityFilter ? filter.clean(message.text) : message.text}
+                <Text style={message.uid === user.uid ? (darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL) : (darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL)}>
+                    {message.reportedBy?.includes(user?.uid) || message.reportCount >= 3 ? '*****' : (profanityFilter ? filter.clean(message.text) : message.text)}
                 </Text>
             );
         } else if ("mediaURL" in message) {
             const { mediaType, mediaURL } = message;
-            console.log('media detected message content: ', message)
             if (mediaType.includes("image")) {
-                return (console.log('image detected message content: ', message),
-                    <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
+                return (
+                    <View>
+                        {!message.reportedBy?.includes(user?.uid) ? (
+                            <Image source={{ uri: mediaURL }} style={styles.mediaImage} />
+                        ) : (
+                            <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This image has been reported</Text>
+                        )}
+                    </View>
                 );
             } else if (mediaType.includes("video")) {
-                return (
-                    console.log('video detected message content: ', message),
+                return message.reportedBy?.includes(user?.uid) ? (
+                    <Text style={(darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL)}>This video has been reported</Text>
+                ) : (
                     <View style={styles.container}>
                         <Video
                             ref={video}
                             style={styles.mediaVideo}
-                            source={{
-                                uri: mediaURL,
-                            }}
+                            source={{ uri: mediaURL }}
                             useNativeControls
                             resizeMode={ResizeMode.CONTAIN}
                             isLooping
                             onPlaybackStatusUpdate={status => setStatus(() => status)}
                         />
-                        <View style={styles.buttons}>
-                            <Button
-                                title={status.isPlaying ? 'Pause' : 'Play'}
-                                onPress={() =>
-                                    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
-                                }
-                            />
-                        </View>
                     </View>
                 );
             } else {
@@ -123,185 +160,63 @@ export default function MessagesScreen() {
             }
         } else {
             return (
-                <Text style={darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL}>
+                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }]}>
                     Unknown message type
                 </Text>
             );
         }
     };
 
-    // Normalize 'createdAt' in messages and media arrays
-    const normalizedMessages = messages.map((msg) => ({
-        ...msg,
-        createdAt: normalizeDate(msg.createdAt), // Ensure normalization
-    }));
-
-    const normalizedMedia = media.map((med) => ({
-        ...med,
-        createdAt: normalizeDate(med.createdAt), // Ensure normalization
-    }));
-
-    // Combine and sort the normalized messages and media
-    const combinedMessages = [...normalizedMessages, ...normalizedMedia].sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
-    const handleSendMessage = async () => {
-        await sendMessage();
-        setInputText("");  // Ensure to clear the controlled input text state
-    };
-
-    const handleSendDoc = async () => {
-        await sendMediaMessage();
-    }
-
-    const handleGPT = async () => {
-        const reply = await GPT();
-        setInputText(reply);  // Set input field text with AI reply
-        textRef.current = reply;
-    };
-
-    const handleInputChange = (text) => {
-        setInputText(text);  // Update the text state
-        textRef.current = text;  // Keep ref updated if needed elsewhere
-    };
-
-    const handleContentSizeChange = (event) => {
-        setInputHeight(event.nativeEvent.contentSize.height);  // Adjust height based on content size
-    };
-    
-    const handleStartRecording = async () => {
-        await startRecording();
-        setIsRecording(true); // Update state to indicate recording has started
-    };
-    
-    const handleStopRecording = async () => {
-        setIsRecording(false); // Update state before stopping recording
-        await stopRecording(); // Stop recording and obtain the audio URI
-        await sendVoiceMessage(); // Upload and send the voice message
-        setIsModalVisible(false); // Close modal after stopping recording
-    };
-    
-    const handlePauseRecording = async () => {
-        console.log('Pausing recording not implemented yet');
-        // Placeholder for future implementation of pause functionality
-    };
-
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={darkMode ? ldStyles.screenD : ldStyles.screenL}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
-        >
-            <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}
-            >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}>
+            <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {combinedMessages.map((message, index) => (
-                    <View
-                        key={index}
-                        style={[
-                            styles.messageItemContainer,
-                            {
-                                justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start',
-                            },
-                        ]}
-                    >
-                        <View
-                            style={[
-                                styles.messageBubble,
-                                message.uid === user.uid
-                                    ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL)
-                                    : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL),
-                            ]}
-                        >
-                            {renderMessageContent(message)}
+                    message.uid !== user.uid ? (
+                        <TouchableOpacity key={message.id || index} onLongPress={() => handlePressMessage(message)}>
+                            <View style={[styles.messageItemContainer, { justifyContent: message.uid === user.uid ? 'flex-end' : 'flex-start' }]}>
+                                <View style={[styles.messageBubble, message.uid === user.uid ? (darkMode ? ldStyles.myMessageD : ldStyles.myMessageL) : (darkMode ? ldStyles.theirMessageD : ldStyles.theirMessageL)]}>
+                                    {renderMessageContent(message)}
+                                </View>
+                            </View>
+                            <Menu opened={selectedMessage === message.id} onBackdropPress={() => setSelectedMessage(null)}>
+                                <MenuTrigger />
+                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
+                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? "Unreport" : "Report"} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
+                                </MenuOptions>
+                            </Menu>
+                        </TouchableOpacity>
+                    ) : (
+                        <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
+                            <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
+                                {renderMessageContent(message, index)}
+                            </View>
                         </View>
-                    </View>
+                    )
                 ))}
             </ScrollView>
 
-            <View
-                style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}
-            >
-                <TouchableOpacity>
-                    <View style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
-                        <View>
-                            <Menu>
-                                <MenuTrigger>
-                                    <Feather name="plus" size={24} color="#737373" />
-                                </MenuTrigger>
-                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.mediaMenusStyleD : ldStyles.mediaMenusStyleL }}>
-                                    <MenuItem
-                                        action={handleSendDoc}
-                                        value={null}
-                                        icon={<Ionicons name="mail" size={dp(2.5)} color='gray' />}
-                                    />
-                                    <MenuItem
-                                        action={() => setIsModalVisible(true)}
-                                        value={null}
-                                        icon={<Ionicons name="mic-circle" size={dp(2.5)} color='gray' />}
-                                    />
-                                </MenuOptions>
-                            </Menu>
-                        </View>
-                    </View>
+            <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
+                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                    <Feather name="plus" size={24} color="#737373" />
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
                     onContentSizeChange={handleContentSizeChange}
                     placeholder="Type a message..."
                     placeholderTextColor="gray"
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} // Set min and max height
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
                     value={inputText}
                     multiline={true} // Enable multiline input
                     scrollEnabled={true} // Allow scrolling inside the input
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
+                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
             </View>
-            {/* Modal for recording controls */}
-            <Modal
-                animationType="none"
-                transparent={true}
-                visible={isModalVisible}
-                onRequestClose={() => setIsModalVisible(false)}
-            >
-                <View style={[darkMode ? ldStyles.modalContainerD : ldStyles.modalContainerL]}>
-           
-                <View style={[darkMode ? ldStyles.modalRecordContentD : ldStyles.modalRecordContentL]}>
-                        <TouchableOpacity 
-                        style={ldStyles.modalItem}
-                        onPress={console.log('startRecording')
-                        }>
-                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Start</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                        style={ldStyles.modalItem}
-                        onPress={console.log('pauseRecording')
-                        }>
-                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Pause</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                        style={ldStyles.modalItem}
-                        onPress={console.log('stopRecording')
-                        }>
-                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextL]}>Stop</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                        style={ldStyles.modalItem}
-                        onPress={() => setIsModalVisible(false)
-                        }>
-                            <Text style={[darkMode ? ldStyles.modalItemTextD : ldStyles.modalItemTextl]}>Close</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-
-            {/* Rest of your screen */}
         </KeyboardAvoidingView>
     );
 }
@@ -389,18 +304,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 16,
     },
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark background with some transparency
-      },
-      modalContent: {
-        backgroundColor: 'white', // Main content area background
-        padding: 20,
-        borderRadius: 10, // Soft corners for a modern look
-        width: '80%', // Width as a percentage for flexibility
-        alignItems: 'center', // Center elements horizontally
-      },
 });
-    

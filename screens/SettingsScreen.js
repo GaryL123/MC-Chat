@@ -36,7 +36,7 @@ export default function SettingsScreen() {
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Ionicons name={darkMode ? "flashlight" : "flashlight-outline"} size={hp(2.7)} color="gray" />
                         <Text style={[darkMode ? ldStyles.itemContainer2TextD : ldStyles.itemContainer2TextL]}>
-                            {darkMode ? 'Dark Mode' : 'Light Mode'}
+                            {darkMode ? t("Dark Mode") : t("Light Mode")}
                         </Text>
                         <Switch onValueChange={toggleDarkMode} value={darkMode} />
                     </View>
