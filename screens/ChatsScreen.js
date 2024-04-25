@@ -1,25 +1,25 @@
 import React, { useLayoutEffect } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, TouchableOpacity, FlatList, StatusBar, StyleSheet } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { filter, defaultProfilePicture } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import chatsLogic from '../logic/chatsLogic';
-import styles from '../assets/styles/AppStyles';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
 export default function ChatsScreen() {
   const { language, darkMode, profanityFilter, textSize } = useSettings();
   const navigation = useNavigation();
   const { friends, renderLastMessage, renderTime, openChat } = chatsLogic(navigation);
+  const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('New Group Chat')} style={ldStyles.createRoomButton}>
+        <TouchableOpacity onPress={() => navigation.navigate(t("New Group Chat"))} style={ldStyles.createRoomButton}>
           <Ionicons name="add-circle-outline" size={30} color="white" />
         </TouchableOpacity>
       ),
@@ -65,7 +65,6 @@ export default function ChatsScreen() {
 
   return (
     <View style={darkMode ? ldStyles.screenD : ldStyles.screenL}>
-      <StatusBar style="dark-content" />
       {
         friends.length > 0 ? (
           <ChatList friends={friends} />

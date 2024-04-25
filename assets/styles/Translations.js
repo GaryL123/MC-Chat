@@ -63,6 +63,10 @@ const translations = {
         English: "Room Invites",
         Spanish: "Invitaciones de Sala"
     },
+    "Invite": {
+        English: "Invite",
+        Spanish: "Invitar"
+    },
     "You": {
         English: "You",
         Spanish: "Tú"
@@ -106,6 +110,10 @@ const translations = {
     "Remove Users": {
         English: "Remove Users",
         Spanish: "Eliminar Usuarios"
+    },
+    "Remove": {
+        English: "Remove",
+        Spanish: "Eliminar"
     },
     "Add Admins": {
         English: "Add Admins",
@@ -191,6 +199,10 @@ const translations = {
         English: "Discard",
         Spanish: "Descartar"
     },
+    "Join": {
+        English: "Join",
+        Spanish: "Unirse"
+    },
     "Create a Room": {
         English: "Create a Room",
         Spanish: "Crear una Sala"
@@ -218,6 +230,10 @@ const translations = {
     "Discard": {
         English: "Discard",
         Spanish: "Descartar"
+    },
+    "Say Hi": {
+        English: "Say Hi",
+        Spanish: "Di Hola"
     }
 };
 

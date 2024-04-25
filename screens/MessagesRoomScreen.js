@@ -39,25 +39,25 @@ export default function MessagesRoomScreen() {
                                         <>
                                             <MenuItem
                                                 text={t("Add Users")}
-                                                action={() => navigation.navigate('Add Users', { roomId })}
+                                                action={() => navigation.navigate(t("Add Users"), { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-add-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
                                                 text={t("Remove Users")}
-                                                action={() => navigation.navigate('Remove Users', { roomId })}
+                                                action={() => navigation.navigate(t("Remove Users"), { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-remove-outline" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
                                                 text={t("Add Admins")}
-                                                action={() => navigation.navigate('Add Admins', { roomId })}
+                                                action={() => navigation.navigate(t("Add Admins"), { roomId })}
                                                 value={null}
                                                 icon={<Ionicons name="person-add" size={hp(2.5)} color="gray" />}
                                             />
                                             <MenuItem
                                                 text={t("Room Settings")}
-                                                action={() => navigation.navigate('Room Settings', { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic })}
+                                                action={() => navigation.navigate(t("Room Settings"), { roomId, roomPhoto, roomName, roomDesc, roomFilter, roomPublic })}
                                                 value={null}
                                                 icon={<Ionicons name="settings-outline" size={hp(2.5)} color="gray" />}
                                             />
