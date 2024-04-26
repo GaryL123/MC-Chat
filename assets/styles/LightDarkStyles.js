@@ -227,7 +227,7 @@ export const getldStyles = (textSize) => StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     minHeight: 35,
-    color: "#f1f1f1", 
+    color: "#f1f1f1",
   },
   circleButtonL: {
     padding: 8,
@@ -286,7 +286,16 @@ export const getldStyles = (textSize) => StyleSheet.create({
     marginTop: 30,
     marginLeft: -30,
     backgroundColor: '#ebebeb',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
+    shadowOffset: { width: 0, height: 0 },
+    width: 190
+  },
+  menuOptionsStyleD: {
+    borderRadius: 10,
+    marginTop: 30,
+    marginLeft: -30,
+    backgroundColor: '#1b1b1b',
+    shadowOpacity: 0.5,
     shadowOffset: { width: 0, height: 0 },
     width: 190
   },
@@ -295,27 +304,18 @@ export const getldStyles = (textSize) => StyleSheet.create({
     marginTop: 30,
     marginLeft: -30,
     backgroundColor: '#ebebeb',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 0 },
     width: 70
-  },
-  menuOptionsStyleD: {
-    borderRadius: 10,
-    marginTop: 30,
-    marginLeft: -30,
-    backgroundColor: '#1b1b1b',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 0 },
-    width: 190
   },
   mediaMenusStyleD: {
     borderRadius: 10,
     marginTop: 30,
     marginLeft: -30,
     backgroundColor: '#1b1b1b',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 0 },
@@ -324,14 +324,14 @@ export const getldStyles = (textSize) => StyleSheet.create({
   menuReportStyleL: {
     borderRadius: 10,
     backgroundColor: '#ebebeb',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowOffset: { width: 0, height: 0 },
     width: 115,
   },
   menuReportStyleD: {
     borderRadius: 10,
     backgroundColor: '#1b1b1b',
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowOffset: { width: 0, height: 0 },
     width: 115,
   },
@@ -452,7 +452,25 @@ export const getldStyles = (textSize) => StyleSheet.create({
     color: 'white',
     fontSize: 10 + textSize,
     padding: 1,
-  }
+  },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 17 + textSize,
+    color: '#f1f1f1',
+    letterSpacing: 1.1,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  headerProfileImage: {
+    height: hp(4),
+    aspectRatio: 1,
+    borderRadius: 100,
+    marginRight: 10,
+  },
 });
 
 export default getldStyles;
