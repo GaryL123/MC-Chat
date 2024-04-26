@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp, heightPercentageToDP as dp } from 'react-native-responsive-screen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { filter, getChatId, normalizeDate } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
@@ -12,16 +12,18 @@ import { Image } from 'expo-image';
 import MenuItem from '../components/MenuItem';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
+
 const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, unreportMessage, GPT } = messagesLogic();
+    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, sendVoiceMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35);
     const [selectedMessage, setSelectedMessage] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
     const ldStyles = getldStyles(textSize);
@@ -114,6 +116,17 @@ export default function MessagesScreen() {
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);
     };
+    const handleStartRecording = async () => {
+        await startRecording();
+        setIsRecording(true);
+    };
+
+    const handleStopRecording = async () => {
+        setIsRecording(false);
+        await stopRecording();
+        await sendVoiceMessage();
+        setIsModalVisible(false);
+    };
 
     const renderMessageContent = (message) => {
         if ("text" in message) {
@@ -196,8 +209,28 @@ export default function MessagesScreen() {
             </ScrollView>
 
             <View style={darkMode ? ldStyles.inputContainerD : ldStyles.inputContainerL}>
-                <TouchableOpacity onPress={handleSendDoc} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
-                    <Feather name="plus" size={24} color="#737373" />
+                <TouchableOpacity>
+                    <View style={darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL}>
+                        <View>
+                            <Menu>
+                                <MenuTrigger>
+                                    <Feather name="plus" size={24} color="#737373" />
+                                </MenuTrigger>
+                                <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.mediaMenusStyleD : ldStyles.mediaMenusStyleL }}>
+                                    <MenuItem
+                                        action={handleSendDoc}
+                                        value={null}
+                                        icon={<Ionicons name="mail" size={dp(2.5)} color='gray' />}
+                                    />
+                                    <MenuItem
+                                        action={() => setIsModalVisible(true)}
+                                        value={null}
+                                        icon={<Ionicons name="mic-circle" size={dp(2.5)} color='gray' />}
+                                    />
+                                </MenuOptions>
+                            </Menu>
+                        </View>
+                    </View>
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
