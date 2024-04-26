@@ -20,7 +20,7 @@ const messagesLogic = () => {
     const [media, setMedia] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
-    const [setRecording, setIsRecording] = useState();
+    const [setRecording, setIsRecording] = useState(false);
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
@@ -187,7 +187,7 @@ const messagesLogic = () => {
         }
     }
     const stopRecording = async () => {
-        if (!recording) { return; }
+        if (!setIsRecording) { return; }
 
         try {
             await recording.stopAndUnloadAsync();
@@ -206,7 +206,6 @@ const messagesLogic = () => {
             const response = await fetch(uri);
             const blob = await response.blob();
             const storage = getStorage();
-            const chatId = getChatId(user?.uid, item?.uid);
             const mediaRef = storageRef(storage);
 
             await uploadBytes(mediaRef, blob);
