@@ -9,6 +9,7 @@ import { filter } from '../logic/commonLogic';
 import { useSettings } from '../logic/settingsContext';
 import messagesRoomLogic from '../logic/messagesRoomLogic';
 import MenuItem from '../components/MenuItem';
+import HeaderTitle from '../components/HeaderTitle';
 import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 
@@ -84,15 +85,6 @@ export default function MessagesRoomScreen() {
             },
         });
     }, [navigation, roomId, isAdmin]);
-
-    const HeaderTitle = ({ photo, name }) => {
-        return (
-            <View style={ldStyles.headerTitleContainer}>
-                <Image source={{ uri: photo }} style={ldStyles.headerProfileImage}/>
-                <Text style={ldStyles.headerTitle}>{name}</Text>
-            </View>
-        );
-    };
 
     const handleLeaveRoom = async (roomId) => {
         Alert.alert(

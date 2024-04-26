@@ -301,25 +301,25 @@ export const getldStyles = (textSize) => StyleSheet.create({
   },
   mediaMenusStyleL: {
     borderRadius: 10,
-    marginTop: 30,
-    marginLeft: -30,
+    marginTop: -90,
+    marginLeft: -20.5,
     backgroundColor: '#ebebeb',
     shadowOpacity: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 0 },
-    width: 70
+    width: 65
   },
   mediaMenusStyleD: {
     borderRadius: 10,
-    marginTop: 30,
-    marginLeft: -30,
+    marginTop: -90,
+    marginLeft: -20.5,
     backgroundColor: '#1b1b1b',
     shadowOpacity: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 0 },
-    width: 70
+    width: 65
   },
   menuReportStyleL: {
     borderRadius: 10,
@@ -469,7 +469,7 @@ export const getldStyles = (textSize) => StyleSheet.create({
     height: hp(4),
     aspectRatio: 1,
     borderRadius: 100,
-    marginRight: 10,
+    marginRight: 7,
   },
 });
 
