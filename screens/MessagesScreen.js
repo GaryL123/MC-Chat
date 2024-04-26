@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as dp } from 'react-native-responsive-screen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
@@ -11,6 +11,8 @@ import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
 import MenuItem from '../components/MenuItem';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
+import ActionSheet from 'react-native-actionsheet';
+
 
 
 const ios = Platform.OS == 'ios';
@@ -23,7 +25,6 @@ export default function MessagesScreen() {
     const [inputText, setInputText] = useState('');
     const [inputHeight, setInputHeight] = useState(35);
     const [selectedMessage, setSelectedMessage] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
     const ldStyles = getldStyles(textSize);
@@ -50,6 +51,22 @@ export default function MessagesScreen() {
             },
         });
     }, [navigation, item]);
+
+    const actionSheetRef = useRef(null);
+
+    const showActionSheet = (item) => {
+        setTimeout(() => actionSheetRef.current.show(), 0); // Add a slight delay to ensure the state is updated
+    };
+
+    const handleAction = (index) => {
+        if (index === 0) { // start recording
+            console.log('start recording pressed');
+        } else if (index === 1) { // stop recording and send
+            console.log('stop recording pressed');
+        } else if (index === 2) { // close
+              console.log('close pressed');
+        }
+    };
 
     const handlePressMessage = async (message) => {
         setSelectedMessage(message.id);
@@ -125,7 +142,6 @@ export default function MessagesScreen() {
         setIsRecording(false);
         await stopRecording();
         await sendVoiceMessage();
-        setIsModalVisible(false);
     };
 
     const renderMessageContent = (message) => {
@@ -223,7 +239,7 @@ export default function MessagesScreen() {
                                         icon={<Ionicons name="mail" size={dp(2.5)} color='gray' />}
                                     />
                                     <MenuItem
-                                        action={() => setIsModalVisible(true)}
+                                        action={() => showActionSheet(item)}
                                         value={null}
                                         icon={<Ionicons name="mic-circle" size={dp(2.5)} color='gray' />}
                                     />
@@ -234,13 +250,13 @@ export default function MessagesScreen() {
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
-                    onContentSizeChange={handleContentSizeChange}
-                    placeholder="Type a message..."
-                    placeholderTextColor="gray"
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }, { fontSize: textSize }]} // Set min and max height
+                    onContentSizeChange={handleContentSizeChange} 
+                    placeholder='Type a message...'
+                    placeholderTextColor={'gray'}
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} 
                     value={inputText}
-                    multiline={true} // Enable multiline input
-                    scrollEnabled={true} // Allow scrolling inside the input
+                    multiline={true} 
+                    scrollEnabled={true} 
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
                 <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
@@ -249,6 +265,13 @@ export default function MessagesScreen() {
                 <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
+                <ActionSheet
+                    ref={actionSheetRef}
+                    title={'What would you like to do?'}
+                    options={['Start Recording', 'Stop Recording', 'Close']}
+                    cancelButtonIndex={2}
+                    onPress={(index) => handleAction(index)}
+                />
             </View>
         </KeyboardAvoidingView>
     );
