@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { Image } from 'expo-image';
 import { Ionicons, Feather, Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
@@ -25,7 +26,7 @@ export default function MessagesRoomScreen() {
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: roomName,
+            headerTitle: () => <HeaderTitle photo={roomPhoto} name={roomName} />,
             headerRight: () => (
                 <TouchableOpacity>
                     <View style={ldStyles.menuContainer}>
@@ -83,6 +84,15 @@ export default function MessagesRoomScreen() {
             },
         });
     }, [navigation, roomId, isAdmin]);
+
+    const HeaderTitle = ({ photo, name }) => {
+        return (
+            <View style={ldStyles.headerTitleContainer}>
+                <Image source={{ uri: photo }} style={ldStyles.headerProfileImage}/>
+                <Text style={ldStyles.headerTitle}>{name}</Text>
+            </View>
+        );
+    };
 
     const handleLeaveRoom = async (roomId) => {
         Alert.alert(

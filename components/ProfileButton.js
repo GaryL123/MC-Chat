@@ -22,7 +22,7 @@ const ProfileButton = () => {
   const hasNotifications = hasPendingRequests || hasPendingInvites;
   const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
-  
+
   const handleLogout = async () => {
     await logout();
   };
@@ -30,55 +30,53 @@ const ProfileButton = () => {
   return (
     <TouchableOpacity>
       <View style={ldStyles.menuContainer}>
-        <View>
-          <Menu>
-            <MenuTrigger>
-              <Image
-                style={ldStyles.profileImageSmall}
-                source={{ uri: user?.photoURL || defaultProfilePicture }}
-              />
-              {hasNotifications && (
-                <View style={ldStyles.notificationBubble2}>
-                  <Text style={ldStyles.notificationText}>{totalNotifications}</Text>
-                </View>
-              )}
-            </MenuTrigger>
-            <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
+        <Menu>
+        <MenuTrigger customStyles={{ TriggerTouchableComponent: TouchableOpacity, triggerTouchable: { activeOpacity: 1, underlayColor: 'transparent' } }}>
+            <Image
+              style={ldStyles.profileImageSmall}
+              source={{ uri: user?.photoURL || defaultProfilePicture }}
+            />
+            {hasNotifications && (
+              <View style={ldStyles.notificationBubble2}>
+                <Text style={ldStyles.notificationText}>{totalNotifications}</Text>
+              </View>
+            )}
+          </MenuTrigger>
+          <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuOptionsStyleD : ldStyles.menuOptionsStyleL }}>
+            <MenuItem
+              text={t("Profile")}
+              action={() => navigation.navigate('ProfileStack')}
+              value={null}
+              icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
+            />
+            {hasPendingRequests && (
               <MenuItem
-                text={t("Profile")}
-                action={() => navigation.navigate('ProfileStack')}
+                text={t("Friend Requests")}
+                action={() => navigation.navigate('FriendRequestsStack')}
                 value={null}
-                icon={<Ionicons name="person-outline" size={hp(2.5)} color="gray" />}
+                customContent={
+                  <NotificationBubble count={pendingFriendRequests.length} />
+                }
               />
-              {hasPendingRequests && (
-                <MenuItem
-                  text={t("Friend Requests")}
-                  action={() => navigation.navigate('FriendRequestsStack')}
-                  value={null}
-                  customContent={
-                    <NotificationBubble count={pendingFriendRequests.length} />
-                  }
-                />
-              )}
-              {hasPendingInvites && (
-                <MenuItem
-                  text={t("Room Invites")}
-                  action={() => navigation.navigate('RoomInvitesStack')}
-                  value={null}
-                  customContent={
-                    <NotificationBubble count={pendingRoomInvites.length} />
-                  }
-                />
-              )}
+            )}
+            {hasPendingInvites && (
               <MenuItem
-                text={t("Log Out")}
-                action={handleLogout}
+                text={t("Room Invites")}
+                action={() => navigation.navigate('RoomInvitesStack')}
                 value={null}
-                icon={<Ionicons name="log-out-outline" size={hp(2.5)} color="gray" />}
+                customContent={
+                  <NotificationBubble count={pendingRoomInvites.length} />
+                }
               />
-            </MenuOptions>
-          </Menu>
-        </View>
+            )}
+            <MenuItem
+              text={t("Log Out")}
+              action={handleLogout}
+              value={null}
+              icon={<Ionicons name="log-out-outline" size={hp(2.5)} color="gray" />}
+            />
+          </MenuOptions>
+        </Menu>
       </View>
     </TouchableOpacity>
   );
