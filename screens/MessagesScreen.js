@@ -135,16 +135,6 @@ export default function MessagesScreen() {
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);
     };
-    const handleStartRecording = async () => {
-        await startRecording();
-        setIsRecording(true);
-    };
-
-    const handleStopRecording = async () => {
-        setIsRecording(false);
-        await stopRecording();
-        await sendVoiceMessage();
-    };
 
     const renderMessageContent = (message) => {
         if ("text" in message) {
