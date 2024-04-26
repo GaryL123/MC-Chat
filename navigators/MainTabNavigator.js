@@ -19,10 +19,10 @@ const TranslatedTabBarLabel = ({ labelKey }) => {
     Chats: { English: "Chats", Spanish: "Charlas" },
     Rooms: { English: "Rooms", Spanish: "Habitaciones" },
     Directory: { English: "Directory", Spanish: "Directorio" },
-    Settings: { English: "Settings", Spanish: "Configuraciones" }
+    Settings: { English: "Settings", Spanish: "Config" }
   };
 
-  return () => <Text style={{fontSize: 10 + textSize, color: '#f1f1f1', textTransform: 'uppercase', letterSpacing: 1.1}}>{translations[labelKey][language] || translations[labelKey]['English']}</Text>;
+  return () => <Text style={{fontSize: 9 + textSize, color: '#f1f1f1', textTransform: 'uppercase', letterSpacing: 1.1}}>{translations[labelKey][language] || translations[labelKey]['English']}</Text>;
 };
 
 const MainTabNavigator = () => (

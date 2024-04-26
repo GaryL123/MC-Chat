@@ -103,6 +103,10 @@ const translations = {
         English: "Report",
         Spanish: "Reportar"
     },
+    "Unreport": {
+        English: "Unreport",
+        Spanish: "Cencelar reporte"
+    },
     "Add Users": {
         English: "Add Users",
         Spanish: "Agregar Usuarios"
