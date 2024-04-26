@@ -71,22 +71,6 @@ const messagesLogic = () => {
         }, 100)
     }
 
-    const setAudioMode = async () => {
-        try {
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: true, // Allows recording on iOS
-                //interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-                playsInSilentModeIOS: true, // Plays audio even if the device is in silent mode
-                //interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-                shouldDuckAndroid: true,
-                staysActiveInBackground: false,
-                playThroughEarpieceAndroid: false,
-            });
-        } catch (error) {
-            console.error("Failed to set audio mode:", error);
-        }
-    };
-
     const createChatIfNotExists = async () => {
         let chatId = getChatId(user?.uid, item?.uid);
         await setDoc(doc(db, "chatInds", chatId), {
@@ -186,19 +170,22 @@ const messagesLogic = () => {
         }
         return true;
     };
-    const startRecording = async () => {
-        await setAudioMode();
+    async function startRecording() {
+
+        await Audio.setAudioModeAsync({
+            allowsRecordingIOS: true,
+            playsInSilentModeIOS: true,
+        });
         const permissionGranted = await requestMicPermission();
         if (!permissionGranted) {
             console.log("Microphone permission is required.");
             return;
         }
         try {
-            const newRecording = new Audio.Recording();
-            await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-            await newRecording.startAsync();
-            console.log("Recording started.");
-            setRecording(newRecording);
+            console.log('Starting recording..');
+            const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+            setRecording(recording);
+            console.log('Recording started');
             // Log after a delay to see if the state has updated
             setTimeout(() => {
                 console.log('recording after delay: ', recording);
@@ -208,7 +195,7 @@ const messagesLogic = () => {
             console.error('Failed to start recording: ', error);
         }
     }
-    const stopRecording = async () => {
+    async function stopRecording() {
         if (!recording) {
             console.error('No active recording');
             return null;
@@ -217,7 +204,7 @@ const messagesLogic = () => {
         try {
             await recording.stopAndUnloadAsync();
             const recordingURI = recording.getURI();
-            setRecording(null);
+            setRecording(undefined);
             setRecordingURI(recordingURI);
             console.log('stopped recording. recordingURI: ', recordingURI);
         } catch (error) {
@@ -269,6 +256,7 @@ const messagesLogic = () => {
             console.log('Failed to send voice message: ', error);
         }
     };
+    
     const reportMessage = async (textMessage, chatId, message) => {
         const messageRef = (textMessage ? doc(db, 'chatInds', chatId, 'messages', message.id) : doc(db, 'chatInds', chatId, 'media', message.id));
 

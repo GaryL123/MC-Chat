@@ -10,10 +10,10 @@ import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
 import MenuItem from '../components/MenuItem';
-import ActionSheet from 'react-native-actionsheet';
-import HeaderTitle from '../components/HeaderTitle';
-import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
+import ActionSheet from 'react-native-actionsheet';
+
+
 
 const ios = Platform.OS == 'ios';
 
@@ -27,24 +27,23 @@ export default function MessagesScreen() {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
-    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: () => <HeaderTitle photo={item?.photoURL} name={item?.fName + ' ' + item?.lName} />,
+            headerTitle: item?.fName + ' ' + item?.lName,
             headerRight: () => (
                 <View style={{ flexDirection: 'row', paddingRight: 10 }}>
                     <TouchableOpacity onPress={() => {/* Handle voice call */ }} style={{ marginRight: 15 }}>
-                        <Feather name="phone" size={24} color="#f1f1f1" />
+                        <Feather name="phone" size={24} color="white" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {/* Handle video call */ }}>
-                        <Feather name="video" size={24} color="#f1f1f1" />
+                        <Feather name="video" size={24} color="white" />
                     </TouchableOpacity>
                 </View>
             ),
-            headerTintColor: '#f1f1f1',
+            headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#166939',
                 height: 120,
@@ -61,9 +60,9 @@ export default function MessagesScreen() {
 
     const handleAction = (index) => {
         if (index === 0) { // start recording
-            startRecording();
+            handleStartRecording();
         } else if (index === 1) { // stop recording and send
-            stopRecording();
+            handleStopRecording();
         } else if (index === 2) {
             sendVoiceMessage();
         } else if (index === 3) { // close
@@ -76,7 +75,7 @@ export default function MessagesScreen() {
     }
 
     const handleReportMessage = async (message, isReported) => {
-        const confirmAction = isReported ? t("Unreport") : t("Report");
+        const confirmAction = isReported ? 'Unreport' : 'Report';
         const textMessage = "text" in message;
 
         Alert.alert(
@@ -136,6 +135,13 @@ export default function MessagesScreen() {
     const handleContentSizeChange = (event) => {
         setInputHeight(event.nativeEvent.contentSize.height);
     };
+    const handleStartRecording = async () => {
+        await startRecording();
+    };
+
+    const handleStopRecording = async () => {
+        await stopRecording();
+    };
 
     const renderMessageContent = (message) => {
         if ("text" in message) {
@@ -172,7 +178,23 @@ export default function MessagesScreen() {
                         />
                     </View>
                 );
-            } else {
+            } else if (mediaType.includes("audio")) {
+                return message.reportedBy?.includes(user?.uid) ? (
+                  <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>This audio has been reported</Text>
+                ) : (
+                    <View style={styles.container}>
+                    <Video
+                        ref={video}
+                        style={styles.mediaVideo}
+                        source={{ uri: mediaURL }}
+                        useNativeControls
+                        resizeMode={ResizeMode.CONTAIN}
+                        isLooping
+                        onPlaybackStatusUpdate={status => setStatus(() => status)}
+                    />
+                </View>
+                );
+              } else {
                 return (
                     <View style={styles.mediaContainer}>
                         <Feather name="file" size={32} color="gray" />
@@ -203,7 +225,7 @@ export default function MessagesScreen() {
                             <Menu opened={selectedMessage === message.id} onBackdropPress={() => setSelectedMessage(null)}>
                                 <MenuTrigger />
                                 <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
-                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? t("Unreport") : t("Report")} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
+                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? "Unreport" : "Report"} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
                                 </MenuOptions>
                             </Menu>
                         </TouchableOpacity>
