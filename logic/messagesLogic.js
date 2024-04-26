@@ -20,7 +20,8 @@ const messagesLogic = () => {
     const [media, setMedia] = useState([]);
     const textRef = useRef('');
     const inputRef = useRef(null);
-    const [setRecording, setIsRecording] = useState(false);
+    const [recording, setRecording] = useState(null);
+    const [recordingURI, setRecordingURI] = useState(null);
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
@@ -163,8 +164,12 @@ const messagesLogic = () => {
     };
     const requestMicPermission = async () => {
         const { status } = await Audio.requestPermissionsAsync();
-        return status === 'granted';
-    }
+        if (status !== 'granted') {
+            Alert.alert('Permission Required', 'Microphone permission is needed to record audio.');
+            return false;
+        }
+        return true;
+    };
     const startRecording = async () => {
         const permissionGranted = await requestMicPermission();
         if (!permissionGranted) {
@@ -173,35 +178,32 @@ const messagesLogic = () => {
         }
         try {
             const newRecording = new Audio.Recording();
-
-            await newRecording.prepareToRecordAsync(
-                Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-            );
-
+            await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await newRecording.startAsync();
             setRecording(newRecording);
-            setIsRecording(true);
         }
         catch (error) {
             console.error('Failed to start recording: ', error);
         }
     }
     const stopRecording = async () => {
-        if (!setIsRecording) { return; }
-
-        try {
-            await recording.stopAndUnloadAsync();
-            const audioUri = recording.getURI();
-            setRecording(null);
-            setIsRecording(false);
-
-            return audioUri;
-        } catch (error) {
-            console.error('Failed to stop recording: ', error);
+        if (!recording) {
+          console.error('No active recording');
+          return null;
         }
-    }
+      
+        try {
+          await recording.stopAndUnloadAsync();
+          const recordingURI = recording.getURI();
+          setRecording(null);
+          setRecordingURI(recordingURI);
+        } catch (error) {
+          console.error('Failed to stop recording: ', error);
+          return null;
+        }
+      };
 
-    const uploadAudio = async(uri, fileName) => {
+    const uploadAudio = async (uri, fileName) => {
         try {
             const response = await fetch(uri);
             const blob = await response.blob();
@@ -216,15 +218,15 @@ const messagesLogic = () => {
             console.error('Failed to upload audio: ', error);
         }
     }
-    const sendVoiceMessage = async() => {
+    const sendVoiceMessage = async () => {
         const uri = await stopRecording();
         if (!uri) { return; }
 
         const downloadUrl = await uploadAudio(uri);
-        if (!downloadUrl) { 
+        if (!downloadUrl) {
             console.error('Failed to get download URL...');
-        return;
-     }
+            return;
+        }
         try {
             const chatId = getChatId(user?.uid, item?.uid);
             const docRef = doc(db, 'chatInds', chatId);

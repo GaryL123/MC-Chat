@@ -19,7 +19,7 @@ const ios = Platform.OS == 'ios';
 
 export default function MessagesScreen() {
     const { language, darkMode, profanityFilter, textSize } = useSettings();
-    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, sendVoiceMessage, unreportMessage, GPT } = messagesLogic();
+    const { item, user, messages, textRef, media, scrollViewRef, sendMessage, sendMediaMessage, reportMessage, startRecording, stopRecording, sendVoiceMessage, unreportMessage, GPT } = messagesLogic();
     const video = React.useRef(null);
     const [status, setStatus] = React.useState({});
     const [inputText, setInputText] = useState('');
@@ -60,11 +60,13 @@ export default function MessagesScreen() {
 
     const handleAction = (index) => {
         if (index === 0) { // start recording
-            console.log('start recording pressed');
+            startRecording();
         } else if (index === 1) { // stop recording and send
-            console.log('stop recording pressed');
-        } else if (index === 2) { // close
-              console.log('close pressed');
+            stopRecording();
+        } else if (index === 2) {
+            sendVoiceMessage();
+        } else if (index === 3) { // close
+            console.log('close pressed');
         }
     };
 
@@ -189,7 +191,7 @@ export default function MessagesScreen() {
             }
         } else {
             return (
-                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL, { fontSize: textSize }]}>
+                <Text style={[darkMode ? ldStyles.theirMessageTextD : ldStyles.theirMessageTextL]}>
                     Unknown message type
                 </Text>
             );
@@ -197,7 +199,7 @@ export default function MessagesScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL, { fontSize: textSize }]} keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[darkMode ? ldStyles.screenD : ldStyles.screenL]} keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}>
             <ScrollView contentContainerStyle={styles.messageListContainer} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
                 {combinedMessages.map((message, index) => (
                     message.uid !== user.uid ? (
@@ -250,26 +252,26 @@ export default function MessagesScreen() {
                 </TouchableOpacity>
                 <TextInput
                     onChangeText={handleInputChange}
-                    onContentSizeChange={handleContentSizeChange} 
+                    onContentSizeChange={handleContentSizeChange}
                     placeholder='Type a message...'
                     placeholderTextColor={'gray'}
-                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]} 
+                    style={[darkMode ? ldStyles.textInputD : ldStyles.textInputL, { height: Math.max(35, Math.min(100, inputHeight)) }]}
                     value={inputText}
-                    multiline={true} 
-                    scrollEnabled={true} 
+                    multiline={true}
+                    scrollEnabled={true}
                     keyboardAppearance={darkMode ? 'dark' : 'light'}
                 />
-                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleGPT} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Image source={require('../assets/openai.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL, { fontSize: textSize }]}>
+                <TouchableOpacity onPress={handleSendMessage} style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}>
                     <Feather name="send" size={24} color="#737373" />
                 </TouchableOpacity>
                 <ActionSheet
                     ref={actionSheetRef}
                     title={'What would you like to do?'}
-                    options={['Start Recording', 'Stop Recording', 'Close']}
-                    cancelButtonIndex={2}
+                    options={['Start Recording', 'Stop Recording', 'Send Recording', 'Close']}
+                    cancelButtonIndex={3}
                     onPress={(index) => handleAction(index)}
                 />
             </View>
