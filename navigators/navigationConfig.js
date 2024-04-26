@@ -16,6 +16,8 @@ export const HeaderScreenOptions = {
   headerTintColor: '#fff',
   headerTitleStyle: {
     fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1.1,
   },
   headerRight: () => (
     <ProfileButton />

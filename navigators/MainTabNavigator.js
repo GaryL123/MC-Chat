@@ -14,7 +14,7 @@ import { useSettings } from '../logic/settingsContext';
 const Tab = createBottomTabNavigator();
 
 const TranslatedTabBarLabel = ({ labelKey }) => {
-  const { language } = useSettings();
+  const { language, textSize } = useSettings();
   const translations = {
     Chats: { English: "Chats", Spanish: "Charlas" },
     Rooms: { English: "Rooms", Spanish: "Habitaciones" },
@@ -22,7 +22,7 @@ const TranslatedTabBarLabel = ({ labelKey }) => {
     Settings: { English: "Settings", Spanish: "Configuraciones" }
   };
 
-  return () => <Text style={{fontSize: 10, color: 'white'}}>{translations[labelKey][language] || translations[labelKey]['English']}</Text>;
+  return () => <Text style={{fontSize: 10 + textSize, color: '#f1f1f1', textTransform: 'uppercase', letterSpacing: 1.1}}>{translations[labelKey][language] || translations[labelKey]['English']}</Text>;
 };
 
 const MainTabNavigator = () => (
