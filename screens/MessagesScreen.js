@@ -269,6 +269,7 @@ export default function MessagesScreen() {
                 </TouchableOpacity>
                 <ActionSheet
                     ref={actionSheetRef}
+                    style={[darkMode ? ldStyles.circleButtonD : ldStyles.circleButtonL]}
                     title={'What would you like to do?'}
                     options={['Start Recording', 'Stop Recording', 'Send Recording', 'Close']}
                     cancelButtonIndex={3}

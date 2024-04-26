@@ -71,6 +71,22 @@ const messagesLogic = () => {
         }, 100)
     }
 
+    const setAudioMode = async () => {
+        try {
+            await Audio.setAudioModeAsync({
+                allowsRecordingIOS: true, // Allows recording on iOS
+                //interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+                playsInSilentModeIOS: true, // Plays audio even if the device is in silent mode
+                //interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+                shouldDuckAndroid: true,
+                staysActiveInBackground: false,
+                playThroughEarpieceAndroid: false,
+            });
+        } catch (error) {
+            console.error("Failed to set audio mode:", error);
+        }
+    };
+
     const createChatIfNotExists = async () => {
         let chatId = getChatId(user?.uid, item?.uid);
         await setDoc(doc(db, "chatInds", chatId), {
@@ -171,6 +187,7 @@ const messagesLogic = () => {
         return true;
     };
     const startRecording = async () => {
+        await setAudioMode();
         const permissionGranted = await requestMicPermission();
         if (!permissionGranted) {
             console.log("Microphone permission is required.");
