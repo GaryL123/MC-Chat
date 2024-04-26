@@ -180,7 +180,12 @@ const messagesLogic = () => {
             const newRecording = new Audio.Recording();
             await newRecording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
             await newRecording.startAsync();
+            console.log("Recording started.");
             setRecording(newRecording);
+            // Log after a delay to see if the state has updated
+            setTimeout(() => {
+                console.log('recording after delay: ', recording);
+            }, 100); // 100 ms delay
         }
         catch (error) {
             console.error('Failed to start recording: ', error);
@@ -188,41 +193,43 @@ const messagesLogic = () => {
     }
     const stopRecording = async () => {
         if (!recording) {
-          console.error('No active recording');
-          return null;
+            console.error('No active recording');
+            return null;
         }
-      
-        try {
-          await recording.stopAndUnloadAsync();
-          const recordingURI = recording.getURI();
-          setRecording(null);
-          setRecordingURI(recordingURI);
-        } catch (error) {
-          console.error('Failed to stop recording: ', error);
-          return null;
-        }
-      };
 
-    const uploadAudio = async (uri, fileName) => {
+        try {
+            await recording.stopAndUnloadAsync();
+            const recordingURI = recording.getURI();
+            setRecording(null);
+            setRecordingURI(recordingURI);
+            console.log('stopped recording. recordingURI: ', recordingURI);
+        } catch (error) {
+            console.error('Failed to stop recording: ', error);
+            return null;
+        }
+    };
+
+    const uploadAudio = async (uri) => {
         try {
             const response = await fetch(uri);
             const blob = await response.blob();
             const storage = getStorage();
-            const mediaRef = storageRef(storage);
+            const chatId = getChatId(user?.uid, item?.uid);
+            const mediaRef = storageRef(storage, `chatMedia/${chatId}/${Date.now()}`);
 
             await uploadBytes(mediaRef, blob);
 
-            const downLoadUrl = await getDownloadURL(mediaRef);
-            return downLoadUrl;
+            const downloadUrl = await getDownloadURL(mediaRef);
+            console.log('download url from uloadAudio: ', downloadUrl)
+            return downloadUrl;
         } catch (error) {
             console.error('Failed to upload audio: ', error);
         }
     }
     const sendVoiceMessage = async () => {
-        const uri = await stopRecording();
-        if (!uri) { return; }
+        if (!recordingURI) { return; }
 
-        const downloadUrl = await uploadAudio(uri);
+        const downloadUrl = await uploadAudio(recordingURI);
         if (!downloadUrl) {
             console.error('Failed to get download URL...');
             return;
@@ -232,7 +239,7 @@ const messagesLogic = () => {
             const docRef = doc(db, 'chatInds', chatId);
             const messageRef = collection(docRef, 'media');
 
-            await addDoc(messagesRef, {
+            await addDoc(messageRef, {
                 uid: user?.uid,
                 email: user?.email,
                 mediaType: 'audio',
@@ -240,6 +247,7 @@ const messagesLogic = () => {
                 fileName: 'voiceMessage',
                 createdAt: Timestamp.fromDate(new Date()),
             });
+            console.log('message sent, uploaded to database')
         } catch (error) {
             console.log('Failed to send voice message: ', error);
         }

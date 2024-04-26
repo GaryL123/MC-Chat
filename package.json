@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0",
@@ -33,6 +34,7 @@
     "firebase": "^10.10.0",
     "firebase-auth": "^0.1.2",
     "openai": "^4.33.0",
+    "patch-package": "^8.0.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-actionsheet": "^2.4.2",
