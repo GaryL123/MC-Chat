@@ -10,6 +10,8 @@ import messagesLogic from '../logic/messagesLogic';
 import { Video, ResizeMode } from 'expo-av';
 import { Image } from 'expo-image';
 import MenuItem from '../components/MenuItem';
+import HeaderTitle from '../components/HeaderTitle';
+import translations from '../assets/styles/Translations';
 import { getldStyles } from '../assets/styles/LightDarkStyles';
 import ActionSheet from 'react-native-actionsheet';
 
@@ -27,19 +29,20 @@ export default function MessagesScreen() {
     const [selectedMessage, setSelectedMessage] = useState(null);
     const chatId = getChatId(user?.uid, item?.uid);
     const navigation = useNavigation();
+    const t = (key) => translations[key][language] || translations[key]['English'];
     const ldStyles = getldStyles(textSize);
 
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: item?.fName + ' ' + item?.lName,
+            headerTitle: () => <HeaderTitle photo={item?.photoURL} name={item?.fName + ' ' + item?.lName} />,
             headerRight: () => (
                 <View style={{ flexDirection: 'row', paddingRight: 10 }}>
                     <TouchableOpacity onPress={() => {/* Handle voice call */ }} style={{ marginRight: 15 }}>
-                        <Feather name="phone" size={24} color="white" />
+                        <Feather name="phone" size={24} color="#f1f1f1" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {/* Handle video call */ }}>
-                        <Feather name="video" size={24} color="white" />
+                        <Feather name="video" size={24} color="#f1f1f1" />
                     </TouchableOpacity>
                 </View>
             ),
@@ -75,7 +78,7 @@ export default function MessagesScreen() {
     }
 
     const handleReportMessage = async (message, isReported) => {
-        const confirmAction = isReported ? 'Unreport' : 'Report';
+        const confirmAction = isReported ? t("Unreport") : t("Report");
         const textMessage = "text" in message;
 
         Alert.alert(
@@ -225,7 +228,7 @@ export default function MessagesScreen() {
                             <Menu opened={selectedMessage === message.id} onBackdropPress={() => setSelectedMessage(null)}>
                                 <MenuTrigger />
                                 <MenuOptions customStyles={{ optionsContainer: darkMode ? ldStyles.menuReportStyleD : ldStyles.menuReportStyleL }}>
-                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? "Unreport" : "Report"} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
+                                    <MenuItem text={message.reportedBy && message.reportedBy.includes(user?.uid) ? t("Unreport") : t("Report")} action={() => handleReportMessage(message, message.reportedBy && message.reportedBy.includes(user?.uid))} />
                                 </MenuOptions>
                             </Menu>
                         </TouchableOpacity>
