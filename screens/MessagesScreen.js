@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button, Linking, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as dp } from 'react-native-responsive-screen';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -55,17 +55,17 @@ export default function MessagesScreen() {
     const actionSheetRef = useRef(null);
 
     const showActionSheet = (item) => {
-        setTimeout(() => actionSheetRef.current.show(), 0); // Add a slight delay to ensure the state is updated
+        setTimeout(() => actionSheetRef.current.show(), 0); 
     };
 
     const handleAction = (index) => {
-        if (index === 0) { // start recording
+        if (index === 0) { 
             handleStartRecording();
-        } else if (index === 1) { // stop recording and send
+        } else if (index === 1) { 
             handleStopRecording();
         } else if (index === 2) {
             sendVoiceMessage();
-        } else if (index === 3) { // close
+        } else if (index === 3) { 
             console.log('close pressed');
         }
     };
@@ -121,6 +121,14 @@ export default function MessagesScreen() {
         await sendMediaMessage();
     }
 
+    const handleDownloadFile = (url) => {
+        try {
+            // Open the URL in the browser
+            Linking.openURL(url);
+        } catch (error) {
+            Alert.alert("Error", "Unable to open the file download link.");
+        }
+    };
     const handleGPT = async () => {
         const reply = await GPT();
         setInputText(reply);
@@ -180,26 +188,27 @@ export default function MessagesScreen() {
                 );
             } else if (mediaType.includes("audio")) {
                 return message.reportedBy?.includes(user?.uid) ? (
-                  <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>This audio has been reported</Text>
+                    <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>This audio has been reported</Text>
                 ) : (
                     <View style={styles.container}>
-                    <Video
-                        ref={video}
-                        style={styles.mediaVideo}
-                        source={{ uri: mediaURL }}
-                        useNativeControls
-                        resizeMode={ResizeMode.CONTAIN}
-                        isLooping
-                        onPlaybackStatusUpdate={status => setStatus(() => status)}
-                    />
-                </View>
-                );
-              } else {
-                return (
-                    <View style={styles.mediaContainer}>
-                        <Feather name="file" size={32} color="gray" />
-                        <Text>Unsupported media type</Text>
+                        <Video
+                            ref={video}
+                            style={styles.mediaAudio}
+                            source={{ uri: mediaURL }}
+                            useNativeControls
+                            resizeMode={ResizeMode.CONTAIN}
+                            isLooping
+                            onPlaybackStatusUpdate={status => setStatus(() => status)}
+                        />
                     </View>
+                );
+            } else {
+                return (
+                    <TouchableOpacity onPress={() => handleDownloadFile(mediaURL)}>
+                        <Text style={darkMode ? ldStyles.myMessageTextD : ldStyles.myMessageTextL}>
+                            <Feather name="file" size={24} color="#737373" /> Download File: {message.fileName}
+                        </Text>
+                    </TouchableOpacity>
                 );
             }
         } else {
@@ -366,6 +375,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     mediaVideo: {
+        width: '100%',
+        height: 150,
+        aspectRatio: 1,
+        borderRadius: 10,
+    },
+    mediaAudio: {
         width: '100%',
         height: 150,
         aspectRatio: 1,
