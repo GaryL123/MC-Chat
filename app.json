@@ -4,10 +4,10 @@
     "slug": "MC-Chat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/MCChat_Color_512px.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/MCChat_Color_512px.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,15 +19,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/MCChat_Color_512px.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hsallaku.MCChat"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/MCChat_Color_512px.png"
     },
     "extra": {
-      "OPENAI_API_KEY": "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"
+      "OPENAI_API_KEY": "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",
+      "eas": {
+        "projectId": "9faedf46-1e59-489e-800f-bb1b100c1940"
+      }
     }
   }
 }
