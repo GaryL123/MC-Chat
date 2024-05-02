@@ -25,6 +25,7 @@
     "expo-av": "^13.10.6",
     "expo-blur": "^12.9.2",
     "expo-constants": "^15.4.5",
+    "expo-dev-client": "~3.3.11",
     "expo-document-picker": "^11.10.1",
     "expo-file-system": "^16.0.9",
     "expo-image": "^1.10.6",
