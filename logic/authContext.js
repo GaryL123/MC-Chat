@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, sendEmailVerification } from 'firebase/auth';
 import { auth, db } from "../firebaseConfig";
 import { collection, doc, getDoc, getDocs, setDoc, onSnapshot } from 'firebase/firestore'
 
@@ -15,6 +15,7 @@ export const AuthContextProvider = ({ children }) => {
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (user) => {
             if (user) {
+                await handleEmailVerification(user);
                 setIsAuthenticated(true);
                 updateUserState(user);
                 fetchPendingFriendRequests(user.uid);
@@ -55,6 +56,10 @@ export const AuthContextProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
+            if (!response.user.emailVerified) {
+                await auth.signOut();
+                return { success: false, message: 'Your email address is not verified. Please check your email and click the verification link.' };
+            }
             return { success: true };
         } catch (e) {
             let msg = e.message;
@@ -75,25 +80,33 @@ export const AuthContextProvider = ({ children }) => {
 
     const register = async (email, fName, lName, password) => {
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-
-            setIsAuthenticated(true);
-
-            await setDoc(doc(db, "users", response?.user?.uid), {
-                uid: response?.user?.uid,
-                email: response?.user?.email,
-                fName: fName,
-                lName: lName
-            });
-
-            return { success: true, data: response?.user };
+          // Create user with email and password
+          const response = await createUserWithEmailAndPassword(auth, email, password);
+      
+          // Send email verification
+          await sendEmailVerification(response.user);
+      
+          // Store user data in Firestore after sending verification email
+          await setDoc(doc(db, "users", response.user.uid), {
+            uid: response.user.uid,
+            email: response.user.email,
+            fName: fName,
+            lName: lName,
+            emailVerified: false, // Set initially to false
+          });
+      
+          // Return success message indicating email verification
+          await auth.signOut();
+          return { success: true, message: 'Verification email sent. Please check your email to verify your account.' };
         } catch (e) {
-            let msg = e.message;
-            if (msg.includes('(auth/invalid-email)')) msg = 'Invalid email'
-            if (msg.includes('(auth/email-already-in-use)')) msg = 'This email is already in use'
-            return { success: false, msg };
+          let msg = e.message;
+          if (msg.includes('(auth/invalid-email)')) msg = 'Invalid email';
+          if (msg.includes('(auth/email-already-in-use)')) msg = 'This email is already in use';
+      
+          return { success: false, message: msg };
         }
-    }
+      };
+      
 
     const resetPassword = async (email) => {
         try {
@@ -130,6 +143,18 @@ export const AuthContextProvider = ({ children }) => {
 
         return unsubscribe; // Ensure you unsubscribe to avoid memory leaks
     };
+    const handleEmailVerification = async (user) => {
+        if (user && user.emailVerified) {
+            const userDocRef = doc(db, "users", user.uid);
+            await setDoc(
+                userDocRef,
+                {
+                    emailVerified: true,
+                },
+                { merge: true }
+            );
+        }
+    };
 
     const fetchPendingRoomInvites = async (uid) => {
         const requestsRef = collection(db, 'users', uid, 'invitesReceived');
@@ -156,7 +181,7 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, pendingFriendRequests, pendingRoomInvites, login, register, logout, resetPassword, fetchPendingFriendRequests, fetchPendingRoomInvites, updateUserData }}>
+        <AuthContext.Provider value={{ login, user, isAuthenticated, pendingFriendRequests, pendingRoomInvites, register, logout, resetPassword, fetchPendingFriendRequests, fetchPendingRoomInvites, updateUserData }}>
             {children}
         </AuthContext.Provider>
     )

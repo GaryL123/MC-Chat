@@ -16,16 +16,6 @@ export default function ChatsScreen() {
   const t = (key) => translations[key][language] || translations[key]['English'];
   const ldStyles = getldStyles(textSize);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.navigate(t("New Group Chat"))} style={ldStyles.createRoomButton}>
-          <Ionicons name="add-circle-outline" size={30} color="white" />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
   const ChatList = ({ friends }) => {
     return (
       <FlatList
