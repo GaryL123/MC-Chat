@@ -36,16 +36,7 @@ export default function MessagesScreen() {
         navigation.setOptions({
             headerShown: true,
             headerTitle: () => <HeaderTitle photo={item?.photoURL} name={item?.fName + ' ' + item?.lName} />,
-            headerRight: () => (
-                <View style={{ flexDirection: 'row', paddingRight: 10 }}>
-                    <TouchableOpacity onPress={() => {/* Handle voice call */ }} style={{ marginRight: 15 }}>
-                        <Feather name="phone" size={24} color="#f1f1f1" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {/* Handle video call */ }}>
-                        <Feather name="video" size={24} color="#f1f1f1" />
-                    </TouchableOpacity>
-                </View>
-            ),
+            
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: '#166939',
@@ -244,7 +235,7 @@ export default function MessagesScreen() {
                     ) : (
                         <View key={index} style={[styles.messageItemContainer, { justifyContent: 'flex-end' }]}>
                             <View style={[styles.messageBubble, darkMode ? ldStyles.myMessageD : ldStyles.myMessageL]}>
-                                {renderMessageContent(message, index)}
+                                {renderMessageContent(message)}
                             </View>
                         </View>
                     )

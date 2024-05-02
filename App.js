@@ -32,15 +32,15 @@ function App() {
   }, []);
 
   return (
-    <SettingsContextProvider>
-      <MenuProvider>
-        <NavigationContainer>
-          <AuthContextProvider>
+    <AuthContextProvider>
+      <SettingsContextProvider>
+        <MenuProvider>
+          <NavigationContainer>
             {currentUser ? <MainTabNavigator /> : <AuthStackNavigator />}
-          </AuthContextProvider>
-        </NavigationContainer>
-      </MenuProvider>
-    </SettingsContextProvider>
+          </NavigationContainer>
+        </MenuProvider>
+      </SettingsContextProvider>
+    </AuthContextProvider>
   );
 }
 
