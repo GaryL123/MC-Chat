@@ -4,34 +4,31 @@
     "slug": "MC-Chat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/MCChat_Color_512px.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/MCChat_Color_512px.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "*/"
     ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/MCChat_Color_512px.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.hsallaku.MCChat"
+      "package": "com.capstone.mcchat"
     },
     "web": {
-      "favicon": "./assets/MCChat_Color_512px.png"
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "OPENAI_API_KEY": "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",
-      "eas": {
-        "projectId": "9faedf46-1e59-489e-800f-bb1b100c1940"
-      }
+      "OPENAI_API_KEY": "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"
     }
   }
 }

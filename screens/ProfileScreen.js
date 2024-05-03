@@ -163,7 +163,7 @@ export default function ProfileScreen() {
                         </View>
                     </View>
 
-                    <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
+                    {/* <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <Octicons name="mail" size={hp(2.7)} color="gray" />
                         <TextInput
                             value={email}
@@ -175,7 +175,7 @@ export default function ProfileScreen() {
                             keyboardAppearance={darkMode ? 'dark' : 'light'}
                         />
                         <Text style={[darkMode ? ldStyles.emailDomainD : ldStyles.emailDomainL]}>@manhattan.edu</Text>
-                    </View>
+                    </View> */}
 
                     <View style={[darkMode ? ldStyles.itemContainer2D : ldStyles.itemContainer2L]}>
                         <FontAwesome6 name={faculty ? "person-harassing" : "person-drowning"} size={hp(2.7)} color="gray" />
